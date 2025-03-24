@@ -1,0 +1,55 @@
+site_name: FRECKLL
+repo_url: https://github.com/ahmed-f-alrefaie/FRECKLL
+site_url: https://ahmed-f-alrefaie.github.io/FRECKLL
+site_description: Fast Disequilibrium chemistry
+site_author: Ahmed F. Al-Refaie
+edit_uri: edit/main/docs/
+repo_name: ahmed-f-alrefaie/FRECKLL
+copyright: Maintained by <a href="https://ahmed-f-alrefaie.com">ahmed-f-alrefaie</a>.
+
+nav:
+  - Home: index.md
+  - Modules: modules.md
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: ["src/freckll"]
+theme:
+  name: material
+  feature:
+    tabs: true
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: white
+      accent: deep orange
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: deep orange
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+
+extra_javascript:
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/ahmed-f-alrefaie/FRECKLL
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/FRECKLL
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
