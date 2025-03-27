@@ -3,7 +3,7 @@ from ..reactions.common import compile_thermodynamic_properties
 from ..species import SpeciesDict, SpeciesFormula
 from ..nasa import NasaCoeffs
 from ..types import FreckllArray
-
+from astropy import units as u
 
 def map_production_loss(
     reactions: list[Reaction],
@@ -56,7 +56,7 @@ class ChemicalNetwork:
         return self.composition
 
     def compile_reactions(
-        self, temperature: FreckllArray, pressure: FreckllArray
+        self, temperature: u.Quantity, pressure: u.Quantity
     ) -> None:
         """Compile the reactions.
 
@@ -65,13 +65,16 @@ class ChemicalNetwork:
             pressure: The pressure.
 
         """
-        from ..kinetics import density
+        from ..kinetics import air_density
 
         thermo_properties = compile_thermodynamic_properties(
-            self.species, self.nasa_coeffs, temperature
+            self.species, self.nasa_coeffs, temperature.to(u.K).value
         )
 
-        self.compiled_density = density(temperature, pressure)
+        self.compiled_density = air_density(temperature, pressure).to(1/u.cm**3).value
+
+        pressure = pressure.to(u.mbar).value
+        temperature = temperature.to(u.K).value
 
         for reaction_call in self.reaction_calls:
             reaction_call.compile(temperature, pressure, thermo_properties)
