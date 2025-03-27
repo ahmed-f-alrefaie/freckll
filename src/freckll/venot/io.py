@@ -39,7 +39,10 @@ def load_nasa_coeffs(file_path: pathlib.Path | str) -> SpeciesDict[NasaCoeffs]:
                 break
             line_2 = file.readline().strip()
             line_3 = file.readline().strip()
+            
             nasa = _parse_nasa_lines(line_1, line_2, line_3, _decode_species)
+            if nasa.species in nasa_coeffs:
+                print(line_1, nasa.species.input_formula, nasa_coeffs[nasa.species].species.input_formula)
             nasa_coeffs[nasa.species] = nasa
 
     return nasa_coeffs
@@ -61,6 +64,31 @@ _species_mapping: dict[str, SpeciesFormula] = {
     "C4H7T": SpeciesFormula("C4H7", isomer_id="T", input_formula="C4H7T"),
     "1cC8H9": SpeciesFormula("C8H9", isomer_id="1c", input_formula="1cC8H9"),
     "CH2OH": SpeciesFormula("CH3O", isomer_id="H2", input_formula="CH2OH"),
+    "C2H4OOH": SpeciesFormula("C2H5OO", isomer_id="H4", input_formula="C2H4OOH"),
+    "CH3ONO": SpeciesFormula("CH3NO2", isomer_id="ONO", input_formula="CH3ONO"),
+    "C2H6CO": SpeciesFormula("C2H5CHO", isomer_id="H6", input_formula="C2H6CO"),
+    "HONO": SpeciesFormula("HNO2", isomer_id="ONO", input_formula="HONO"),
+    "HOCN": SpeciesFormula("HCNO", isomer_id="HO", input_formula="HOCN"),
+    "HNO3": SpeciesFormula("HONO2", isomer_id="O3", input_formula="HNO3"),
+    "HNC": SpeciesFormula("HCN", isomer_id="HNC", input_formula="HNC"),
+    "HON": SpeciesFormula("HNO", isomer_id="HON", input_formula="HON"),
+    "NCN": SpeciesFormula("CNN", isomer_id="NCN", input_formula="NCN"),
+    "cC5H4OH": SpeciesFormula("C5H5O", isomer_id="cH4O", input_formula="cC5H4OH"),
+    "cC6H4OH": SpeciesFormula("C6H5O", isomer_id="cH4O", input_formula="cC6H4OH"),
+    "OC6H4OH": SpeciesFormula("C6H5O2", isomer_id="H4O", input_formula="OC6H4OH"),
+    "C6H5CH2OH": SpeciesFormula("HOC6H4CH3", isomer_id="HOC", input_formula="C6H5CH2OH"),
+    "C6H4CH3": SpeciesFormula("C7H7", isomer_id="C6H4", input_formula="C6H4CH3"),
+    "HOC6H4CH2": SpeciesFormula("OC6H4CH3", isomer_id="HOC", input_formula="HOC6H4CH2"),
+    "C6H5CHOH": SpeciesFormula("HOC6H4CH2", isomer_id="C6H", input_formula="C6H5CHOH"),
+    "C6H5CH2O": SpeciesFormula("C6H5CHOH", isomer_id="C6H5", input_formula="C6H5CH2O"),
+    "C6H5CH2OO": SpeciesFormula("HOC6H4CH2O", isomer_id="C6H", input_formula="C6H5CH2OO"),
+    "OOC6H4CH3": SpeciesFormula("C6H5CH2OO", isomer_id="OOC", input_formula="OOC6H4CH3"),
+    "C4H8O": SpeciesFormula("C3H8CO", isomer_id="C4", input_formula="C4H8O"),
+    "C3H7OCH3": SpeciesFormula("C4H9OH", isomer_id="C3H7", input_formula="C3H7OCH3"),
+    "C3H5OH": SpeciesFormula("C2H6CO", isomer_id="C3H5", input_formula="C3H5OH"),
+    "C4H7OH": SpeciesFormula("C4H8O", isomer_id="H7", input_formula="C4H7OH"),
+    "C5H9OH": SpeciesFormula("C4H9CHO", isomer_id="C5H", input_formula="C5H9OH"),
+    "HOCH2O": SpeciesFormula("CH3OO", isomer_id="HOC", input_formula="HOCH2O"),
 }
 
 
