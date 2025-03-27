@@ -60,6 +60,7 @@ _species_mapping: dict[str, SpeciesFormula] = {
     "toluene": SpeciesFormula("C7H8", input_formula="toluene"),
     "C4H7T": SpeciesFormula("C4H7", isomer_id="T", input_formula="C4H7T"),
     "1cC8H9": SpeciesFormula("C8H9", isomer_id="1c", input_formula="1cC8H9"),
+    "CH2OH": SpeciesFormula("CH3O", isomer_id="H2", input_formula="CH2OH"),
 }
 
 
