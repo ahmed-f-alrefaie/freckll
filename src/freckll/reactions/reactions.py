@@ -102,6 +102,7 @@ def k0kinf_reaction(
         temperature: FreckllArray = temperature,
         falloff_coeffs: list[float] = falloff_coeffs,
         invert: bool = invert,
+        unimolecular: bool = unimolecular,
     ) -> list[FreckllArray]:
 
         m: FreckllArray = (efficiency[:, None] * concentration).sum(axis=0)
@@ -216,8 +217,6 @@ def decomposition_k0kinf_reaction(
                 products, inv_k_rate, kinfinv, m, temperature
             )
 
-            if unimolecular:
-                inv_k_rate *= m
 
             check_rate = inv_k_rate != inv_k_rate_coll
 
