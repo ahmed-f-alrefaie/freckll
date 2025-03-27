@@ -133,10 +133,10 @@ def load_efficiencies(
                 break
             efficiencies.append(_decode_species(line.strip()))
     # Build a species
-    efficiencies = [e for e in efficiencies if e in composition]
+    efficiencies = [e if e in composition else None for e in efficiencies]
 
     # Build species index
-    efficiencies = np.array([composition.index(e) for e in efficiencies])
+    efficiencies = np.array([composition.index(e) if e else -1 for e in efficiencies], dtype=np.int64)
 
     return efficiencies
 
@@ -212,12 +212,14 @@ def build_efficienies(
     """
     efficiencies_array = np.full(len(composition), fill_value)
     efficiencies = np.array(efficiencies)
+    valid_efficiencies = efficiency_index != -1
 
     num_efficiencies = min(len(efficiencies), len(efficiency_index))
-    efficiencies_array[efficiency_index[:num_efficiencies]] = efficiencies[
-        :num_efficiencies
-    ]
 
+    valid_effi_coeffs = efficiencies[valid_efficiencies[:num_efficiencies]]
+    valid_effi_index = efficiency_index[valid_efficiencies[:num_efficiencies]]
+
+    efficiencies_array[valid_effi_index] = valid_effi_coeffs
     return efficiencies_array
 
 
@@ -255,13 +257,13 @@ def _handle_k0_reactions(
             coeffs = c[10:]
             falloff_coeffs = coeffs[:5] if "SRI" in stem_name else coeffs[:4]
             efficiency_coeff = coeffs[5:] if "SRI" in stem_name else coeffs[4:]
-
             efficiencies = build_efficienies(
                 composition,
                 efficiency_coeff,
                 efficiency_indices,
                 fill_value=efficiency_fill,
             )
+
             reaction_calls.append(
                 ReactionCall(
                     composition,

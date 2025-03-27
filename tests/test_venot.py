@@ -387,3 +387,24 @@ def test_parse_reaction_line():
     np.testing.assert_allclose(
         coeffs, [1.000e13, 0.000e00, 2.363e04, 1.260e00, 0.000e00]
     )
+
+
+
+def test_build_efficiencies():
+    from freckll.venot.io import build_efficienies
+    effi_coeffs = np.array([0.4, 0.75, 1.5, 6.5, 3.0, 1.0, 3.0, 0.35, 0.4, 0.35, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+    
+    effi_index = np.array([ 6, 34, 27, 35, 32, 38, 11, -1, 33, 37, 21, -1, -1, -1, -1, 20, 31,
+       -1, -1, -1, -1, -1])
+                    
+    effi_species = np.zeros(47)
+
+    efficiency = build_efficienies(effi_species, effi_coeffs, effi_index)
+
+    expected = np.array([1.  , 1.  , 1.  , 1.  , 1.  , 1.  , 0.4 , 1.  , 1.  , 1.  , 1.  ,
+       3.  , 1.  , 1.  , 1.  , 1.  , 1.  , 1.  , 1.  , 1.  , 1.  , 1.  ,
+       1.  , 1.  , 1.  , 1.  , 1.  , 1.5 , 1.  , 1.  , 1.  , 1.  , 3.  ,
+       0.4 , 0.75, 6.5 , 1.  , 0.35, 1.  , 1.  , 1.  , 1.  , 1.  , 1.  ,
+       1.  , 1.  , 1.  ])
+    
+    np.testing.assert_allclose(efficiency, expected)
