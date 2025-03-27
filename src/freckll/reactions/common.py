@@ -37,7 +37,7 @@ def collision_rate_limit(
 
     """
     uni_reaction = len(reactants) == 1
-
+    kboltz = K_BOLTZMANN * 1e4
     spec1 = reactants[0]
     try:
         spec2 = reactants[1]
@@ -48,11 +48,11 @@ def collision_rate_limit(
     mass1 = spec1.monoisotopic_mass / AVO * 1e-3
     mass2 = spec2.monoisotopic_mass / AVO * 1e-3
 
-    reduced_mass = (mass1 * mass2) / (mass1 + mass2)
+    reduced_mass = (mass1 + mass2) / 2
 
     eff_xsec = 4.0 * np.pi * (RA * RA)
 
-    avg_speed = np.sqrt((8 * K_BOLTZMANN * temperature) / (np.pi * reduced_mass))
+    avg_speed = np.sqrt((8 * kboltz * temperature) / (np.pi * reduced_mass))
 
     k_coll = eff_xsec * avg_speed
 

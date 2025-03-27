@@ -16,6 +16,39 @@ def test_arrhenius():
     
     np.testing.assert_allclose(k0, expected)
 
+def test_collision_reaction():
+    from freckll.reactions.common import collision_rate_limit
+    from freckll.species import SpeciesFormula
+    reactats = SpeciesFormula("CH3")
+    k0 = np.array([2.30619237e-11, 1.31264193e-11, 6.88277557e-12, 3.80031234e-12,
+       3.02367037e-12, 1.43511975e-12, 3.08418410e-13, 5.30003132e-14,
+       9.04939281e-15, 1.53248255e-15, 2.40874692e-16, 2.34637676e-17,
+       9.02245617e-19])
+    
+    ki=np.array([5.997e-11, 5.997e-11, 5.997e-11, 5.997e-11, 5.997e-11, 5.997e-11,
+       5.997e-11, 5.997e-11, 5.997e-11, 5.997e-11, 5.997e-11, 5.997e-11,
+       5.997e-11])
+    
+    m = np.array([3.57581283e+20, 7.58837183e+19, 1.61989375e+19, 3.28066710e+18,
+       5.42973748e+17, 7.62225561e+16, 1.63528555e+16, 4.77902996e+15,
+       1.37736280e+15, 3.84935743e+14, 9.48470847e+13, 1.58797461e+13,
+       1.13167872e+12])
+
+    temperature = np.array([1846.3, 1827.5, 1764.8, 1651.1, 1398.2, 1266.1, 1349.5, 1515. ,
+       1676.1, 1834.9, 1986. , 2176.5, 2412. ])
+    
+    result = collision_rate_limit(
+        k_rate=k0, k_inf=ki, reactants=[reactats, reactats],m_concentration=m, temperature=temperature
+    )
+
+    expected = np.array([2.30619237e-11, 1.31264193e-11, 6.88277557e-12, 3.80031234e-12,
+       3.02367037e-12, 1.43511975e-12, 3.08418410e-13, 5.30003132e-14,
+       9.04939281e-15, 1.53248255e-15, 2.40874692e-16, 2.34637676e-17,
+       9.02245617e-19])
+    
+    np.testing.assert_allclose(result, expected)
+
+
 
 def test_collision_reaction_single_species():
     from freckll.reactions.common import collision_rate_limit
