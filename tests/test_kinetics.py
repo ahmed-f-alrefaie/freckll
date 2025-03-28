@@ -266,8 +266,8 @@ def test_fd_terms(coeff_inputs):
 
     chegp = compute_coeffs(*coeff_inputs[:-1])
 
-    np.testing.assert_allclose(fd_plus.to(1/u.mm).value, chegp[7])
-    np.testing.assert_allclose(fd_minus, chegp[8])
+    np.testing.assert_allclose(fd_plus.to(1/u.cm).value, chegp[7])
+    np.testing.assert_allclose(fd_minus.to(1/u.cm).value, chegp[8])
 
 
 def test_diffusive_terms(coeff_inputs):
@@ -282,13 +282,13 @@ def test_diffusive_terms(coeff_inputs):
     dip = chegp[9]
     dim = chegp[10]
 
-    planet_radius = coeff_inputs[2]
-    planet_mass = coeff_inputs[-1]
+    planet_radius = coeff_inputs[2] << u.km
+    planet_mass = coeff_inputs[-1] << u.kg
 
-    altitude = coeff_inputs[1]
-    mu = coeff_inputs[6]
-    T = coeff_inputs[7]
-    masses = coeff_inputs[5]
+    altitude = coeff_inputs[1] << u.km
+    mu = coeff_inputs[6] << u.kg
+    T = coeff_inputs[7] << u.K
+    masses = coeff_inputs[5] << u.kg
 
     delta_z, delta_z_p, delta_z_m, inv_dz, inv_dz_p, inv_dz_m = deltaz_terms(altitude)
 
@@ -306,8 +306,8 @@ def test_diffusive_terms(coeff_inputs):
         inv_dz_m,
     )
 
-    np.testing.assert_allclose(diffusion_plus[..., :-1], dip[..., :-1])
-    np.testing.assert_allclose(diffusion_minus[..., 1:], dim[..., 1:])
+    np.testing.assert_allclose(diffusion_plus[..., :-1].to(1/u.cm).value, dip[..., :-1], rtol=1e-5)
+    np.testing.assert_allclose(diffusion_minus[..., 1:].to(1/u.cm).value, dim[..., 1:], rtol=1e-5)
 
 
 def test_density_mdiffuse_kzz_terms(coeff_inputs):
@@ -315,20 +315,20 @@ def test_density_mdiffuse_kzz_terms(coeff_inputs):
 
     chegp = compute_coeffs(*coeff_inputs[:-1])
 
-    density = coeff_inputs[4]
-    molecular_diffusion = coeff_inputs[8]
-    Kzz = coeff_inputs[9]
+    density = coeff_inputs[4] << 1/u.cm**3
+    molecular_diffusion = coeff_inputs[8] << u.cm**2/u.s
+    Kzz = coeff_inputs[9] << u.cm**2/u.s
 
     dens_plus, dens_minus = general_plus_minus(density)
     mdiff_plus, mdiff_minus = general_plus_minus(molecular_diffusion)
     kzz_plus, kzz_minus = general_plus_minus(Kzz)
 
-    np.testing.assert_allclose(dens_plus, chegp[5])
-    np.testing.assert_allclose(dens_minus, chegp[6])
-    np.testing.assert_allclose(mdiff_plus, chegp[11])
-    np.testing.assert_allclose(mdiff_minus, chegp[12])
-    np.testing.assert_allclose(kzz_plus, chegp[15])
-    np.testing.assert_allclose(kzz_minus, chegp[16])
+    np.testing.assert_allclose(dens_plus.value, chegp[5])
+    np.testing.assert_allclose(dens_minus.value, chegp[6])
+    np.testing.assert_allclose(mdiff_plus.value, chegp[11])
+    np.testing.assert_allclose(mdiff_minus.value, chegp[12])
+    np.testing.assert_allclose(kzz_plus.value, chegp[15])
+    np.testing.assert_allclose(kzz_minus.value, chegp[16])
 
 
 def test_vmr_terms(coeff_inputs):
@@ -339,18 +339,105 @@ def test_vmr_terms(coeff_inputs):
     dyp = chegp[13]
     dym = chegp[14]
 
-    altitude = coeff_inputs[1]
+    altitude = coeff_inputs[1] << u.km
     fm = coeff_inputs[0]
 
     _, _, _, _, inv_dz_p, inv_dz_m = deltaz_terms(altitude)
 
     vmr_plus, vmr_minus = vmr_terms(fm, inv_dz_p, inv_dz_m)
 
-    np.testing.assert_allclose(vmr_plus, dyp[..., :-1])
-    np.testing.assert_allclose(vmr_minus, dym[..., 1:])
+    np.testing.assert_allclose(vmr_plus.to(1/u.cm).value, dyp[..., :-1])
+    np.testing.assert_allclose(vmr_minus.to(1/u.cm).value, dym[..., 1:])
 
 
-def test_diffusive_flux(coeff_inputs):
+def test_diffusive_flux_no_diffusion(coeff_inputs):
+    from freckll.kinetics import diffusion_flux
+    from freckll.constants import K_BOLTZMANN, AMU
+
+    chegp = compute_coeffs(*coeff_inputs[:-1])
+    cp, cm, c_plus, c_moins, dip, dim, dp, dm, dyp, dym, kp, km = chegp[5:]
+
+    dp[...] = 0
+    dm[...] = 0
+
+    fm = coeff_inputs[0]
+
+    expected = np.zeros_like(coeff_inputs[0])
+
+    expected[:, 1:-1] += (
+        cp[1:-1]
+        * (
+            dp[:, 1:-1]
+            * ((fm[:, 2:] + fm[:, 1:-1]) * 0.5 * dip[:, 1:-1] + dyp[:, 1:-1])
+            + kp[1:-1] * dyp[:, 1:-1]
+        )
+        * c_plus[1:-1]
+        + cm[1:-1]
+        * (
+            dm[:, 1:-1]
+            * ((fm[:, 1:-1] + fm[:, :-2]) * 0.5 * dim[:, 1:-1] + dym[:, 1:-1])
+            + km[1:-1] * dym[:, 1:-1]
+        )
+        * c_moins[1:-1]
+    )
+    expected[:, 0] += (
+        cp[0]
+        * (
+            dp[:, 0] * ((fm[:, 1] + fm[:, 0]) * 0.5 * dip[:, 0] + dyp[:, 0])
+            + kp[0] * dyp[:, 0]
+        )
+        * c_plus[0]
+    )
+    expected[:, -1] += (
+        c_moins[-1]
+        * cm[-1]
+        * (
+            dm[:, -1] * ((fm[:, -1] + fm[:, -2]) * 0.5 * dim[:, -1] + dym[:, -1])
+            + km[-1] * dym[:, -1]
+        )
+    )
+
+    # vmr: FreckllArray,
+    # density: FreckllArray,
+    # planet_radius: FreckllArray,
+    # planet_mass: FreckllArray,
+    # altitude: FreckllArray,
+    # temperature: FreckllArray,
+    # mu: FreckllArray,
+    # masses: FreckllArray,
+    # molecular_diffusion: FreckllArray,
+    # kzz: FreckllArray,
+
+    vmr = coeff_inputs[0] << u.dimensionless_unscaled
+    density = coeff_inputs[4] << (1/u.cm**3)
+    planet_radius = coeff_inputs[2] << u.km
+    planet_mass = coeff_inputs[-1] << u.kg
+    altitude = coeff_inputs[1] << u.km
+    temperature = coeff_inputs[7] << u.K
+    mu = coeff_inputs[6] << u.g
+    masses = coeff_inputs[5] << u.g
+    molecular_diffusion = coeff_inputs[8]*0 << u.cm**2/u.s
+    kzz = coeff_inputs[9] << u.cm**2/u.s
+
+    diff_flux = diffusion_flux(
+        vmr,
+        density,
+        planet_radius,
+        planet_mass,
+        altitude,
+        temperature,
+        mu,
+        masses,
+        molecular_diffusion,
+        kzz,
+    ).decompose()
+
+
+    np.testing.assert_allclose((diff_flux/density).to(1/u.s).value, expected/coeff_inputs[4])
+
+
+
+def test_diffusive_flux_w_diffusion(coeff_inputs):
     from freckll.kinetics import diffusion_flux
     from freckll.constants import K_BOLTZMANN, AMU
 
@@ -405,18 +492,18 @@ def test_diffusive_flux(coeff_inputs):
     # molecular_diffusion: FreckllArray,
     # kzz: FreckllArray,
 
-    vmr = coeff_inputs[0]
-    density = coeff_inputs[4]
-    planet_radius = coeff_inputs[2]
-    planet_mass = coeff_inputs[-1]
-    altitude = coeff_inputs[1]
-    temperature = coeff_inputs[7]
-    mu = coeff_inputs[6]
-    masses = coeff_inputs[5]
-    molecular_diffusion = coeff_inputs[8]
-    kzz = coeff_inputs[9]
+    vmr = coeff_inputs[0] << u.dimensionless_unscaled
+    density = coeff_inputs[4] << (1/u.cm**3)
+    planet_radius = coeff_inputs[2] << u.km
+    planet_mass = coeff_inputs[-1] << u.kg
+    altitude = coeff_inputs[1] << u.km
+    temperature = coeff_inputs[7] << u.K
+    mu = coeff_inputs[6] << u.g
+    masses = coeff_inputs[5] << u.g
+    molecular_diffusion = coeff_inputs[8] << u.m**2/u.s
+    kzz = coeff_inputs[9] << u.cm**2/u.s
 
-    diff_flux = diffusion_flux(
+    diff_flux = (diffusion_flux(
         vmr,
         density,
         planet_radius,
@@ -427,6 +514,8 @@ def test_diffusive_flux(coeff_inputs):
         masses,
         molecular_diffusion,
         kzz,
-    )
+    )/density)
 
-    np.testing.assert_allclose(diff_flux, expected)
+    diff_flux.to(1/(u.s))
+
+    np.testing.assert_allclose(diff_flux.to(1/u.s).value, expected/coeff_inputs[4])

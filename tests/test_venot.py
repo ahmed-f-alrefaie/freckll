@@ -350,7 +350,7 @@ def test_load_composes_file(tmp_path):
     # Check last is condensed phase
     assert species[-1] == SpeciesFormula("NH3", state="liquid")
     # Check isomer is okay
-    assert species[37] == SpeciesFormula("C2H3CHO", isomer_id="Z")
+    assert species[37] == SpeciesFormula("C2H3CHOZ", true_formula="C3H4O")
     assert len(species) == 111
 
 
@@ -365,7 +365,7 @@ def test_parse_reaction_line():
     reactants, products, coeffs = _parse_reaction_line(REACTION_LINES.split("\n")[0])
 
     assert reactants == [SpeciesFormula("HCNO")]
-    assert products == [SpeciesFormula("HCN"), SpeciesFormula("O", isomer_id="3P")]
+    assert products == [SpeciesFormula("HCN"), SpeciesFormula("O3P", true_formula="O")]
     np.testing.assert_allclose(
         coeffs, [4.200e31, -6.120e00, 3.077e04, 1.100e00, 0.000e00]
     )
@@ -382,7 +382,7 @@ def test_parse_reaction_line():
 
     reactants, products, coeffs = _parse_reaction_line(REACTION_LINE)
 
-    assert reactants == [SpeciesFormula("CH2CHO", isomer_id="H2")]
+    assert reactants == [SpeciesFormula("CH2CHO", true_formula="C2H3O")]
     assert products == [SpeciesFormula("CH3CO")]
     np.testing.assert_allclose(
         coeffs, [1.000e13, 0.000e00, 2.363e04, 1.260e00, 0.000e00]

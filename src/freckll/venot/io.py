@@ -50,45 +50,45 @@ def load_nasa_coeffs(file_path: pathlib.Path | str) -> SpeciesDict[NasaCoeffs]:
 
 # Some species have multiple isomers/states, so we need to map the species to the correct isomer/state
 _species_mapping: dict[str, SpeciesFormula] = {
-    "CH2CHO": SpeciesFormula("CH3CO", isomer_id="H2", input_formula="CH2CHO"),
-    "C4H8Y": SpeciesFormula("C4H8", isomer_id="Y", input_formula="C4H8Y"),
-    "C2H3CHOZ": SpeciesFormula("C2H3CHO", isomer_id="Z", input_formula="C2H3CHOZ"),
-    "N4S": SpeciesFormula("N", isomer_id="4S", input_formula="N4S"),
-    "N2D": SpeciesFormula("N", isomer_id="2D", input_formula="N2D"),
-    "H2Oc": SpeciesFormula("H2O", state=SpeciesState.LIQUID, input_formula="H2Oc"),
-    "CH4c": SpeciesFormula("CH4", state=SpeciesState.LIQUID, input_formula="CH4c"),
-    "NH3c": SpeciesFormula("NH3", state=SpeciesState.LIQUID, input_formula="NH3c"),
-    "O3P": SpeciesFormula("O", isomer_id="3P", input_formula="O3P"),
-    "O1D": SpeciesFormula("O", isomer_id="1D", input_formula="O1D"),
-    "toluene": SpeciesFormula("C7H8", input_formula="toluene"),
-    "C4H7T": SpeciesFormula("C4H7", isomer_id="T", input_formula="C4H7T"),
-    "1cC8H9": SpeciesFormula("C8H9", isomer_id="1c", input_formula="1cC8H9"),
-    "CH2OH": SpeciesFormula("CH3O", isomer_id="H2", input_formula="CH2OH"),
-    "C2H4OOH": SpeciesFormula("C2H5OO", isomer_id="H4", input_formula="C2H4OOH"),
-    "CH3ONO": SpeciesFormula("CH3NO2", isomer_id="ONO", input_formula="CH3ONO"),
-    "C2H6CO": SpeciesFormula("C2H5CHO", isomer_id="H6", input_formula="C2H6CO"),
-    "HONO": SpeciesFormula("HNO2", isomer_id="ONO", input_formula="HONO"),
-    "HOCN": SpeciesFormula("HCNO", isomer_id="HO", input_formula="HOCN"),
-    "HNO3": SpeciesFormula("HONO2", isomer_id="O3", input_formula="HNO3"),
-    "HNC": SpeciesFormula("HCN", isomer_id="HNC", input_formula="HNC"),
-    "HON": SpeciesFormula("HNO", isomer_id="HON", input_formula="HON"),
-    "NCN": SpeciesFormula("CNN", isomer_id="NCN", input_formula="NCN"),
-    "cC5H4OH": SpeciesFormula("C5H5O", isomer_id="cH4O", input_formula="cC5H4OH"),
-    "cC6H4OH": SpeciesFormula("C6H5O", isomer_id="cH4O", input_formula="cC6H4OH"),
-    "OC6H4OH": SpeciesFormula("C6H5O2", isomer_id="H4O", input_formula="OC6H4OH"),
-    "C6H5CH2OH": SpeciesFormula("HOC6H4CH3", isomer_id="HOC", input_formula="C6H5CH2OH"),
-    "C6H4CH3": SpeciesFormula("C7H7", isomer_id="C6H4", input_formula="C6H4CH3"),
-    "HOC6H4CH2": SpeciesFormula("OC6H4CH3", isomer_id="HOC", input_formula="HOC6H4CH2"),
-    "C6H5CHOH": SpeciesFormula("HOC6H4CH2", isomer_id="C6H", input_formula="C6H5CHOH"),
-    "C6H5CH2O": SpeciesFormula("C6H5CHOH", isomer_id="C6H5", input_formula="C6H5CH2O"),
-    "C6H5CH2OO": SpeciesFormula("HOC6H4CH2O", isomer_id="C6H", input_formula="C6H5CH2OO"),
-    "OOC6H4CH3": SpeciesFormula("C6H5CH2OO", isomer_id="OOC", input_formula="OOC6H4CH3"),
-    "C4H8O": SpeciesFormula("C3H8CO", isomer_id="C4", input_formula="C4H8O"),
-    "C3H7OCH3": SpeciesFormula("C4H9OH", isomer_id="C3H7", input_formula="C3H7OCH3"),
-    "C3H5OH": SpeciesFormula("C2H6CO", isomer_id="C3H5", input_formula="C3H5OH"),
-    "C4H7OH": SpeciesFormula("C4H8O", isomer_id="H7", input_formula="C4H7OH"),
-    "C5H9OH": SpeciesFormula("C4H9CHO", isomer_id="C5H", input_formula="C5H9OH"),
-    "HOCH2O": SpeciesFormula("CH3OO", isomer_id="HOC", input_formula="HOCH2O"),
+    "CH2CHO": SpeciesFormula("CH2CHO", true_formula="CH3CO"),
+    "C4H8Y": SpeciesFormula("C4H8Y", true_formula="C4H8"),
+    "C2H3CHOZ": SpeciesFormula("C2H3CHOZ", true_formula="C2H3CHO"),
+    "N4S": SpeciesFormula("N4S", true_formula="N"),
+    "N2D": SpeciesFormula("N2D", true_formula="N"),
+    "H2Oc": SpeciesFormula("H2Oc", state=SpeciesState.LIQUID, true_formula="H2O"),
+    "CH4c": SpeciesFormula("CH4c", state=SpeciesState.LIQUID, true_formula="CH4"),
+    "NH3c": SpeciesFormula("NH3c", state=SpeciesState.LIQUID, true_formula="NH3"),
+    "O3P": SpeciesFormula("O3P", true_formula="O"),
+    "O1D": SpeciesFormula("O1D", true_formula="O"),
+    "toluene": SpeciesFormula("toluene", true_formula="C7H8"),
+    "C4H7T": SpeciesFormula("C4H7T", true_formula="C4H7"),
+    "1cC8H9": SpeciesFormula("1cC8H9", true_formula="C8H9"),
+    "CH2OH": SpeciesFormula("CH2OH", true_formula="CH3O"),
+    "C2H4OOH": SpeciesFormula("C2H4OOH", true_formula="C2H5OO"),
+    "CH3ONO": SpeciesFormula("CH3ONO", true_formula="CH3NO2"),
+    "C2H6CO": SpeciesFormula("C2H6CO", true_formula="C2H5CHO"),
+    "HONO": SpeciesFormula("HONO", true_formula="HNO2"),
+    "HOCN": SpeciesFormula("HOCN", true_formula="HCNO"),
+    "HNO3": SpeciesFormula("HNO3", true_formula="HONO2"),
+    "HNC": SpeciesFormula("HNC", true_formula="HCN"),
+    "HON": SpeciesFormula("HON", true_formula="HNO"),
+    "NCN": SpeciesFormula("NCN", true_formula="CNN"),
+    "cC5H4OH": SpeciesFormula("cC5H4OH", true_formula="C5H5O"),
+    "cC6H4OH": SpeciesFormula("cC6H4OH", true_formula="C6H5O"),
+    "OC6H4OH": SpeciesFormula("OC6H4OH", true_formula="C6H5O2"),
+    "C6H5CH2OH": SpeciesFormula("C6H5CH2OH", true_formula="HOC6H4CH3"),
+    "C6H4CH3": SpeciesFormula("C6H4CH3", true_formula="C7H7"),
+    "HOC6H4CH2": SpeciesFormula("HOC6H4CH2", true_formula="OC6H4CH3"),
+    "C6H5CHOH": SpeciesFormula("C6H5CHOH", true_formula="HOC6H4CH2"),
+    "C6H5CH2O": SpeciesFormula("C6H5CH2O", true_formula="C6H5CHOH"),
+    "C6H5CH2OO": SpeciesFormula("C6H5CH2OO", true_formula="HOC6H4CH2O"),
+    "OOC6H4CH3": SpeciesFormula("OOC6H4CH3", true_formula="C6H5CH2OO"),
+    "C4H8O": SpeciesFormula("C4H8O", true_formula="C3H8CO"),
+    "C3H7OCH3": SpeciesFormula("C3H7OCH3", true_formula="C4H9OH"),
+    "C3H5OH": SpeciesFormula("C3H5OH", true_formula="C2H6CO"),
+    "C4H7OH": SpeciesFormula("C4H7OH", true_formula="C4H8O"),
+    "C5H9OH": SpeciesFormula("C5H9OH", true_formula="C4H9CHO"),
+    "HOCH2O": SpeciesFormula("HOCH2O", true_formula="CH3OO"),
 }
 
 
@@ -107,16 +107,16 @@ def _decode_species(s: str) -> SpeciesFormula:
 
     if s not in _species_mapping:
         if s[0].islower() or (s[0].isdigit() and s[1].isupper()):
-            return SpeciesFormula(s[1:], isomer_id=s[0], input_formula=s)
+            return SpeciesFormula(s, true_formula=s[1:])
         if s[0].isdigit() and s[1].isdigit():
-            return SpeciesFormula(s[2:], isomer_id=int(s[:2]), input_formula=s)
+            return SpeciesFormula(s, true_formula=s[2:])
 
     spec = _species_mapping.get(s)
 
     if spec is not None:
         return spec
 
-    return SpeciesFormula(s, input_formula=s)
+    return SpeciesFormula(s)
 
 
 def _parse_reaction_line(

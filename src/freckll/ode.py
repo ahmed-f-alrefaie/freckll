@@ -21,15 +21,17 @@ def construct_reaction_terms(
     reaction_terms = np.zeros((len(species), num_layers), dtype=np.float64)
 
     for spec_idx, spec in enumerate(species):
-        productions = [p.dens_krate for p in production_reactions.get(spec, [])]
-        losses = [-l.dens_krate for l in loss_reactions.get(spec, [])]
+        production_spec = production_reactions.get(spec, [])
+        loss_spec = loss_reactions.get(spec, [])
+        productions = [p.dens_krate for p in production_spec]
+        losses = [-l.dens_krate for l in loss_spec]
 
         all_reactions = productions + losses
 
         if not all_reactions:
             continue
 
-        reaction_terms[spec_idx] = ksum(np.array(productions + losses), k=k)
+        reaction_terms[spec_idx] = ksum(np.array(all_reactions), k=k)
 
     # reaction_terms = np.zeros(
     #     (len(reactions), num_species, num_layers), dtype=np.float64
@@ -105,10 +107,12 @@ def construct_jacobian_reaction_terms(
             for p in r.reactants_indices:
                 chem_dict[p].append(-r.dens_krate)
 
+        if not chem_dict:
+            continue
+
         row_idx = compute_index(spec_idx, layer_idx, num_species, num_layers)
         for p, v in chem_dict.items():
             reaction_term = ksum(np.array(v), k=k) / spec_density
-
             col_idx = compute_index(p, layer_idx, num_species, num_layers)
             rows.append(row_idx)
             cols.append(col_idx)

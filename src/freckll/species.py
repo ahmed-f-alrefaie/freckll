@@ -24,8 +24,7 @@ class SpeciesFormula(Formula):
         self,
         formula: str,
         state: t.Optional[SpeciesState] = None,
-        input_formula: t.Optional[str] = None,
-        isomer_id: int | str = 0,
+        true_formula: t.Optional[str] = None,
     ) -> None:
         """Initialize species.
 
@@ -34,7 +33,8 @@ class SpeciesFormula(Formula):
             state: The state of the species.
             isomer_id: The isomer id of the species.
         """
-        self.input_formula = input_formula or formula
+  
+        
         if state is None:
             # Try to guess the state from [s] or [l] in the formula
             if formula.endswith("[s]"):
@@ -45,9 +45,10 @@ class SpeciesFormula(Formula):
                 formula = formula[:-3]
             else:
                 state = SpeciesState.GAS
+        self.input_formula = formula
+        self.true_formula = true_formula or formula
         self.state = state
-        self.isomer_id = isomer_id
-        super().__init__(formula)
+        super().__init__(self.true_formula)
 
         self.composition_dict = self.composition().asdict()
         self.composition_values = list(self.composition_dict.values())
@@ -65,15 +66,14 @@ class SpeciesFormula(Formula):
 
     def __hash__(self) -> int:
         """Hash function. Necessary for sets and dicts."""
-        val = list(self.composition_dict.values()) + [self.state, self.isomer_id]
 
-        return hash(frozenset(val))
+        return hash(self.input_formula)
 
     def __eq__(self, other: t.Union[str, "SpeciesFormula", object]) -> bool:
         """Equality check. Necessary for sets and dicts."""
         if isinstance(other, str):
             # Support for checking against a string and the original formula
-            return (self == SpeciesFormula(other)) | (self.input_formula == other)
+            return (self.input_formula == other) 
         if not isinstance(other, SpeciesFormula):
             raise TypeError
         comp_self = self.composition_values
@@ -82,15 +82,14 @@ class SpeciesFormula(Formula):
         return (
             frozenset(comp_self) == frozenset(comp_other)
             and self.state == other.state
-            and self.isomer_id == other.isomer_id
+            and self.formula == other.formula
+            and self.input_formula == other.input_formula
         )
 
     def __str__(self) -> str:
-        str_val = f"{self.formula}"
+        str_val = f"{self.input_formula}"
         if self.state != SpeciesState.GAS:
             str_val += f"[{self.state}]"
-        if self.isomer_id != 0:
-            str_val += f" variant: {self.isomer_id}"
         return str_val
 
     def __repr__(self) -> str:
@@ -123,7 +122,7 @@ class SpeciesDict(dict[SpeciesFormula, _VT]):
         if isinstance(key, str):
 
             if "/" in key:
-                molecule, varient = key.split("/")
+                molecule
                 key = SpeciesFormula(molecule.strip(), isomer_id=varient.strip())
             else:
                 key = SpeciesFormula(key)

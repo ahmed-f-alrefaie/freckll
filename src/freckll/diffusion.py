@@ -4,7 +4,7 @@ from .species import SpeciesFormula, SpeciesDict
 from .types import FreckllArray
 import numpy as np
 import typing as t
-
+from astropy import units as u
 _diffusion_volumes = SpeciesDict(
     {
         SpeciesFormula("C"): 15.9,
@@ -61,10 +61,10 @@ def diffusion_volume(species: SpeciesFormula) -> float:
 
 def molecular_diffusion(
     species: list[SpeciesFormula],
-    number_density: FreckllArray,
-    temperature: FreckllArray,
-    pressure: FreckllArray,
-) -> FreckllArray:
+    number_density: u.Quantity,
+    temperature: u.Quantity,
+    pressure: u.Quantity,
+) -> u.Quantity:
     """Compute the molecular diffusion term for a species.
 
     Args:
@@ -79,19 +79,19 @@ def molecular_diffusion(
     """
     from .utils import n_largest_index
 
-    y = number_density / np.sum(number_density, axis=0)
+    y = (number_density / np.sum(number_density, axis=0)).decompose().value
     sigma = np.array([s.diffusion for s in species])
     mole_masses = np.array([s.monoisotopic_mass for s in species])
 
     index_1, index_2 = n_largest_index(y, 2, axis=0)
 
-    mass_over_one = 1 / np.maximum(mole_masses, 1.0)
+    mass_over_one = 1 / np.maximum(mole_masses, 1.0 << u.u)
 
     mass_ab_one = 2.0 / (mass_over_one[:, None] + mass_over_one[None, index_1])
     mass_ab_two = 2.0 / (mass_over_one[:, None] + mass_over_one[None, index_2])
 
-    pressure_bar = pressure * 1e3
-
+    pressure_bar = pressure.to(u.bar).value
+    temperature = temperature.to(u.K).value
     diff_1 = (0.00143 * temperature[None, :] ** 1.75) / (
         pressure_bar[None,]
         * np.sqrt(mass_ab_one)

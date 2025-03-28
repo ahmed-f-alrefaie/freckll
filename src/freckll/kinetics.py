@@ -26,7 +26,7 @@ def gravity_at_height(
         altitude: The altitude at which to compute the gravity.
 
     """
-    return (const.G * mass / (radius + altitude) ** 2).to(u.cm/u.s**2)
+    return (const.G * mass / (radius + altitude) ** 2)
 
 
 def air_density(temperature: u.Quantity, pressure: u.Quantity) -> FreckllArray:

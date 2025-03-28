@@ -5,7 +5,7 @@ import pathlib
 import typing as t
 import numpy as np
 from .types import FreckllArrayInt
-
+from astropy import units as u
 
 @contextmanager
 def create_composes(
@@ -38,8 +38,8 @@ def create_composes(
 
 
 def equil_chemistry_ace(
-    temperature: t.Union[float, t.List[float]],
-    pressure: t.Union[float, t.List[float]],
+    temperature: u.Quantity,
+    pressure: u.Quantity,
     composition: list[SpeciesFormula],
     therm_file: pathlib.Path,
     elements: t.Optional[t.List[str]] = ["H", "He", "C", "N", "O"],
@@ -76,8 +76,8 @@ def equil_chemistry_ace(
         indices,
     ):
         species, mix_profile, mmw = run_ace(
-            temperature << u.K,
-            pressure << u.Unit(pressure_unit),
+            temperature,
+            pressure,
             elements=elements,
             abundances=abundances,
             specfile=specfile,
@@ -85,4 +85,4 @@ def equil_chemistry_ace(
         )
         vmr[indices] = mix_profile
 
-    return vmr
+    return vmr, mmw
