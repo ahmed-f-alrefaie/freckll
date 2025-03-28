@@ -80,15 +80,16 @@ def molecular_diffusion(
     from .utils import n_largest_index
 
     y = (number_density / np.sum(number_density, axis=0)).decompose().value
-    sigma = np.array([s.diffusion for s in species])
+    sigma = np.array([s.diffusion_volume for s in species])
     mole_masses = np.array([s.monoisotopic_mass for s in species])
 
     index_1, index_2 = n_largest_index(y, 2, axis=0)
 
-    mass_over_one = 1 / np.maximum(mole_masses, 1.0 << u.u)
+    mass_over_one = 1 / np.maximum(mole_masses, 1.0)
 
     mass_ab_one = 2.0 / (mass_over_one[:, None] + mass_over_one[None, index_1])
     mass_ab_two = 2.0 / (mass_over_one[:, None] + mass_over_one[None, index_2])
+
 
     pressure_bar = pressure.to(u.bar).value
     temperature = temperature.to(u.K).value
@@ -104,11 +105,13 @@ def molecular_diffusion(
         * (sigma[:, None] ** (1 / 3) + sigma[None, index_2] ** (1 / 3)) ** 2
     )
 
-    y_diff_1 = y[index_1]
-    y_diff_2 = y[index_2]
+    layer_idx = np.arange(number_density.shape[1], dtype=np.int64)
+
+    y_diff_1 = y[index_1,layer_idx]
+    y_diff_2 = y[index_2,layer_idx]
 
     diff_mol = 1.0 / (y_diff_1[None, :] / diff_1 + y_diff_2[None, :] / diff_2)
-    diff_mol[index_2] = diff_1[index_2]
-    diff_mol[index_1] = 0.0
+    diff_mol[index_2, layer_idx] = diff_1[index_2, layer_idx]
+    diff_mol[index_1, layer_idx] = 0.0
 
-    return t.cast(FreckllArray, diff_mol)
+    return diff_mol << u.cm**2 / u.s
