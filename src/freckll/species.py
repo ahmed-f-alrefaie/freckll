@@ -52,7 +52,7 @@ class SpeciesFormula(Formula):
 
         self.composition_dict = self.composition().asdict()
         self.composition_values = list(self.composition_dict.values())
-
+        self.diffusion = None
     def _compute_diffusion(self) -> None:
         """Compute the diffusion coefficient."""
         from .diffusion import diffusion_volume
@@ -62,6 +62,8 @@ class SpeciesFormula(Formula):
     @property
     def diffusion_volume(self) -> float:
         """Compute the diffusion volume."""
+        if self.diffusion is None:
+            self._compute_diffusion()
         return self.diffusion
 
     def __hash__(self) -> int:
