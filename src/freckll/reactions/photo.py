@@ -1,50 +1,45 @@
 """Module related to loading in photodisocciation data."""
-from astropy import units as u
-from ..species import SpeciesFormula, SpeciesDict
+
+import typing as t
+
 import numpy as np
 import numpy.typing as npt
-from ..types import FreckllArray
-import typing as t
-from ..reactions.data import Reaction
-class StarSpectra:
+from astropy import units as u
 
-    def __init__(self, 
-                 wavelength: u.Quantity,
-                 flux: u.Quantity,
-                 reference_distance: u.Quantity
-                 ):
+from ..reactions.data import Reaction
+from ..species import SpeciesDict, SpeciesFormula
+from ..types import FreckllArray
+
+
+class StarSpectra:
+    def __init__(self, wavelength: u.Quantity, flux: u.Quantity, reference_distance: u.Quantity):
         """Initialize the star spectrum with wavelength and flux data.
 
         Args:
             wavelength: The wavelength of the star spectrum.
             flux: The flux of the star spectrum.
             reference_distance: The reference distance for the flux.
-        
+
         """
         self.wavelength = wavelength
         self.flux = flux
 
         self.reference_distance = reference_distance
 
-    def incident_flux(self, 
-                 distance: u.Quantity) -> u.Quantity:
+    def incident_flux(self, distance: u.Quantity) -> u.Quantity:
         """Calculate the flux density at the reference distance.
 
         Returns:
             u.Quantity: The flux density at the reference distance.
-        
+
         """
-        return self.flux * (self.reference_distance / distance)**2 / 2
-
-
+        return self.flux * (self.reference_distance / distance) ** 2 / 2
 
 
 class CrossSection:
     """Loads cross-section data for molecule."""
 
-    def __init__(self, 
-                 molecule: SpeciesFormula,
-                 wavelength: u.Quantity, cross_section: u.Quantity):
+    def __init__(self, molecule: SpeciesFormula, wavelength: u.Quantity, cross_section: u.Quantity):
         self.wavelength = wavelength
         self.cross_section = cross_section
         self.molecule = molecule
@@ -54,20 +49,19 @@ class CrossSection:
             molecule: The molecule for which the cross-section is loaded.
             wavelength: The wavelength at which the cross-section is measured.
             cross_section: The cross-section value at the given wavelength.
-        
+
         """
 
-    def interp_to(self, 
-                 wavelength: u.Quantity) -> "CrossSection":
+    def interp_to(self, wavelength: u.Quantity) -> "CrossSection":
         """Interpolate the cross section to the given wavelength.
-        
+
         Args:
             wavelength: The wavelength to which the cross section is interpolated.
 
         Returns:
             CrossSection: A new CrossSection object with the interpolated values.
-        
-        
+
+
         """
 
         new_wavelength = self.wavelength.to(wavelength.unit, equivalencies=u.spectral())
@@ -75,7 +69,9 @@ class CrossSection:
         return CrossSection(
             self.molecule,
             wavelength,
-            np.interp(wavelength.value, new_wavelength.value, self.cross_section.value, left=0.0, right=0.0) << self.cross_section.unit)
+            np.interp(wavelength.value, new_wavelength.value, self.cross_section.value, left=0.0, right=0.0)
+            << self.cross_section.unit,
+        )
 
     def __add__(self, other: "CrossSection") -> "CrossSection":
         """Add two cross sections together.
@@ -85,7 +81,7 @@ class CrossSection:
 
         Returns:
             CrossSection: A new CrossSection object with the summed values.
-        
+
         """
         if not isinstance(other, CrossSection):
             raise TypeError("Can only add CrossSection objects")
@@ -95,27 +91,22 @@ class CrossSection:
 
         other = other.interp_to(self.wavelength)
 
-        return CrossSection(
-            self.molecule,
-            self.wavelength,
-            self.cross_section + other.cross_section
-        )
+        return CrossSection(self.molecule, self.wavelength, self.cross_section + other.cross_section)
 
 
 class QuantumYield:
     """Loads quantum yield data for molecule.
-    
+
     This represents the branching ratio of the photodissociation process.
 
     This is generic and it is up to the chemical network to determine how branching ratios
     are organised
-    
+
     """
 
-    def __init__(self, 
-                 molecule: SpeciesFormula, 
-                 branch_id: int | str,
-                 wavelength: u.Quantity, qy: npt.NDArray[np.float64]):
+    def __init__(
+        self, molecule: SpeciesFormula, branch_id: int | str, wavelength: u.Quantity, qy: npt.NDArray[np.float64]
+    ):
         """Initialize and load the quantum yield data.
 
         Args:
@@ -129,26 +120,25 @@ class QuantumYield:
         self.molecule = molecule
         self.branch_id = branch_id
 
-    def interp_to(self,
-                    wavelength: u.Quantity) -> "QuantumYield":
-            """Interpolate the quantum yield to the given wavelength.
-            
-            Args:
-                wavelength: The wavelength to which the quantum yield is interpolated.
+    def interp_to(self, wavelength: u.Quantity) -> "QuantumYield":
+        """Interpolate the quantum yield to the given wavelength.
 
-            Returns:
-                QuantumYield: A new QuantumYield object with the interpolated values.
-            
-            """
-    
-            new_wavelength = self.wavelength.to(wavelength.unit, equivalencies=u.spectral())
-    
-            return QuantumYield(
-                self.molecule,
-                self.branch_id,
-                wavelength,
-                np.interp(wavelength.value, new_wavelength.value, self.qy, left=0.0, right=0.0) )
+        Args:
+            wavelength: The wavelength to which the quantum yield is interpolated.
 
+        Returns:
+            QuantumYield: A new QuantumYield object with the interpolated values.
+
+        """
+
+        new_wavelength = self.wavelength.to(wavelength.unit, equivalencies=u.spectral())
+
+        return QuantumYield(
+            self.molecule,
+            self.branch_id,
+            wavelength,
+            np.interp(wavelength.value, new_wavelength.value, self.qy, left=0.0, right=0.0),
+        )
 
 
 class PhotoMolecule:
@@ -157,64 +147,64 @@ class PhotoMolecule:
     This class contains the cross-section data and quantum yields for the molecule.
 
     """
-    def __init__(self, 
-                molecule: SpeciesFormula,
-                cross_section: CrossSection):
+
+    def __init__(self, molecule: SpeciesFormula, cross_section: CrossSection):
         """Initialize the PhotoMolecule with a molecule and its cross-section.
-        
+
         Args:
             molecule: The molecule for which the cross-section is loaded.
             cross_section: The cross-section data for the molecule.
-            
-        
-        
+
+
+
         """
         self.molecule = molecule
         self.cross_section = cross_section
-        self.quantum_yields: dict[str | int, QuantumYield]  = {}
+        self.quantum_yields: dict[str | int, QuantumYield] = {}
 
-    def add_quantum_yield(self,
-                          branch_id: int | str,
-                          quantum_yield: QuantumYield):
+    def add_quantum_yield(self, branch_id: int | str, quantum_yield: QuantumYield):
         """Add a quantum yield to the molecule.
-        
+
         Will interpolate the quantum yield to the cross-section wavelength.
 
         Args:
             branch_id: The ID of the branching ratio.
             quantum_yield: The quantum yield data to be added.
-        
-        
+
+
         """
         self.quantum_yields[branch_id] = quantum_yield.interp_to(self.cross_section.wavelength)
+
     def get_quantum_yield(self, branch_id: int | str) -> QuantumYield:
         """Get the quantum yield for a given branch.
-        
+
         If the quantum yield is not found, a default quantum yield of 1.0 is returned.
 
         Args:
             branch_id: The ID of the branching ratio.
         Returns:
             QuantumYield: The quantum yield data for the given branch.
-        
-        
+
+
         """
 
         if branch_id not in self.quantum_yields:
-             return QuantumYield(self.molecule, branch_id, self.cross_section.wavelength, np.ones(self.cross_section.wavelength.shape))
+            return QuantumYield(
+                self.molecule, branch_id, self.cross_section.wavelength, np.ones(self.cross_section.wavelength.shape)
+            )
 
         return self.quantum_yields[branch_id]
-    
+
     def interp_to(self, wavelength: u.Quantity) -> "PhotoMolecule":
         """Interpolate the cross section and quantum yields to the given wavelength.
-        
+
         Args:
             wavelength: The wavelength to which the cross section and quantum yields are interpolated.
 
         Returns:
             PhotoMolecule: A new PhotoMolecule object with the interpolated values.
-        
-        
+
+
         """
 
         new_cross_section = self.cross_section.interp_to(wavelength)
@@ -224,8 +214,6 @@ class PhotoMolecule:
             new_molecule.add_quantum_yield(branch_id, qy.interp_to(wavelength))
 
         return new_molecule
-
-
 
     def reaction_rate(self, branch_id: int | str, flux: u.Quantity) -> list[FreckllArray]:
         r"""Compute the reaction rate for a given branch.
@@ -249,25 +237,29 @@ class PhotoMolecule:
 
         Returns:
             u.Quantity: The reaction rate for the given branch.
-        
-        
+
+
         """
         qy = self.get_quantum_yield(branch_id)
         flux = flux.to(u.photon / u.cm**2 / u.s / u.nm, equivalencies=u.spectral_density(self.cross_section.wavelength))
-        reaction_rate = np.trapezoid(qy.qy * self.cross_section.cross_section * flux,self.cross_section.wavelength, axis=-1)/u.photon
-        return reaction_rate.to(1/(u.s)).value
+        reaction_rate = (
+            np.trapezoid(qy.qy * self.cross_section.cross_section * flux, self.cross_section.wavelength, axis=-1)
+            / u.photon
+        )
+        return reaction_rate.to(1 / (u.s)).value
 
 
 class PhotoReactionCall:
-
-    def __init__(self, 
-                 reactant: PhotoMolecule,
-                 products: list[SpeciesFormula],
-                 branch_id: int | str,
-                 species_list: list[SpeciesFormula] = None,
-                 reactant_index: int = None,
-                 product_indices: npt.NDArray[np.integer] = None,
-                 tags: list[str] = None):
+    def __init__(
+        self,
+        reactant: PhotoMolecule,
+        products: list[SpeciesFormula],
+        branch_id: int | str,
+        species_list: list[SpeciesFormula] = None,
+        reactant_index: int = None,
+        product_indices: npt.NDArray[np.integer] = None,
+        tags: list[str] = None,
+    ):
         """Initialize the photodissociation reaction call.
 
         Args:
@@ -278,7 +270,7 @@ class PhotoReactionCall:
             reactant_index: The index of the reactant in the species list.
             product_indices: The indices of the products in the species list.
             tags: The tags associated with the reaction.
-        
+
         """
         self.reactant = reactant
         self.products = products
@@ -290,14 +282,14 @@ class PhotoReactionCall:
 
     def interpolate_to(self, wavelength: u.Quantity) -> "PhotoReactionCall":
         """Interpolate the reaction call to the given wavelength.
-        
+
         Args:
             wavelength: The wavelength to which the reaction call is interpolated.
 
         Returns:
             PhotoReactionCall: A new PhotoReactionCall object with the interpolated values.
-        
-        
+
+
         """
         reactant = self.reactant.interp_to(wavelength)
 
@@ -310,7 +302,6 @@ class PhotoReactionCall:
             tags=self.tags,
         )
 
-
     def __call__(self, flux: u.Quantity, number_density: FreckllArray) -> Reaction:
         """Call the reaction.
 
@@ -319,7 +310,7 @@ class PhotoReactionCall:
 
         Returns:
             FreckllArray: The reaction rate.
-        
+
         """
         reaction_rate = self.reactant.reaction_rate(self.branch_id, flux)
 
@@ -337,46 +328,38 @@ class PhotoReactionCall:
         return [reaction]
 
 
-
-
-def rayleigh(
-        spectral_grid: u.Quantity,
-        alpha: u.Quantity, depolar_factor: float) -> u.Quantity:
+def rayleigh(spectral_grid: u.Quantity, alpha: u.Quantity, depolar_factor: float) -> u.Quantity:
     r"""Calculate the Rayleigh scattering cross-section.
-    
+
     The Rayleigh scattering cross-section is given by the formula:
     $$
     \sigma_R = \frac{8 \pi^3}{3} \left(\frac{\alpha}{\lambda}\right)^4 (1 + \delta^2)$$
     where:
     - $\sigma_R$ is the Rayleigh scattering cross-section
-    - $\alpha$ is the polarizability of the molecule    
-    
+    - $\alpha$ is the polarizability of the molecule
+
     Args:
         spectral_grid: The wavelength grid.
         alpha: The polarizability of the molecule.
         depolar_factor: The depolarization factor.
     Returns:
         u.Quantity: The Rayleigh scattering cross-section.
-    
+
     """
 
     wavelength_cm = spectral_grid.to(u.cm, equivalencies=u.spectral())
 
     alpha = alpha.to(u.cm**3)
 
-    return 8*np.pi/3 * (2*np.pi/wavelength_cm)**4 * alpha**2 * depolar_factor
+    return 8 * np.pi / 3 * (2 * np.pi / wavelength_cm) ** 4 * alpha**2 * depolar_factor
 
 
-rayleigh_species = SpeciesDict[t.Callable[
-    [CrossSection],u.Quantity]]()
-rayleigh_species.update(
-    {
-        SpeciesFormula("N2"): lambda x: CrossSection(SpeciesFormula("N2"), x, rayleigh(x, 1.76e-24 * u.cm**3, 1.0518)),
-        SpeciesFormula("He"): lambda x: CrossSection(SpeciesFormula("He"), x, rayleigh(x, 0.21e-24 * u.cm**3, 1.0)),
-        SpeciesFormula("H2"): lambda x: CrossSection(SpeciesFormula("H2"), x, rayleigh(x, 0.82e-24 * u.cm**3, 1.0341)),
-    }
-
-)
+rayleigh_species = SpeciesDict[t.Callable[[CrossSection], u.Quantity]]()
+rayleigh_species.update({
+    SpeciesFormula("N2"): lambda x: CrossSection(SpeciesFormula("N2"), x, rayleigh(x, 1.76e-24 * u.cm**3, 1.0518)),
+    SpeciesFormula("He"): lambda x: CrossSection(SpeciesFormula("He"), x, rayleigh(x, 0.21e-24 * u.cm**3, 1.0)),
+    SpeciesFormula("H2"): lambda x: CrossSection(SpeciesFormula("H2"), x, rayleigh(x, 0.82e-24 * u.cm**3, 1.0341)),
+})
 
 
 def optical_depth(
@@ -396,7 +379,6 @@ def optical_depth(
     tau = np.sum(cross_section_density, axis=0)
 
     return tau
-    
 
 
 def radiative_transfer(
@@ -406,7 +388,7 @@ def radiative_transfer(
     albedo: float | npt.NDArray[np.float64] = 0.0,
 ) -> u.Quantity:
     r"""Computes the radiative transfer equation.
-    
+
     Computes the radiative transfer equation for a given flux and optical depth.
 
     The equation is given by:
@@ -425,7 +407,7 @@ def radiative_transfer(
         albedo: The albedo of the surface.
     Returns:
         u.Quantity: The total flux at each layer.
-    
+
     """
 
     tau = np.exp(-optical_depth) / np.cos(incident_angle)
@@ -440,34 +422,28 @@ def radiative_transfer(
         flux_down[layer] = flux_down[layer + 1] * tau[layer]
 
     # If albedo then reflect the flux
-    flux_up[0] = flux_down[0]*albedo
+    flux_up[0] = flux_down[0] * albedo
 
     # Propagate the flux upwards from boa to toa
     for layer in range(1, num_layers):
-        flux_up[layer] = flux_up[layer - 1] * tau[layer-1]
+        flux_up[layer] = flux_up[layer - 1] * tau[layer - 1]
 
     flux_down2 = np.zeros_like(flux_down)
     flux_up2 = np.zeros_like(flux_up)
 
     # Propagate the flux downwards from toa to boa
-    flux_down2[-1] = (
-        0.5 * ((1 - tau[-1]) * (flux_up[-1] + flux_top)) + flux_top
-    ) * tau[-1]
+    flux_down2[-1] = (0.5 * ((1 - tau[-1]) * (flux_up[-1] + flux_top)) + flux_top) * tau[-1]
 
-    flux_down2[-1] = (
-        0.5 * ((1 - tau[-1]) * (flux_up[-1] + flux_top)) + flux_top
-    ) * tau[-1]
+    flux_down2[-1] = (0.5 * ((1 - tau[-1]) * (flux_up[-1] + flux_top)) + flux_top) * tau[-1]
     for layer in reversed(range(num_layers)[:-1]):
         flux_down2[layer] = (
-            0.5 * ((1 - tau[layer]) * (flux_up[layer] + flux_down[layer + 1]))
-            + flux_down2[layer + 1]
+            0.5 * ((1 - tau[layer]) * (flux_up[layer] + flux_down[layer + 1])) + flux_down2[layer + 1]
         ) * tau[layer]
 
     flux_up2[0] = albedo * flux_down2[0]
     for layer in range(num_layers)[1:]:
         flux_up2[layer] = (
-            0.5 * ((1 - tau[layer - 1]) * (flux_up[layer - 1] + flux_down[layer]))
-            + flux_up2[layer - 1]
+            0.5 * ((1 - tau[layer - 1]) * (flux_up[layer - 1] + flux_down[layer])) + flux_up2[layer - 1]
         ) * tau[layer - 1]
 
     return flux_up2 + flux_down2

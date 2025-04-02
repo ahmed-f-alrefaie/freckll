@@ -1,13 +1,17 @@
-import numpy as np
 import warnings
+
+import numpy as np
 from astropy import units as u
+
 from .types import FreckllArray
-    # Do products
+
+# Do products
 
 
 # Rewrite
 def compute_coeffs(fm, altitude, Ro, go, density, masses, mu, T, diffusion, Kzz):
     import numpy as np
+
     k_boltz_si = 1.380662e-23
     with warnings.catch_warnings():
         G = 6.674e-11
@@ -35,29 +39,17 @@ def compute_coeffs(fm, altitude, Ro, go, density, masses, mu, T, diffusion, Kzz)
         inv_dz_p = 1.0 / (delta_z_p * 1.0e5)
 
         c_plus = (1.0 + 1.0 / ((Ro + altitude) * 1.0e5 * inv_dz_p) / 2) ** 2 * inv_dz
-        c_moins = (
-            -((1.0 - 1.0 / ((Ro + altitude) * 1.0e5 * inv_dz_m) / 2) ** 2) * inv_dz
-        )
+        c_moins = -((1.0 - 1.0 / ((Ro + altitude) * 1.0e5 * inv_dz_m) / 2) ** 2) * inv_dz
 
         # Level = 0
 
-        c_plus[0] = (
-            1.0 + 1.0 / ((Ro + altitude[0]) * 1.0e5 * inv_dz[0]) / 2
-        ) ** 2 * inv_dz[0]
-        c_moins[0] = (
-            -((1.0 - 1.0 / ((Ro + altitude[0]) * 1.0e5 * inv_dz[0]) / 2) ** 2)
-            * inv_dz[0]
-        )
+        c_plus[0] = (1.0 + 1.0 / ((Ro + altitude[0]) * 1.0e5 * inv_dz[0]) / 2) ** 2 * inv_dz[0]
+        c_moins[0] = -((1.0 - 1.0 / ((Ro + altitude[0]) * 1.0e5 * inv_dz[0]) / 2) ** 2) * inv_dz[0]
 
         # Level = max
 
-        c_plus[-1] = (
-            1.0 + 1.0 / ((Ro + altitude[-1]) * 1.0e5 * inv_dz[-1]) / 2
-        ) ** 2 * inv_dz[-1]
-        c_moins[-1] = (
-            -((1.0 - 1.0 / ((Ro + altitude[-1]) * 1.0e5 * inv_dz[-1]) / 2) ** 2)
-            * inv_dz[-1]
-        )
+        c_plus[-1] = (1.0 + 1.0 / ((Ro + altitude[-1]) * 1.0e5 * inv_dz[-1]) / 2) ** 2 * inv_dz[-1]
+        c_moins[-1] = -((1.0 - 1.0 / ((Ro + altitude[-1]) * 1.0e5 * inv_dz[-1]) / 2) ** 2) * inv_dz[-1]
 
         cm, cp = np.zeros_like(T), np.zeros_like(T)
 
@@ -70,17 +62,7 @@ def compute_coeffs(fm, altitude, Ro, go, density, masses, mu, T, diffusion, Kzz)
         cm[-1] = (density[-1] + density[-2]) * 0.5
 
         ha = k_b * T / (g_alt * 100.0 * (Ro**2 / (Ro + altitude) ** 2) * mu * 1.0e-3)
-        hi = (
-            k_b
-            * T
-            / (
-                g_alt
-                * 100.0
-                * (Ro**2 / (Ro + altitude) ** 2)
-                * masses[:, None]
-                * 1.0e-3
-            )
-        )
+        hi = k_b * T / (g_alt * 100.0 * (Ro**2 / (Ro + altitude) ** 2) * masses[:, None] * 1.0e-3)
 
         hap = np.zeros_like(ha)
         hip = np.zeros_like(hi)
@@ -92,29 +74,15 @@ def compute_coeffs(fm, altitude, Ro, go, density, masses, mu, T, diffusion, Kzz)
         hip[:, :-1] = (
             k_b
             * T[1:]
-            / (
-                g_alt
-                * 100.0
-                * (Ro**2 / (Ro + (altitude[:-1] + delta_z_p[:-1])) ** 2)
-                * masses[:, None]
-                * 1.0e-3
-            )
+            / (g_alt * 100.0 * (Ro**2 / (Ro + (altitude[:-1] + delta_z_p[:-1])) ** 2) * masses[:, None] * 1.0e-3)
         )
         hap[:-1] = (
-            k_b
-            * T[1:]
-            / (
-                g_alt
-                * 100.0
-                * (Ro**2 / (Ro + (altitude[:-1] + delta_z_p[:-1])) ** 2)
-                * mu[1:]
-                * 1.0e-3
-            )
+            k_b * T[1:] / (g_alt * 100.0 * (Ro**2 / (Ro + (altitude[:-1] + delta_z_p[:-1])) ** 2) * mu[1:] * 1.0e-3)
         )
 
-        dip[:, :-1] = (
-            2.0 / (hip[:, :-1] + hi[:, :-1]) - 2.0 / (hap[:-1] + ha[:-1])
-        ) + 2.0 * alpha * inv_dz_p[:-1] * (T[1:] - T[:-1]) / (T[1:] + T[:-1])
+        dip[:, :-1] = (2.0 / (hip[:, :-1] + hi[:, :-1]) - 2.0 / (hap[:-1] + ha[:-1])) + 2.0 * alpha * inv_dz_p[:-1] * (
+            T[1:] - T[:-1]
+        ) / (T[1:] + T[:-1])
 
         ham = np.zeros_like(ha)
         him = np.zeros_like(hi)
@@ -126,52 +94,22 @@ def compute_coeffs(fm, altitude, Ro, go, density, masses, mu, T, diffusion, Kzz)
         him[:, 1:] = (
             k_b
             * T[:-1]
-            / (
-                g_alt
-                * 100.0
-                * (Ro**2 / (Ro + (altitude[1:] - delta_z_m[1:])) ** 2)
-                * masses[:, None]
-                * 1.0e-3
-            )
+            / (g_alt * 100.0 * (Ro**2 / (Ro + (altitude[1:] - delta_z_m[1:])) ** 2) * masses[:, None] * 1.0e-3)
         )
         ham[1:] = (
-            k_b
-            * T[:-1]
-            / (
-                g_alt
-                * 100.0
-                * (Ro**2 / (Ro + (altitude[1:] - delta_z_m[1:])) ** 2)
-                * mu[:-1]
-                * 1.0e-3
-            )
+            k_b * T[:-1] / (g_alt * 100.0 * (Ro**2 / (Ro + (altitude[1:] - delta_z_m[1:])) ** 2) * mu[:-1] * 1.0e-3)
         )
 
         him[:, -1] = (
             k_b
             * T[-2]
-            / (
-                g_alt
-                * 100.0
-                * (Ro**2 / (Ro + (altitude[-1] - delta_z[-1])) ** 2)
-                * masses[:, None]
-                * 1.0e-3
-            )
+            / (g_alt * 100.0 * (Ro**2 / (Ro + (altitude[-1] - delta_z[-1])) ** 2) * masses[:, None] * 1.0e-3)
         ).ravel()
-        ham[-1] = (
-            k_b
-            * T[-2]
-            / (
-                g_alt
-                * 100.0
-                * (Ro**2 / (Ro + (altitude[-1] - delta_z[-1])) ** 2)
-                * mu[-2]
-                * 1.0e-3
-            )
-        )
+        ham[-1] = k_b * T[-2] / (g_alt * 100.0 * (Ro**2 / (Ro + (altitude[-1] - delta_z[-1])) ** 2) * mu[-2] * 1.0e-3)
 
-        dim[:, 1:] = (
-            2.0 / (hi[:, 1:] + him[:, 1:]) - 2.0 / (ha[1:] + ham[1:])
-        ) + 2.0 * alpha * inv_dz_m[1:] * (T[1:] - T[:-1]) / (T[1:] + T[:-1])
+        dim[:, 1:] = (2.0 / (hi[:, 1:] + him[:, 1:]) - 2.0 / (ha[1:] + ham[1:])) + 2.0 * alpha * inv_dz_m[1:] * (
+            T[1:] - T[:-1]
+        ) / (T[1:] + T[:-1])
 
         dim[:, 0] = 1 / hi[:, 0] - 1 / ha[0]
 
@@ -225,7 +163,6 @@ def build_jacobian_levels(coeffs, density):
             kp,
         ) = coeffs
 
-
         pd_same_p = cp * (dp * (0.5 * dip - inv_dz_p) - inv_dz_p * kp) * c_plus
 
         pd_same_m = cm * (dm * (0.5 * dim + inv_dz_m) + inv_dz_m * km) * c_moins
@@ -234,29 +171,13 @@ def build_jacobian_levels(coeffs, density):
         pd_p = cm * (dm * (0.5 * dim - inv_dz_m) - inv_dz_m * km) * c_moins
         pd_m = cp * (dp * (0.5 * dip + inv_dz_p) + inv_dz_p * kp) * c_plus
 
-        pd_same[:, 0] = (
-            cp[0]
-            * (dp[:, 0] * (0.5 * dip[:, 0] - inv_dz[0]) - inv_dz[0] * kp[0])
-            * c_plus[0]
-        )
+        pd_same[:, 0] = cp[0] * (dp[:, 0] * (0.5 * dip[:, 0] - inv_dz[0]) - inv_dz[0] * kp[0]) * c_plus[0]
 
-        pd_m[:, 0] = (
-            cp[0]
-            * (dp[:, 0] * (0.5 * dip[:, 0] + inv_dz[0]) + inv_dz[0] * kp[0])
-            * c_plus[0]
-        )
+        pd_m[:, 0] = cp[0] * (dp[:, 0] * (0.5 * dip[:, 0] + inv_dz[0]) + inv_dz[0] * kp[0]) * c_plus[0]
 
-        pd_same[:, -1] = (
-            cm[-1]
-            * (dm[:, -1] * (0.5 * dim[:, -1] + inv_dz[-1]) + inv_dz[-1] * km[-1])
-            * c_moins[-1]
-        )
+        pd_same[:, -1] = cm[-1] * (dm[:, -1] * (0.5 * dim[:, -1] + inv_dz[-1]) + inv_dz[-1] * km[-1]) * c_moins[-1]
 
-        pd_p[:, -1] = (
-            cm[-1]
-            * (dm[:, -1] * (0.5 * dim[:, -1] - inv_dz[-1]) - inv_dz[-1] * km[-1])
-            * c_moins[-1]
-        )
+        pd_p[:, -1] = cm[-1] * (dm[:, -1] * (0.5 * dim[:, -1] - inv_dz[-1]) - inv_dz[-1] * km[-1]) * c_moins[-1]
         # pd_p[:,-1] =  pd_same[:, -1]
         pd_p[:, 0] = 0.0
         # pd_m[:, 0] = pd_same[:, 0]
@@ -308,7 +229,6 @@ def construct_level_matrix_sparse(pd_same, pd_p, pd_m):
 # [35, 5]
 
 
-
 def convert_fm_to_y(fm):
     num_species, num_layers = fm.shape
     species_idx = np.arange(0, num_species)
@@ -343,11 +263,8 @@ def dndt(
     diffusion,
     Kzz,
 ):
-
     mu = np.sum(fm * masses[:, None], axis=0)
-    coeffs = compute_coeffs(
-        fm, altitude, Ro, go, density, masses, mu, T, diffusion, Kzz
-    )
+    coeffs = compute_coeffs(fm, altitude, Ro, go, density, masses, mu, T, diffusion, Kzz)
 
     cp, cm, c_plus, c_moins, dip, dim, dm, dp, dyp, dym, km, kp = coeffs[3:]
 
@@ -355,35 +272,19 @@ def dndt(
 
     func[:, 1:-1] += (
         cp[1:-1]
-        * (
-            dp[:, 1:-1]
-            * ((fm[:, 2:] + fm[:, 1:-1]) * 0.5 * dip[:, 1:-1] + dyp[:, 1:-1])
-            + kp[1:-1] * dyp[:, 1:-1]
-        )
+        * (dp[:, 1:-1] * ((fm[:, 2:] + fm[:, 1:-1]) * 0.5 * dip[:, 1:-1] + dyp[:, 1:-1]) + kp[1:-1] * dyp[:, 1:-1])
         * c_plus[1:-1]
         + cm[1:-1]
-        * (
-            dm[:, 1:-1]
-            * ((fm[:, 1:-1] + fm[:, :-2]) * 0.5 * dim[:, 1:-1] + dym[:, 1:-1])
-            + km[1:-1] * dym[:, 1:-1]
-        )
+        * (dm[:, 1:-1] * ((fm[:, 1:-1] + fm[:, :-2]) * 0.5 * dim[:, 1:-1] + dym[:, 1:-1]) + km[1:-1] * dym[:, 1:-1])
         * c_moins[1:-1]
     )
     func[:, 0] += (
-        cp[0]
-        * (
-            dp[:, 0] * ((fm[:, 1] + fm[:, 0]) * 0.5 * dip[:, 0] + dyp[:, 0])
-            + kp[0] * dyp[:, 0]
-        )
-        * c_plus[0]
+        cp[0] * (dp[:, 0] * ((fm[:, 1] + fm[:, 0]) * 0.5 * dip[:, 0] + dyp[:, 0]) + kp[0] * dyp[:, 0]) * c_plus[0]
     )
     func[:, -1] += (
         c_moins[-1]
         * cm[-1]
-        * (
-            dm[:, -1] * ((fm[:, -1] + fm[:, -2]) * 0.5 * dim[:, -1] + dym[:, -1])
-            + km[-1] * dym[:, -1]
-        )
+        * (dm[:, -1] * ((fm[:, -1] + fm[:, -2]) * 0.5 * dim[:, -1] + dym[:, -1]) + km[-1] * dym[:, -1])
     )
     # Handle layer
     final = func / density
@@ -408,12 +309,21 @@ def convert_to_banded(A):
     return ab
 
 
-
 def compute_jacobian_sparse(
-    vmr: FreckllArray, altitude: u.Quantity, Ro: u.Quantity, planet_mass: u.Quantity, density: u.Quantity, masses: u.Quantity, mu: u.Quantity, T: u.Quantity, diffusion:u.Quantity, Kzz: u.Quantity
+    vmr: FreckllArray,
+    altitude: u.Quantity,
+    Ro: u.Quantity,
+    planet_mass: u.Quantity,
+    density: u.Quantity,
+    masses: u.Quantity,
+    mu: u.Quantity,
+    T: u.Quantity,
+    diffusion: u.Quantity,
+    Kzz: u.Quantity,
 ):
     from .kinetics import gravity_at_height
-    go = gravity_at_height(planet_mass, Ro, 0 << u.km).to(u.cm/u.s**2).value
+
+    go = gravity_at_height(planet_mass, Ro, 0 << u.km).to(u.cm / u.s**2).value
     altitude = altitude.to(u.km).value
     Ro = Ro.to(u.km).value
     planet_mass = planet_mass.to(u.kg).value
@@ -425,9 +335,7 @@ def compute_jacobian_sparse(
     Kzz = Kzz.to(u.cm**2 / u.s).value
 
     # Compute the coefficients
-    coeffs = compute_coeffs(
-        vmr, altitude, Ro, go, density, masses, mu, T, diffusion, Kzz
-    )
+    coeffs = compute_coeffs(vmr, altitude, Ro, go, density, masses, mu, T, diffusion, Kzz)
 
     # Compute the Jacobian
     pd_same, pd_p, pd_m = build_jacobian_levels(coeffs, density)
@@ -437,17 +345,21 @@ def compute_jacobian_sparse(
     return J
 
 
-
 def compute_dndt_vertical(
-    vmr: FreckllArray, 
-    
-    altitude: u.Quantity, Ro: u.Quantity, planet_mass: u.Quantity, density: u.Quantity, masses: u.Quantity, mu: u.Quantity, T: u.Quantity, diffusion:u.Quantity, Kzz: u.Quantity
+    vmr: FreckllArray,
+    altitude: u.Quantity,
+    Ro: u.Quantity,
+    planet_mass: u.Quantity,
+    density: u.Quantity,
+    masses: u.Quantity,
+    mu: u.Quantity,
+    T: u.Quantity,
+    diffusion: u.Quantity,
+    Kzz: u.Quantity,
 ):
     from .kinetics import gravity_at_height
-    
 
-
-    go = gravity_at_height(planet_mass, Ro, 0 << u.km).to(u.cm/u.s**2).value
+    go = gravity_at_height(planet_mass, Ro, 0 << u.km).to(u.cm / u.s**2).value
     altitude = altitude.to(u.km).value
     Ro = Ro.to(u.km).value
     planet_mass = planet_mass.to(u.kg).value
@@ -468,5 +380,4 @@ def compute_dndt_vertical(
         T,
         diffusion,
         Kzz,
-        
     )
