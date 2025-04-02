@@ -14,7 +14,7 @@ from .types import FreckllArrayInt
 def create_composes(
     composition: list[SpeciesFormula],
     use_input_formula: bool = True,
-    elements: t.Optional[t.List[str]] = ["C", "H", "O", "N"],
+    elements: t.Optional[t.Sequence[str]] = ("C", "H", "O", "N"),
 ) -> t.Iterator[tuple[str, FreckllArrayInt]]:
     """Creates a composition file for ACE."""
     import tempfile
@@ -43,8 +43,8 @@ def equil_chemistry_ace(
     pressure: u.Quantity,
     composition: list[SpeciesFormula],
     therm_file: pathlib.Path,
-    elements: t.Optional[t.List[str]] = ["H", "He", "C", "N", "O"],
-    abundances: t.Optional[t.Sequence[float]] = (
+    elements: t.Sequence[str] = ("H", "He", "C", "N", "O"),
+    abundances: t.Sequence[float] = (
         12,
         10.93,
         8.39,
@@ -53,8 +53,8 @@ def equil_chemistry_ace(
     ),
     use_input_formula: bool = True,
     pressure_unit: str = "bar",
-    composes_elements: t.Optional[t.List[str]] = ["C", "H", "O", "N"],
-) -> t.Tuple[t.List[str], t.List[float], float]:
+    composes_elements: t.Sequence[str] = ("C", "H", "O", "N"),
+) -> tuple[list[str], list[float], float]:
     """Computes the ACE profile from a chemical network.
 
     Args:

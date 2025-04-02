@@ -92,6 +92,10 @@ def test_photomolecule_reaction_rate_unit():
     # Calculate the reaction rate
     reaction_rate = photo_molecule.reaction_rate(branch_id, flux)
 
+    reaction_rate.to(u.s**-1)
+
+    assert True
+
 
 def test_rayleigh():
     from freckll.reactions.photo import rayleigh_species

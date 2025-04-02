@@ -255,10 +255,10 @@ class PhotoReactionCall:
         reactant: PhotoMolecule,
         products: list[SpeciesFormula],
         branch_id: int | str,
-        species_list: list[SpeciesFormula] = None,
-        reactant_index: int = None,
-        product_indices: npt.NDArray[np.integer] = None,
-        tags: list[str] = None,
+        species_list: t.Optional[list[SpeciesFormula]] = None,
+        reactant_index: t.Optional[int] = None,
+        product_indices: t.Optional[npt.NDArray[np.integer]] = None,
+        tags: t.Optional[list[str]] = None,
     ):
         """Initialize the photodissociation reaction call.
 

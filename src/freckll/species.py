@@ -98,12 +98,12 @@ class SpeciesFormula(Formula):
         return f"SpeciesFormula({self.__str__()})"
 
 
-def species_check(a: t.List[SpeciesFormula], b: t.List[SpeciesFormula]) -> bool:
+def species_check(a: list[SpeciesFormula], b: list[SpeciesFormula]) -> bool:
     """Check for same species."""
     return frozenset(a) == frozenset(b)
 
 
-def select_same(a: t.List[SpeciesFormula], b: t.List[SpeciesFormula]) -> t.List[SpeciesFormula]:
+def select_same(a: list[SpeciesFormula], b: list[SpeciesFormula]) -> list[SpeciesFormula]:
     """Select the same species from two lists."""
     return list(frozenset(a) & frozenset(b))
 
@@ -119,8 +119,8 @@ class SpeciesDict(dict[SpeciesFormula, _VT]):
     def get(self, key: t.Union[str, SpeciesFormula], default: t.Optional[_VT | _T] = None) -> _VT | _T:
         if isinstance(key, str):
             if "/" in key:
-                molecule
-                key = SpeciesFormula(molecule.strip(), isomer_id=varient.strip())
+                molecule = key
+                key = SpeciesFormula(molecule.strip())
             else:
                 key = SpeciesFormula(key)
         return super().get(key, default)
@@ -132,7 +132,7 @@ class SpeciesDict(dict[SpeciesFormula, _VT]):
         if isinstance(key, str):
             if "/" in key:
                 molecule, varient = key.split("/")
-                key = SpeciesFormula(molecule.strip(), isomer_id=varient.strip())
+                key = SpeciesFormula(molecule.strip())
             else:
                 key = SpeciesFormula(key)
         return super().__getitem__(key)
@@ -141,7 +141,7 @@ class SpeciesDict(dict[SpeciesFormula, _VT]):
         if isinstance(key, str):
             if "/" in key:
                 molecule, varient = key.split("/")
-                key = SpeciesFormula(molecule.strip(), isomer_id=varient.strip())
+                key = SpeciesFormula(molecule.strip())
             else:
                 key = SpeciesFormula(key)
         super().__setitem__(key, value)
@@ -150,7 +150,7 @@ class SpeciesDict(dict[SpeciesFormula, _VT]):
         if isinstance(key, str):
             if "/" in key:
                 molecule, varient = key.split("/")
-                key = SpeciesFormula(molecule.strip(), isomer_id=varient.strip())
+                key = SpeciesFormula(molecule.strip())
             else:
                 key = SpeciesFormula(key)
 

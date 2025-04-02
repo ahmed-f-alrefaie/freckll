@@ -26,7 +26,7 @@ def construct_reaction_terms(
         production_spec = production_reactions.get(spec, [])
         loss_spec = loss_reactions.get(spec, [])
         productions = [p.dens_krate for p in production_spec]
-        losses = [-l.dens_krate for l in loss_spec]
+        losses = [-ls.dens_krate for ls in loss_spec]
 
         all_reactions = productions + losses
 
@@ -87,7 +87,6 @@ def construct_jacobian_reaction_terms(
     cols = []
     data = []
 
-    n_equation = number_density.size
     num_species = len(species)
 
     atmos_shape = number_density.shape
@@ -103,7 +102,7 @@ def construct_jacobian_reaction_terms(
             continue
 
         chem_dict = defaultdict(list)
-        for react_idx, r in enumerate(all_reactions):
+        for _react_idx, r in enumerate(all_reactions):
             for p in r.product_indices:
                 chem_dict[p].append(r.dens_krate)
             for p in r.reactants_indices:
@@ -137,8 +136,6 @@ def construct_jacobian_vertical_terms(
     from freckll import kinetics
 
     atmos_shape = masses.shape + mu.shape
-
-    atmos_size = np.prod(atmos_shape)
 
     delta_z, delta_z_plus, delta_z_minus, inv_dz, inv_dz_plus, inv_dz_minus = kinetics.deltaz_terms(altitude)
 

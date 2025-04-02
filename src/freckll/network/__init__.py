@@ -175,9 +175,7 @@ class PhotoChemistry:
             np.array([c.cross_section.to(u.cm**2).value for c in self.cross_sections.values()]) << u.cm**2
         )
 
-        self.cross_section_indices = np.array(
-            [self.species_index[c] for c in self.cross_sections.keys()], dtype=np.int64
-        )
+        self.cross_section_indices = np.array([self.species_index[c] for c in self.cross_sections], dtype=np.int64)
 
     def compile_chemistry(
         self, distance: u.Quantity, incident_angle: u.Quantity = 45 * u.deg, albedo: float = 0.0

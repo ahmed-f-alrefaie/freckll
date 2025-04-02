@@ -188,22 +188,6 @@ def test_collision_reaction_single_species():
         1.13167872e12,
     ])
 
-    temperature = np.array([
-        1846.3,
-        1827.5,
-        1764.8,
-        1651.1,
-        1398.2,
-        1266.1,
-        1349.5,
-        1515.0,
-        1676.1,
-        1834.9,
-        1986.0,
-        2176.5,
-        2412.0,
-    ])
-
     result = collision_rate_limit(k_rate=k0, k_inf=ki, reactants=[reactats], m_concentration=m, temperature=1846.3)
 
     expected = np.array([
@@ -449,9 +433,6 @@ def test_inverse_reaction():
 
 def test_invert_two():
     from freckll.reactions.common import invert_reaction
-    from freckll.species import SpeciesFormula
-
-    inv_reactants = [SpeciesFormula("CH3C")]
 
     thermo_inv_react = np.array([
         [

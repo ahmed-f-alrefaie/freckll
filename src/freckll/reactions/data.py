@@ -106,7 +106,7 @@ class ReactionCall:
                     self.product_indices,
                     self.reactants_indices,
                     reaction_rate[1],
-                    self.tags + ["inverted"],
+                    [*self.tags, "inverted"],
                 )
             )
         for r in reactions:

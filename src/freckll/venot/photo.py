@@ -17,8 +17,8 @@ def determine_photodisocciation_reactions(photod_file: PathLike) -> bool:
     Returns:
         bool: True if photodissociation reactions are available, False otherwise.
     """
-    photo_path = pathlib.Path(photo_path)
-    if not photo_path.exists():
+    photod_file = pathlib.Path(photod_file)
+    if not photod_file.exists():
         return False
     # Count the number of reactions in the file
 

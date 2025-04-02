@@ -14,7 +14,6 @@ def compute_coeffs(fm, altitude, Ro, go, density, masses, mu, T, diffusion, Kzz)
 
     k_boltz_si = 1.380662e-23
     with warnings.catch_warnings():
-        G = 6.674e-11
         warnings.simplefilter("ignore")
         k_b = k_boltz_si * 1.0e4
         alpha = 0.0
