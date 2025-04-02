@@ -36,9 +36,7 @@ def distill_jit_3d(array: FreckllArray) -> FreckllArray:
             for k in range(0, array.shape[2]):
                 x = array[i, j, k] + array[i - 1, j, k]
                 z = x - array[i, j, k]
-                array[i - 1, j, k] = (array[i, j, k] - (x - z)) + (
-                    array[i - 1, j, k] - z
-                )
+                array[i - 1, j, k] = (array[i, j, k] - (x - z)) + (array[i - 1, j, k] - z)
                 array[i, j, k] = x
     return array
 

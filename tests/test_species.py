@@ -13,26 +13,21 @@ def test_species_formula_init():
     assert species.formula == "H2O"
     assert species.state == "liquid"
 
-
     species = SpeciesFormula("H2O", state="solid")
     assert species.formula == "H2O"
     assert species.state == "solid"
-
 
     species = SpeciesFormula("H2O[s]")
     assert species.formula == "H2O"
     assert species.state == "solid"
 
-
     species = SpeciesFormula("H2O[l]")
     assert species.formula == "H2O"
     assert species.state == "liquid"
 
-
     species = SpeciesFormula("H2O[c]")
     assert species.formula == "H2O"
     assert species.state == "liquid"
-
 
     species = SpeciesFormula("O2H", true_formula="H2O")
     assert species.formula == "H2O"
@@ -80,6 +75,7 @@ def test_species_not_same():
     species2 = SpeciesFormula("CH2CHO")
 
     assert species1 != species2
+
 
 def test_species_similarity():
     """Test species similarity."""

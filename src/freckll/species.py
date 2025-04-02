@@ -33,8 +33,7 @@ class SpeciesFormula(Formula):
             state: The state of the species.
             isomer_id: The isomer id of the species.
         """
-  
-        
+
         if state is None:
             # Try to guess the state from [s] or [l] in the formula
             if formula.endswith("[s]"):
@@ -53,6 +52,7 @@ class SpeciesFormula(Formula):
         self.composition_dict = self.composition().asdict()
         self.composition_values = list(self.composition_dict.values())
         self.diffusion = None
+
     def _compute_diffusion(self) -> None:
         """Compute the diffusion coefficient."""
         from .diffusion import diffusion_volume
@@ -75,7 +75,7 @@ class SpeciesFormula(Formula):
         """Equality check. Necessary for sets and dicts."""
         if isinstance(other, str):
             # Support for checking against a string and the original formula
-            return (self.input_formula == other) 
+            return self.input_formula == other
         if not isinstance(other, SpeciesFormula):
             raise TypeError
         comp_self = self.composition_values
@@ -103,9 +103,7 @@ def species_check(a: t.List[SpeciesFormula], b: t.List[SpeciesFormula]) -> bool:
     return frozenset(a) == frozenset(b)
 
 
-def select_same(
-    a: t.List[SpeciesFormula], b: t.List[SpeciesFormula]
-) -> t.List[SpeciesFormula]:
+def select_same(a: t.List[SpeciesFormula], b: t.List[SpeciesFormula]) -> t.List[SpeciesFormula]:
     """Select the same species from two lists."""
     return list(frozenset(a) & frozenset(b))
 
@@ -118,11 +116,8 @@ class SpeciesDict(dict[SpeciesFormula, _VT]):
 
     """
 
-    def get(
-        self, key: t.Union[str, SpeciesFormula], default: t.Optional[_VT | _T] = None
-    ) -> _VT | _T:
+    def get(self, key: t.Union[str, SpeciesFormula], default: t.Optional[_VT | _T] = None) -> _VT | _T:
         if isinstance(key, str):
-
             if "/" in key:
                 molecule
                 key = SpeciesFormula(molecule.strip(), isomer_id=varient.strip())
@@ -135,7 +130,6 @@ class SpeciesDict(dict[SpeciesFormula, _VT]):
 
     def __getitem__(self, key: t.Union[str, SpeciesFormula]) -> _VT:
         if isinstance(key, str):
-
             if "/" in key:
                 molecule, varient = key.split("/")
                 key = SpeciesFormula(molecule.strip(), isomer_id=varient.strip())
@@ -145,7 +139,6 @@ class SpeciesDict(dict[SpeciesFormula, _VT]):
 
     def __setitem__(self, key: t.Union[str, SpeciesFormula], value: _VT) -> None:
         if isinstance(key, str):
-
             if "/" in key:
                 molecule, varient = key.split("/")
                 key = SpeciesFormula(molecule.strip(), isomer_id=varient.strip())
@@ -155,7 +148,6 @@ class SpeciesDict(dict[SpeciesFormula, _VT]):
 
     def __contains__(self, key: t.Union[str, SpeciesFormula, object]) -> bool:
         if isinstance(key, str):
-
             if "/" in key:
                 molecule, varient = key.split("/")
                 key = SpeciesFormula(molecule.strip(), isomer_id=varient.strip())

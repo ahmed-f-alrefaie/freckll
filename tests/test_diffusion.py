@@ -8,7 +8,6 @@ import pytest
     [("H2O", 13.1), ("H2", 6.12), ("H2O2", 16.84)],
 )
 def test_diffusion_volume(species_str: str, expected: float) -> None:
-    import numpy as np
     from freckll.diffusion import diffusion_volume
     from freckll.species import SpeciesFormula
 

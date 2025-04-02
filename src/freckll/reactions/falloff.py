@@ -75,19 +75,13 @@ def troe_falloff_term(
     if t3 == 0.0 or t1 == 0.0:
         return 1.0
 
-    f_cent = (
-        (1 - a_troe) * np.exp(-temperature / t3)
-        + a_troe * np.exp(-temperature / t1)
-        + np.exp(-t2 / temperature)
-    )
+    f_cent = (1 - a_troe) * np.exp(-temperature / t3) + a_troe * np.exp(-temperature / t1) + np.exp(-t2 / temperature)
     log_fcent = np.log10(f_cent)
 
     c = -0.4 - 0.67 * log_fcent
     nf = 0.75 - 1.27 * log_fcent
     log_k0kinfm = np.log10(k0 * m / kinf)
-    log_falloff = log_fcent / (
-        1 + ((log_k0kinfm + c) / (nf - d * (log_k0kinfm + c))) ** 2
-    )
+    log_falloff = log_fcent / (1 + ((log_k0kinfm + c) / (nf - d * (log_k0kinfm + c))) ** 2)
 
     return t.cast(FreckllArray, 10.0**log_falloff)
 

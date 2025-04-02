@@ -1,11 +1,14 @@
-from acepython import run_ace
-from contextlib import contextmanager
-from .species import SpeciesFormula
 import pathlib
 import typing as t
+from contextlib import contextmanager
+
 import numpy as np
-from .types import FreckllArrayInt
+from acepython import run_ace
 from astropy import units as u
+
+from .species import SpeciesFormula
+from .types import FreckllArrayInt
+
 
 @contextmanager
 def create_composes(
@@ -28,9 +31,7 @@ def create_composes(
 
             composition_str = " ".join([f"{comp.get(e, [0])[0]:2d}" for e in elements])
 
-            filetemp.write(
-                f"{idx+1:3d}  {formula:12} {s.monoisotopic_mass:6.3f} {composition_str}\n"
-            )
+            filetemp.write(f"{idx + 1:3d}  {formula:12} {s.monoisotopic_mass:6.3f} {composition_str}\n")
         filetemp.close()
         yield filetemp.name, np.array(composition_index)
     finally:
@@ -67,7 +68,6 @@ def equil_chemistry_ace(
         The species, mixing ratios and mean molecular weight.
 
     """
-    from astropy import units as u
 
     vmr = np.full(shape=(len(composition), len(temperature)), fill_value=1e-50)
 

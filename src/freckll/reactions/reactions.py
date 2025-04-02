@@ -104,7 +104,6 @@ def k0kinf_reaction(
         invert: bool = invert,
         unimolecular: bool = unimolecular,
     ) -> list[FreckllArray]:
-
         m: FreckllArray = (efficiency[:, None] * concentration).sum(axis=0)
 
         falloff = falloff_function(
@@ -124,14 +123,10 @@ def k0kinf_reaction(
         k_rate = collision_rate_limit(reactants, k_rate, kinf, m, temperature)
 
         if invert:
-            k0inv, kinfinv, keq = invert_reaction(
-                thermo_products, thermo_reactants, k0, kinf, temperature
-            )
+            k0inv, kinfinv, keq = invert_reaction(thermo_products, thermo_reactants, k0, kinf, temperature)
 
             k0inv_coll = collision_rate_limit(products, k0inv, kinfinv, m, temperature)
-            falloff = falloff_function(
-                k0inv_coll, kinfinv, m, temperature, *falloff_coeffs
-            )
+            falloff = falloff_function(k0inv_coll, kinfinv, m, temperature, *falloff_coeffs)
 
             inv_k_rate = k0inv_coll * falloff / (1 + k0inv_coll * m / kinfinv)
 
@@ -207,19 +202,14 @@ def decomposition_k0kinf_reaction(
         # Limit the collision rate
 
         if invert:
-            k0inv, kinfinv, keq = invert_reaction(
-                thermo_products, thermo_reactants, k0, kinf, temperature
-            )
+            k0inv, kinfinv, keq = invert_reaction(thermo_products, thermo_reactants, k0, kinf, temperature)
             # falloff = falloff_function(k0inv, kinfinv, m, temperature, *falloff_coeffs)
 
             inv_k_rate = k0inv * falloff / (1 + k0inv * m / kinfinv)
             if unimolecular:
                 inv_k_rate *= m
 
-            inv_k_rate_coll = collision_rate_limit(
-                products, inv_k_rate, kinfinv, m, temperature
-            )
-
+            inv_k_rate_coll = collision_rate_limit(products, inv_k_rate, kinfinv, m, temperature)
 
             check_rate = inv_k_rate != inv_k_rate_coll
 
@@ -274,14 +264,10 @@ def decomposition_reaction(
         k_rate = np.copy(k0)
         m = np.sum(concentration, axis=0)
         if invert:
-            k0inv, _, keq = invert_reaction(
-                thermo_products, thermo_reactants, k0, np.zeros_like(k0), temperature
-            )
+            k0inv, _, keq = invert_reaction(thermo_products, thermo_reactants, k0, np.zeros_like(k0), temperature)
             inv_k_rate = k0inv
             if len(products) > 1:
-                inv_k_rate_coll = collision_rate_limit(
-                    products, inv_k_rate, np.zeros_like(k0), m, temperature
-                )
+                inv_k_rate_coll = collision_rate_limit(products, inv_k_rate, np.zeros_like(k0), m, temperature)
 
                 check_rate = k0inv != inv_k_rate_coll
 
@@ -340,21 +326,15 @@ def corps_reaction(
         m = np.sum(concentration, axis=0)
 
         if len(reactants) < 3:
-            k_rate = collision_rate_limit(
-                reactants, k_rate, np.zeros_like(k0), m, temperature
-            )
+            k_rate = collision_rate_limit(reactants, k_rate, np.zeros_like(k0), m, temperature)
 
         if invert:
-            k0inv, _, keq = invert_reaction(
-                thermo_products, thermo_reactants, k0, np.zeros_like(k0), temperature
-            )
+            k0inv, _, keq = invert_reaction(thermo_products, thermo_reactants, k0, np.zeros_like(k0), temperature)
 
             inv_k_rate = k0inv
 
             if len(products) > 1:
-                inv_k_rate_coll = collision_rate_limit(
-                    products, inv_k_rate, np.zeros_like(k0), m, temperature
-                )
+                inv_k_rate_coll = collision_rate_limit(products, inv_k_rate, np.zeros_like(k0), m, temperature)
 
                 check_rate = k0inv != inv_k_rate_coll
 
@@ -411,21 +391,16 @@ def de_excitation_reaction(
         thermo_reactants: FreckllArray = thermo_reactants,
         thermo_products: FreckllArray = thermo_products,
     ) -> FreckllArray:
-
         m = np.sum(concentration * efficiency[:, None], axis=0)
 
         k0 = collision_rate_limit(reactants, k0, np.zeros_like(k0), m, temperature)
 
         k_rate = k0 * m
         if invert:
-            k0inv, _, keq = invert_reaction(
-                thermo_products, thermo_reactants, k0, np.zeros_like(k0), temperature
-            )
+            k0inv, _, keq = invert_reaction(thermo_products, thermo_reactants, k0, np.zeros_like(k0), temperature)
 
             inv_k_rate = k0inv * m
-            k0inv_coll = collision_rate_limit(
-                products, k0inv, np.zeros_like(k0), m, temperature
-            )
+            k0inv_coll = collision_rate_limit(products, k0inv, np.zeros_like(k0), m, temperature)
             inv_k_rate_coll = k0inv_coll * m
             check_rate = inv_k_rate != inv_k_rate_coll
 
@@ -486,18 +461,12 @@ def k0_reaction(
     ):
         m = np.sum(concentration * efficiency[:, None], axis=0)
         k_rate = k0 * m
-        k_rate = collision_rate_limit(
-            reactants, k_rate, np.zeros_like(k0), m, temperature
-        )
+        k_rate = collision_rate_limit(reactants, k_rate, np.zeros_like(k0), m, temperature)
 
         if invert:
-            k0inv, _, keq = invert_reaction(
-                thermo_products, thermo_reactants, k0, np.zeros_like(k0), temperature
-            )
+            k0inv, _, keq = invert_reaction(thermo_products, thermo_reactants, k0, np.zeros_like(k0), temperature)
 
-            k0inv_coll = collision_rate_limit(
-                products, k0inv, np.zeros_like(k0), m, temperature
-            )
+            k0inv_coll = collision_rate_limit(products, k0inv, np.zeros_like(k0), m, temperature)
 
             inv_k_rate = k0inv_coll * m
 
@@ -561,15 +530,11 @@ def decomposition_k0_reaction(
         k_rate = k0 * m
 
         if invert:
-            k0inv, _, keq = invert_reaction(
-                thermo_products, thermo_reactants, k0, np.zeros_like(k0), temperature
-            )
+            k0inv, _, keq = invert_reaction(thermo_products, thermo_reactants, k0, np.zeros_like(k0), temperature)
 
             inv_k_rate = k0inv * m
 
-            inv_k_rate_coll = collision_rate_limit(
-                products, inv_k_rate, np.zeros_like(k0), m, temperature
-            )
+            inv_k_rate_coll = collision_rate_limit(products, inv_k_rate, np.zeros_like(k0), m, temperature)
 
             check_rate = inv_k_rate != inv_k_rate_coll
 
@@ -637,25 +602,18 @@ def manybody_plog_reaction(
     k0 = np.array([f(t, p)[0] for t, p in zip(temperature, p_log)])[:, 0]
 
     def _react(concentration: FreckllArray) -> list[FreckllArray]:
-
         m = np.sum(concentration, axis=0)
 
         krate = k0
         if len(reactants) < 3:
-            krate = collision_rate_limit(
-                reactants, k0, np.zeros_like(k0), m, temperature
-            )
+            krate = collision_rate_limit(reactants, k0, np.zeros_like(k0), m, temperature)
 
         if invert:
-            k0inv, _, keq = invert_reaction(
-                thermo_products, thermo_reactants, k0, np.zeros_like(k0), temperature
-            )
+            k0inv, _, keq = invert_reaction(thermo_products, thermo_reactants, k0, np.zeros_like(k0), temperature)
 
             inv_k_rate = k0inv
             if len(products) > 1:
-                inv_k_rate_coll = collision_rate_limit(
-                    products, inv_k_rate, np.zeros_like(k0), m, temperature
-                )
+                inv_k_rate_coll = collision_rate_limit(products, inv_k_rate, np.zeros_like(k0), m, temperature)
 
                 check_rate = inv_k_rate != inv_k_rate_coll
 
@@ -717,21 +675,16 @@ def decomposition_plog(
     k0 = np.array([f(t, p)[0] for t, p in zip(temperature, p_log)])[:, 0]
 
     def _react(concentration: FreckllArray) -> list[FreckllArray]:
-
         m = np.sum(concentration, axis=0)
 
         krate = k0
 
         if invert:
-            k0inv, _, keq = invert_reaction(
-                thermo_products, thermo_reactants, k0, np.zeros_like(k0), temperature
-            )
+            k0inv, _, keq = invert_reaction(thermo_products, thermo_reactants, k0, np.zeros_like(k0), temperature)
 
             inv_k_rate = k0inv
             if len(products) > 1:
-                inv_k_rate_coll = collision_rate_limit(
-                    products, inv_k_rate, np.zeros_like(k0), m, temperature
-                )
+                inv_k_rate_coll = collision_rate_limit(products, inv_k_rate, np.zeros_like(k0), m, temperature)
 
                 check_rate = inv_k_rate != inv_k_rate_coll
 

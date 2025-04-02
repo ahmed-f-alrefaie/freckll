@@ -1,8 +1,13 @@
 """Chemical netowrk from Olivia Venot"""
 
-from ..network import ChemicalNetwork
 import pathlib
+import typing as t
 
+from astropy.io.typing import PathLike
+
+from ..network import ChemicalNetwork, PhotoChemistry
+from ..reactions.photo import StarSpectra
+from ..species import SpeciesFormula
 
 
 class VenotChemicalNetwork(ChemicalNetwork):
@@ -16,6 +21,7 @@ class VenotChemicalNetwork(ChemicalNetwork):
 
         """
         from .io import infer_composition, load_composition, load_efficiencies, load_nasa_coeffs, load_reactions
+
         network_path = pathlib.Path(network_path)
         if not network_path.is_dir():
             raise ValueError(f"{network_path} is not a directory")
@@ -34,3 +40,39 @@ class VenotChemicalNetwork(ChemicalNetwork):
         reactions = load_reactions(composition, network_path, efficiencies)
 
         super().__init__(composition, nasa_coeffs, reactions)
+
+
+class VenotPhotoChemistry(PhotoChemistry):
+    """Loads photochemistry data."""
+
+    def __init__(
+        self,
+        species_list: list[SpeciesFormula],
+        photodissociation_file: PathLike,
+        cross_section_path: PathLike,
+        star_spectra: t.Optional[StarSpectra] = None,
+    ) -> None:
+        """Initialize the photochemistry.
+
+        Args:
+            photo_dissociation_file: The path to the photodissociation data.
+            cross_section_path: The path to the cross-section data.
+            star_spectra_path: The path to the star spectra data.
+
+        """
+        from .photo import (
+            construct_photomolecules,
+            load_all_cross_sections,
+            load_all_quantum_yields,
+            load_photolysis_reactions,
+        )
+
+        cross_sections = load_all_cross_sections(cross_section_path, species_list)
+        quantum_yields = load_all_quantum_yields(cross_section_path, cross_sections, species_list)
+        photomolecules = construct_photomolecules(cross_sections, quantum_yields)
+
+        photo_reactions = load_photolysis_reactions(
+            species_list,
+            photomolecules,
+            photodissociation_file,
+        )

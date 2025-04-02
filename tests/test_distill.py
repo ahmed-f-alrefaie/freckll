@@ -19,7 +19,7 @@ def test_distill_jit_2d():
     from freckll.distill import distill_jit_2d
 
     test = np.array([1e-16, 1, -1e-16, 1e16, -1e16, 1e16, -1e16])
-    test = np.stack([test, test],axis=1)
+    test = np.stack([test, test], axis=1)
 
     assert test.sum() != 2
     distill_jit_2d(test)

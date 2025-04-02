@@ -1,5 +1,4 @@
 version = 1
-revision = 1
 requires-python = ">=3.9, <4.0"
 resolution-markers = [
     "python_full_version >= '3.11'",
@@ -1000,7 +999,6 @@ requires-dist = [
     { name = "numpy", specifier = ">=2.0.2" },
     { name = "scipy", specifier = ">=1.13.1" },
 ]
-provides-extras = ["ace"]
 
 [package.metadata.requires-dev]
 dev = [

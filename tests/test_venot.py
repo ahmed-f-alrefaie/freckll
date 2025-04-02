@@ -1,7 +1,7 @@
 """Test Venot related netowrk functions."""
 
-import pytest
 import numpy as np
+import pytest
 
 TEST_DATA = """1  CH3COOOH     76.054  2  4  3  0
   2  C4H9O        79.116  4  9  1  0
@@ -164,29 +164,25 @@ def test_parse_nasa_lines():
         "  1.67243000e-12 -4.19548000e+04  2.96617000e+01"
     )
 
-    a_truth = np.array(
-        [
-            7.87651000e00,
-            1.42400000e-02,
-            -4.81648000e-06,
-            7.62396000e-10,
-            -4.65514000e-14,
-            -4.39851000e04,
-            -9.71105000e00,
-        ]
-    )
+    a_truth = np.array([
+        7.87651000e00,
+        1.42400000e-02,
+        -4.81648000e-06,
+        7.62396000e-10,
+        -4.65514000e-14,
+        -4.39851000e04,
+        -9.71105000e00,
+    ])
 
-    b_truth = np.array(
-        [
-            2.19569000e-01,
-            3.53131000e-02,
-            -2.24276000e-05,
-            3.22888000e-09,
-            1.67243000e-12,
-            -4.19548000e04,
-            2.96617000e01,
-        ]
-    )
+    b_truth = np.array([
+        2.19569000e-01,
+        3.53131000e-02,
+        -2.24276000e-05,
+        3.22888000e-09,
+        1.67243000e-12,
+        -4.19548000e04,
+        2.96617000e01,
+    ])
 
     nasa = _parse_nasa_lines(line1, line2, line3)
 
@@ -202,8 +198,8 @@ def test_parse_nasa_lines():
 
 
 def test_read_nasa_file(tmp_path):
-    from freckll.venot.io import load_nasa_coeffs
     from freckll.species import SpeciesFormula
+    from freckll.venot.io import load_nasa_coeffs
 
     test_data = """CH3COOOH             300  5000  1000
  7.87651000e+00  1.42400000e-02 -4.81648000e-06  7.62396000e-10 -4.65514000e-14 -4.39851000e+04 -9.71105000e+00
@@ -242,104 +238,92 @@ C3H7O                300  5000  1000
 
     np.testing.assert_allclose(
         nasa_coeffs["CH3COOOH"].a_coeff,
-        np.array(
-            [
-                7.87651000e00,
-                1.42400000e-02,
-                -4.81648000e-06,
-                7.62396000e-10,
-                -4.65514000e-14,
-                -4.39851000e04,
-                -9.71105000e00,
-            ]
-        ),
+        np.array([
+            7.87651000e00,
+            1.42400000e-02,
+            -4.81648000e-06,
+            7.62396000e-10,
+            -4.65514000e-14,
+            -4.39851000e04,
+            -9.71105000e00,
+        ]),
         rtol=1e-5,
     )
 
     np.testing.assert_allclose(
         nasa_coeffs["CH3COOOH"].b_coeff,
-        np.array(
-            [
-                2.19569000e-01,
-                3.53131000e-02,
-                -2.24276000e-05,
-                3.22888000e-09,
-                1.67243000e-12,
-                -4.19548000e04,
-                2.96617000e01,
-            ]
-        ),
+        np.array([
+            2.19569000e-01,
+            3.53131000e-02,
+            -2.24276000e-05,
+            3.22888000e-09,
+            1.67243000e-12,
+            -4.19548000e04,
+            2.96617000e01,
+        ]),
         rtol=1e-5,
     )
 
     np.testing.assert_allclose(
         nasa_coeffs["C4H9O"].a_coeff,
-        np.array(
-            [
-                1.08161110e01,
-                2.04849930e-02,
-                -6.12612710e-06,
-                8.93178750e-10,
-                -5.17843620e-14,
-                -1.92811310e04,
-                -4.12957710e01,
-            ]
-        ),
+        np.array([
+            1.08161110e01,
+            2.04849930e-02,
+            -6.12612710e-06,
+            8.93178750e-10,
+            -5.17843620e-14,
+            -1.92811310e04,
+            -4.12957710e01,
+        ]),
         rtol=1e-5,
     )
 
     np.testing.assert_allclose(
         nasa_coeffs["C4H9O"].b_coeff,
-        np.array(
-            [
-                -1.95327960e00,
-                5.21634150e-02,
-                -3.10300130e-05,
-                6.12449510e-09,
-                7.11754390e-13,
-                -1.55101920e04,
-                2.57509210e01,
-            ]
-        ),
+        np.array([
+            -1.95327960e00,
+            5.21634150e-02,
+            -3.10300130e-05,
+            6.12449510e-09,
+            7.11754390e-13,
+            -1.55101920e04,
+            2.57509210e01,
+        ]),
         rtol=1e-5,
     )
 
     np.testing.assert_allclose(
         nasa_coeffs["C3H7O"].a_coeff,
-        np.array(
-            [
-                7.93919420e00,
-                1.59497130e-02,
-                -4.72068500e-06,
-                6.84053480e-10,
-                -3.95399350e-14,
-                -1.54257270e04,
-                -2.76003010e01,
-            ]
-        ),
+        np.array([
+            7.93919420e00,
+            1.59497130e-02,
+            -4.72068500e-06,
+            6.84053480e-10,
+            -3.95399350e-14,
+            -1.54257270e04,
+            -2.76003010e01,
+        ]),
         rtol=1e-5,
     )
 
     np.testing.assert_allclose(
         nasa_coeffs["C3H7O"].b_coeff,
-        np.array(
-            [
-                -1.84931550e00,
-                4.10015100e-02,
-                -2.54725640e-05,
-                5.89854340e-09,
-                2.34561960e-13,
-                -1.26042650e04,
-                2.35337830e01,
-            ]
-        ),
+        np.array([
+            -1.84931550e00,
+            4.10015100e-02,
+            -2.54725640e-05,
+            5.89854340e-09,
+            2.34561960e-13,
+            -1.26042650e04,
+            2.35337830e01,
+        ]),
         rtol=1e-5,
     )
 
 
 def test_load_composes_file(tmp_path):
-    from freckll.venot.io import load_composition
     from freckll.species import SpeciesFormula
+    from freckll.venot.io import load_composition
 
     composes_file = tmp_path / "composes.dat"
     composes_file.write_text(TEST_DATA)
@@ -348,7 +332,8 @@ def test_load_composes_file(tmp_path):
     # Check first is okay
     assert species[0] == SpeciesFormula("CH3COOOH")
     # Check last is condensed phase
-    assert species[-1] == SpeciesFormula("NH3", state="liquid")
+    assert species[-1].formula == "H3N"
+    assert species[-1].state == "liquid"
     # Check isomer is okay
     assert species[37] == SpeciesFormula("C2H3CHOZ", true_formula="C3H4O")
     assert len(species) == 111
@@ -366,17 +351,13 @@ def test_parse_reaction_line():
 
     assert reactants == [SpeciesFormula("HCNO")]
     assert products == [SpeciesFormula("HCN"), SpeciesFormula("O3P", true_formula="O")]
-    np.testing.assert_allclose(
-        coeffs, [4.200e31, -6.120e00, 3.077e04, 1.100e00, 0.000e00]
-    )
+    np.testing.assert_allclose(coeffs, [4.200e31, -6.120e00, 3.077e04, 1.100e00, 0.000e00])
 
     reactants, products, coeffs = _parse_reaction_line(REACTION_LINES.split("\n")[1])
 
     assert reactants == [SpeciesFormula("HCNH")]
     assert products == [SpeciesFormula("HCN"), SpeciesFormula("H")]
-    np.testing.assert_allclose(
-        coeffs, [6.100e28, -5.690e00, 1.220e04, 1.100e00, 0.000e00]
-    )
+    np.testing.assert_allclose(coeffs, [6.100e28, -5.690e00, 1.220e04, 1.100e00, 0.000e00])
 
     REACTION_LINE = """ CH2CHO                                                 CH3CO                                                   1.000E+13  0.000E+00  2.363E+04  1.260E+00  0.000E+00"""
 
@@ -384,27 +365,91 @@ def test_parse_reaction_line():
 
     assert reactants == [SpeciesFormula("CH2CHO", true_formula="C2H3O")]
     assert products == [SpeciesFormula("CH3CO")]
-    np.testing.assert_allclose(
-        coeffs, [1.000e13, 0.000e00, 2.363e04, 1.260e00, 0.000e00]
-    )
-
+    np.testing.assert_allclose(coeffs, [1.000e13, 0.000e00, 2.363e04, 1.260e00, 0.000e00])
 
 
 def test_build_efficiencies():
     from freckll.venot.io import build_efficienies
-    effi_coeffs = np.array([0.4, 0.75, 1.5, 6.5, 3.0, 1.0, 3.0, 0.35, 0.4, 0.35, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
-    
-    effi_index = np.array([ 6, 34, 27, 35, 32, 38, 11, -1, 33, 37, 21, -1, -1, -1, -1, 20, 31,
-       -1, -1, -1, -1, -1])
-                    
+
+    effi_coeffs = np.array([
+        0.4,
+        0.75,
+        1.5,
+        6.5,
+        3.0,
+        1.0,
+        3.0,
+        0.35,
+        0.4,
+        0.35,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+    ])
+
+    effi_index = np.array([6, 34, 27, 35, 32, 38, 11, -1, 33, 37, 21, -1, -1, -1, -1, 20, 31, -1, -1, -1, -1, -1])
+
     effi_species = np.zeros(47)
 
     efficiency = build_efficienies(effi_species, effi_coeffs, effi_index)
 
-    expected = np.array([1.  , 1.  , 1.  , 1.  , 1.  , 1.  , 0.4 , 1.  , 1.  , 1.  , 1.  ,
-       3.  , 1.  , 1.  , 1.  , 1.  , 1.  , 1.  , 1.  , 1.  , 1.  , 1.  ,
-       1.  , 1.  , 1.  , 1.  , 1.  , 1.5 , 1.  , 1.  , 1.  , 1.  , 3.  ,
-       0.4 , 0.75, 6.5 , 1.  , 0.35, 1.  , 1.  , 1.  , 1.  , 1.  , 1.  ,
-       1.  , 1.  , 1.  ])
-    
+    expected = np.array([
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.4,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        3.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.5,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        3.0,
+        0.4,
+        0.75,
+        6.5,
+        1.0,
+        0.35,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+    ])
+
     np.testing.assert_allclose(efficiency, expected)

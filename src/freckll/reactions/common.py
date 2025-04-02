@@ -10,9 +10,7 @@ from ..types import FreckllArray, FreckllArrayInt
 
 class UniBiReactionSupported(Exception):
     def __init__(self, reactants: list[SpeciesFormula]) -> None:
-        super().__init__(
-            f"Reaction {reactants} is not supported. Up to 2 supported only"
-        )
+        super().__init__(f"Reaction {reactants} is not supported. Up to 2 supported only")
 
 
 H2 = SpeciesFormula("H2")
@@ -65,10 +63,7 @@ def collision_rate_limit(
         k_rate_exceeds_kinf = k_kinf > 1.0
         k_rate_condition = k_rate_coll > k_kinf
         k_rate = np.where(
-            update_mask
-            & (kinf_zero | k_rate_exceeds_kinf)
-            & (~kinf_zero)
-            & k_rate_condition,
+            update_mask & (kinf_zero | k_rate_exceeds_kinf) & (~kinf_zero) & k_rate_condition,
             k_coll,
             k_rate,
         )
@@ -100,9 +95,7 @@ def collision_rate_array(
     """
     eff_xsec = 4.0 * np.pi * (RA * RA)
 
-    avg_speed = np.sqrt(
-        (8 * K_BOLTZMANN * temperature[None, :]) / (np.pi * reduced_masses[:, None])
-    )
+    avg_speed = np.sqrt((8 * K_BOLTZMANN * temperature[None, :]) / (np.pi * reduced_masses[:, None]))
 
     k_coll = eff_xsec * avg_speed
 
@@ -116,11 +109,7 @@ def collision_rate_array(
         k_rate_exceeds_kinf = k_kinf > 1.0
         k_rate_condition = k_rate_coll > k_kinf
         k_rate = np.where(
-            update_mask
-            & uni_reactions
-            & (kinf_zero | k_rate_exceeds_kinf)
-            & (~kinf_zero)
-            & k_rate_condition,
+            update_mask & uni_reactions & (kinf_zero | k_rate_exceeds_kinf) & (~kinf_zero) & k_rate_condition,
             k_coll,
             k_rate,
         )
@@ -149,9 +138,7 @@ def compile_thermodynamic_properties(
     Returns:
         The thermodynamic properties of the species.
     """
-    thermo_properties = np.empty(
-        shape=(len(species), 2, temperature.shape[0]), dtype=temperature.dtype
-    )
+    thermo_properties = np.empty(shape=(len(species), 2, temperature.shape[0]), dtype=temperature.dtype)
 
     for idx, spec in enumerate(species):
         if spec.state != "gas":

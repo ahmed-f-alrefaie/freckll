@@ -1,12 +1,14 @@
 """Module to construct the ODE system for the Freckll model."""
 
 import numpy as np
-from .types import FreckllArray, FreckllArrayInt
-from .reactions.data import Reaction
+from astropy import units as u
+from scipy import sparse
+
 from .distill import ksum
 from .network import ChemicalNetwork
-from .species import SpeciesFormula, SpeciesDict
-from scipy import sparse
+from .reactions.data import Reaction
+from .species import SpeciesDict, SpeciesFormula
+from .types import FreckllArray, FreckllArrayInt
 
 
 def construct_reaction_terms(
@@ -121,15 +123,15 @@ def construct_jacobian_reaction_terms(
 
 
 def construct_jacobian_vertical_terms(
-    density: FreckllArray,
+    density: u.Quantity,
     planet_radius: float,
     planet_mass: float,
-    altitude: FreckllArray,
-    temperature: FreckllArray,
-    mu: FreckllArray,
-    masses: FreckllArray,
-    molecular_diffusion: FreckllArray,
-    kzz: FreckllArray,
+    altitude: u.Quantity,
+    temperature: u.Quantity,
+    mu: u.Quantity,
+    masses: u.Quantity,
+    molecular_diffusion: u.Quantity,
+    kzz: u.Quantity,
 ):
     """Construct the Jacobian for the vertical terms."""
     from freckll import kinetics
@@ -138,9 +140,7 @@ def construct_jacobian_vertical_terms(
 
     atmos_size = np.prod(atmos_shape)
 
-    delta_z, delta_z_plus, delta_z_minus, inv_dz, inv_dz_plus, inv_dz_minus = (
-        kinetics.deltaz_terms(altitude)
-    )
+    delta_z, delta_z_plus, delta_z_minus, inv_dz, inv_dz_plus, inv_dz_minus = kinetics.deltaz_terms(altitude)
 
     fd_plus, fd_minus = kinetics.finite_difference_terms(
         altitude,
@@ -168,24 +168,18 @@ def construct_jacobian_vertical_terms(
     mdiff_plus, mdiff_minus = kinetics.general_plus_minus(molecular_diffusion)
     kzz_plus, kzz_minus = kinetics.general_plus_minus(kzz)
 
-    vt_same_layer = np.zeros(atmos_shape, dtype=np.float64)
+    vt_same_layer = np.zeros(atmos_shape, dtype=np.float64) << 1 / (u.cm**3 * u.s)
 
     # Same layer
     vt_same_layer_p = (
         dens_plus[..., :-1]
-        * (
-            mdiff_plus[..., :-1] * (0.5 * diffusion_plus[..., :-1] - inv_dz_plus)
-            - inv_dz_plus * kzz_plus[..., :-1]
-        )
+        * (mdiff_plus[..., :-1] * (0.5 * diffusion_plus[..., :-1] - inv_dz_plus) - inv_dz_plus * kzz_plus[..., :-1])
         * fd_plus[..., :-1]
     )
 
     vt_same_layer_m = (
         dens_minus[..., 1:]
-        * (
-            mdiff_minus[..., 1:] * (0.5 * diffusion_minus[..., 1:] + inv_dz_minus)
-            + inv_dz_minus * kzz_minus[..., 1:]
-        )
+        * (mdiff_minus[..., 1:] * (0.5 * diffusion_minus[..., 1:] + inv_dz_minus) + inv_dz_minus * kzz_minus[..., 1:])
         * fd_minus[..., 1:]
     )
 
@@ -194,53 +188,37 @@ def construct_jacobian_vertical_terms(
 
     vt_same_layer[..., 0] = (
         dens_plus[..., 0]
-        * (
-            mdiff_plus[..., 0] * (0.5 * diffusion_plus[..., 0] - inv_dz[..., 0])
-            - inv_dz[..., 0] * kzz_plus[..., 0]
-        )
+        * (mdiff_plus[..., 0] * (0.5 * diffusion_plus[..., 0] - inv_dz[..., 0]) - inv_dz[..., 0] * kzz_plus[..., 0])
         * fd_plus[..., 0]
     )
 
     vt_same_layer[..., -1] = (
         dens_minus[..., -1]
         * (
-            mdiff_minus[..., -1]
-            * (0.5 * diffusion_minus[..., -1] - inv_dz_minus[..., -1])
+            mdiff_minus[..., -1] * (0.5 * diffusion_minus[..., -1] - inv_dz_minus[..., -1])
             - inv_dz_minus[..., -1] * kzz_minus[..., -1]
         )
         * fd_minus[..., -1]
     )
 
     # +1 layer
-    vt_plus_layer = (
-        dens_minus
-        * (mdiff_minus * (0.5 * diffusion_minus - inv_dz) - inv_dz * kzz_minus)
-        * fd_minus
-    )
+    vt_plus_layer = dens_minus * (mdiff_minus * (0.5 * diffusion_minus - inv_dz) - inv_dz * kzz_minus) * fd_minus
 
     vt_plus_layer[..., -1] = (
         dens_minus[..., -1]
         * (
-            mdiff_minus[..., -1]
-            * (0.5 * diffusion_minus[..., -1] - inv_dz_minus[..., -1])
+            mdiff_minus[..., -1] * (0.5 * diffusion_minus[..., -1] - inv_dz_minus[..., -1])
             - inv_dz_minus[..., -1] * kzz_minus[..., -1]
         )
         * fd_minus[..., -1]
     )
 
     # -1 layer
-    vt_minus_layer = (
-        dens_plus
-        * (mdiff_plus * (0.5 * diffusion_plus + inv_dz) + inv_dz * kzz_plus)
-        * fd_plus
-    )
+    vt_minus_layer = dens_plus * (mdiff_plus * (0.5 * diffusion_plus + inv_dz) + inv_dz * kzz_plus) * fd_plus
 
     vt_minus_layer[..., 0] = (
         dens_plus[..., 0]
-        * (
-            mdiff_plus[..., 0] * (0.5 * diffusion_plus[..., 0] + inv_dz[..., 0])
-            + inv_dz[..., 0] * kzz_plus[..., 0]
-        )
+        * (mdiff_plus[..., 0] * (0.5 * diffusion_plus[..., 0] + inv_dz[..., 0]) + inv_dz[..., 0] * kzz_plus[..., 0])
         * fd_plus[..., 0]
     )
 
@@ -252,6 +230,10 @@ def construct_jacobian_vertical_terms(
     vt_minus_layer /= density
     vt_minus_layer = vt_minus_layer[..., :-1]
     vt_plus_layer = vt_plus_layer[..., 1:]
+
+    vt_same_layer = vt_same_layer.decompose().value
+    vt_plus_layer = vt_plus_layer.decompose().value
+    vt_minus_layer = vt_minus_layer.decompose().value
 
     num_species, num_layers = vt_same_layer.shape
 
@@ -307,11 +289,9 @@ def construct_jacobian_vertical_terms_sparse(
         kzz,
     )
 
-    mat_size = mu.size * masses.size
+    neq = mu.size * masses.size
 
-    return sparse.coo_matrix(
-        (data, (rows, columns)), shape=(mat_size, mat_size)
-    ).tocsr()
+    return sparse.csc_matrix((data, (columns, rows)), shape=(neq, neq))
 
 
 def construct_jacobian_reaction_terms_sparse(
@@ -319,17 +299,13 @@ def construct_jacobian_reaction_terms_sparse(
     species: list[SpeciesFormula],
     number_density: FreckllArray,
     k: int = 4,
-) -> sparse.csr_matrix:
-    rows, columns, data = construct_jacobian_reaction_terms(
-        loss_reactions, species, number_density, k
-    )
-    return sparse.coo_matrix(
-        (data, (rows, columns)), shape=(number_density.size, number_density.size)
-    ).tocsr()
+) -> sparse.csc_matrix:
+    rows, columns, data = construct_jacobian_reaction_terms(loss_reactions, species, number_density, k)
+    neq = number_density.size
+    return sparse.csc_matrix((data, (columns, rows)), shape=(neq, neq))
 
 
 class KineticSolver:
-
     def __init__(self, network: ChemicalNetwork) -> None:
         """Initialize the solver."""
         self.network = network

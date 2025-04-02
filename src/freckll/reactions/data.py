@@ -1,12 +1,13 @@
 """Handles storing reactions."""
 
-from freckll.species import SpeciesFormula
 import typing as t
-from ..types import ReactionFunction
-import numpy.typing as npt
-import numpy as np
-from ..types import FreckllArray, FreckllArrayInt
 from dataclasses import dataclass
+
+import numpy as np
+
+from freckll.species import SpeciesFormula
+
+from ..types import FreckllArray, FreckllArrayInt, ReactionFunction
 
 
 @dataclass
@@ -23,18 +24,6 @@ class Reaction:
         """Calculate the density krate."""
         reactants_dens = np.prod(number_density[self.reactants_indices], axis=0)
         self.dens_krate = self.reaction_rate * reactants_dens
-
-    def reaction_matrix(self, species: int) -> FreckllArray:
-        """Get the reaction matrix."""
-        return np.array(
-            [
-                (
-                    -1
-                    if species in self.reactants_indices
-                    else 1 if species in self.product_indices else 0
-                )
-            ]
-        )
 
 
 class ReactionCall:
@@ -80,9 +69,7 @@ class ReactionCall:
         thermo_reactants = thermo_properties[self.reactants_indices]
         thermo_products = thermo_properties[self.product_indices]
 
-        self.reaction_call = self.reaction_function(
-            temperature, pressure, thermo_reactants, thermo_products
-        )
+        self.reaction_call = self.reaction_function(temperature, pressure, thermo_reactants, thermo_products)
 
     def __call__(
         self,

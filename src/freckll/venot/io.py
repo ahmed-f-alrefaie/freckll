@@ -21,9 +21,7 @@ def _parse_nasa_lines(
     species, x1, x2, x3 = line_1.split()
     a_coeff = np.array([float(s) for s in line_2.split()])
     b_coeff = np.array([float(s) for s in line_3.split()])
-    return NasaCoeffs(
-        decode_species(species), float(x1), float(x2), float(x3), a_coeff, b_coeff
-    )
+    return NasaCoeffs(decode_species(species), float(x1), float(x2), float(x3), a_coeff, b_coeff)
 
 
 def load_nasa_coeffs(file_path: pathlib.Path | str) -> SpeciesDict[NasaCoeffs]:
@@ -39,7 +37,7 @@ def load_nasa_coeffs(file_path: pathlib.Path | str) -> SpeciesDict[NasaCoeffs]:
                 break
             line_2 = file.readline().strip()
             line_3 = file.readline().strip()
-            
+
             nasa = _parse_nasa_lines(line_1, line_2, line_3, _decode_species)
             if nasa.species in nasa_coeffs:
                 print(line_1, nasa.species.input_formula, nasa_coeffs[nasa.species].species.input_formula)
@@ -140,9 +138,7 @@ def _parse_reaction_line(
     return reactants, products, coeffs
 
 
-def load_efficiencies(
-    file_path: pathlib.Path | str, composition: list[SpeciesFormula]
-) -> npt.NDArray[np.integer]:
+def load_efficiencies(file_path: pathlib.Path | str, composition: list[SpeciesFormula]) -> npt.NDArray[np.integer]:
     """Load the efficiencies from a file.
 
     Args:
@@ -270,15 +266,9 @@ def _handle_k0_reactions(
     reaction_calls = []
 
     if "kinf" in stem_name:
-        fall_function = (
-            falloff.sri_falloff if "SRI" in stem_name else falloff.troe_falloff_term
-        )
+        fall_function = falloff.sri_falloff if "SRI" in stem_name else falloff.troe_falloff_term
 
-        react_function = (
-            react.decomposition_k0kinf_reaction
-            if "decompo" in stem_name
-            else react.k0kinf_reaction
-        )
+        react_function = react.decomposition_k0kinf_reaction if "decompo" in stem_name else react.k0kinf_reaction
         efficiency_fill = 0.0 if "sansM" in stem_name else 1.0
         for r, p, c in reaction_data:
             k0_coeffs = c[:5]
@@ -321,11 +311,7 @@ def _handle_k0_reactions(
             )
 
     else:
-        react_function = (
-            react.decomposition_k0_reaction
-            if "decompo" in stem_name
-            else react.k0_reaction
-        )
+        react_function = react.decomposition_k0_reaction if "decompo" in stem_name else react.k0_reaction
         for r, p, c in reaction_data:
             k0_coeffs = c[:5]
             efficiency_coeff = c[5:]
@@ -360,11 +346,7 @@ def _handle_plog_reactions(
 
     import freckll.reactions.reactions as react
 
-    reaction_function = (
-        react.decomposition_plog
-        if "decompo" in file_path.stem
-        else react.manybody_plog_reaction
-    )
+    reaction_function = react.decomposition_plog if "decompo" in file_path.stem else react.manybody_plog_reaction
     reaction_calls = []
     for r, p, c in reaction_data:
         *plog_coeffs, _, _ = c
@@ -418,9 +400,7 @@ def _construct_reaction_call(  # noqa: C901
     if "desexcitation" in stem_name:
         reaction_calls = []
         for r, p, c in reaction_data:
-            efficiencies = build_efficienies(
-                composition, c[5:], efficiency_indices, fill_value=1.0
-            )
+            efficiencies = build_efficienies(composition, c[5:], efficiency_indices, fill_value=1.0)
             reaction_calls.append(
                 ReactionCall(
                     composition,
@@ -494,9 +474,7 @@ def load_reactions(
     # Reaction and its type is based on the file name
     reaction_calls = []
     for r in reaction_files:
-        reaction_calls.extend(
-            _construct_reaction_call(composition, r, efficiency_indices)
-        )
+        reaction_calls.extend(_construct_reaction_call(composition, r, efficiency_indices))
 
     return reaction_calls
 
