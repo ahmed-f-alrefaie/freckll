@@ -27,7 +27,18 @@ class StarSpectra:
         self.reference_distance = reference_distance
 
     def incident_flux(self, distance: u.Quantity) -> u.Quantity:
-        """Calculate the flux density at the reference distance.
+        r"""Calculate the flux density at the reference distance.
+
+
+        The flux density is calculated using the formula:
+        $$
+        F = F_0(\frac{D_0}{d})^2$$
+        where:
+        - $F$ is the flux density at distance $d$
+        - $F_0$ is the flux density at reference distance $D_0$
+        - $d$ is the distance from the star
+        - $D_0$ is the reference distance
+
 
         Returns:
             u.Quantity: The flux density at the reference distance.
@@ -39,10 +50,7 @@ class StarSpectra:
 class CrossSection:
     """Loads cross-section data for molecule."""
 
-    def __init__(self, molecule: SpeciesFormula, wavelength: u.Quantity, cross_section: u.Quantity):
-        self.wavelength = wavelength
-        self.cross_section = cross_section
-        self.molecule = molecule
+    def __init__(self, molecule: SpeciesFormula, wavelength: u.Quantity, cross_section: u.Quantity) -> None:
         """Initialize and load the cross-section data.
 
         Args:
@@ -51,12 +59,17 @@ class CrossSection:
             cross_section: The cross-section value at the given wavelength.
 
         """
+        self.wavelength = wavelength
+        self.cross_section = cross_section
+        self.molecule = molecule
 
-    def interp_to(self, wavelength: u.Quantity) -> "CrossSection":
-        """Interpolate the cross section to the given wavelength.
+    def interp_to(self, wavelength: u.Quantity, temperature: u.Quantity, pressure: u.Quantity) -> "CrossSection":
+        """Interpolate the cross section to the given wavelength, temperature and pressure
 
         Args:
             wavelength: The wavelength to which the cross section is interpolated.
+            temperature: The temperature at which the cross section is measured.
+            pressure: The pressure at which the cross section is measured.
 
         Returns:
             CrossSection: A new CrossSection object with the interpolated values.
@@ -88,8 +101,6 @@ class CrossSection:
 
         if self.molecule != other.molecule:
             raise ValueError("Cannot add cross sections of different molecules")
-
-        other = other.interp_to(self.wavelength)
 
         return CrossSection(self.molecule, self.wavelength, self.cross_section + other.cross_section)
 
@@ -195,7 +206,7 @@ class PhotoMolecule:
 
         return self.quantum_yields[branch_id]
 
-    def interp_to(self, wavelength: u.Quantity) -> "PhotoMolecule":
+    def interp_to(self, wavelength: u.Quantity, temperature: u.Quantity, pressure: u.Quantity) -> "PhotoMolecule":
         """Interpolate the cross section and quantum yields to the given wavelength.
 
         Args:
@@ -207,7 +218,7 @@ class PhotoMolecule:
 
         """
 
-        new_cross_section = self.cross_section.interp_to(wavelength)
+        new_cross_section = self.cross_section.interp_to(wavelength, temperature, pressure)
         new_molecule = PhotoMolecule(self.molecule, new_cross_section)
 
         for branch_id, qy in self.quantum_yields.items():
@@ -263,7 +274,7 @@ class PhotoReactionCall:
         """Initialize the photodissociation reaction call.
 
         Args:
-            reactants: The reactants of the reaction.
+            reactant: The reactant of the reaction.
             products: The products of the reaction.
             branch_id: The ID of the branching ratio.
             species_list: The list of species in the network.
@@ -275,12 +286,20 @@ class PhotoReactionCall:
         self.reactant = reactant
         self.products = products
         self.tags = tags if tags is not None else ["photodissociation"]
-        self.reactant_index = reactant_index or species_list.index(reactant.molecule)
-        self.product_indices = product_indices or np.array([species_list.index(x) for x in products])
+
+        self.reactant_index = reactant_index
+        if self.reactant_index is None:
+            self.reactant_index = species_list.index(reactant.molecule)
+        self.product_indices = product_indices
+        if self.product_indices is None:
+            self.product_indices = np.array([species_list.index(p) for p in products], dtype=np.int64)
         self.branch_id = branch_id
         self.tags = list(set(self.tags))
 
-    def interpolate_to(self, wavelength: u.Quantity) -> "PhotoReactionCall":
+    def interpolate_to(self, wavelength: u.Quantity,
+                       temperature: u.Quantity | None = None,
+                       pressure: u.Quantity | None = None,
+                       ) -> "PhotoReactionCall":
         """Interpolate the reaction call to the given wavelength.
 
         Args:
@@ -291,7 +310,7 @@ class PhotoReactionCall:
 
 
         """
-        reactant = self.reactant.interp_to(wavelength)
+        reactant = self.reactant.interp_to(wavelength, temperature, pressure)
 
         return PhotoReactionCall(
             reactant,
@@ -302,14 +321,28 @@ class PhotoReactionCall:
             tags=self.tags,
         )
 
+    @property
+    def molecule(self) -> SpeciesFormula:
+        """Return the molecule of the reactant."""
+        return self.reactant.molecule
+
+    @property
+    def cross_section(self) -> CrossSection:
+        """Return the cross-section of the reactant."""
+        return self.reactant.cross_section
+
     def __call__(self, flux: u.Quantity, number_density: FreckllArray) -> Reaction:
         """Call the reaction.
 
+        This method computes the reaction rate and creates a Reaction object.
+
         Args:
-            concentration: The concentration of the reactants.
+            flux: The flux at which the reaction is computed.
+            number_density: The number density of the reactant.
+
 
         Returns:
-            FreckllArray: The reaction rate.
+            Reaction: The reaction object representing the photodissociation reaction.
 
         """
         reaction_rate = self.reactant.reaction_rate(self.branch_id, flux)
@@ -323,7 +356,7 @@ class PhotoReactionCall:
             tags=self.tags,
         )
 
-        reaction.calculate_density_krate(number_density)
+        reaction.calculate_density_krate(number_density.to(u.cm**-3).value)
 
         return [reaction]
 
@@ -334,7 +367,9 @@ def rayleigh(spectral_grid: u.Quantity, alpha: u.Quantity, depolar_factor: float
     The Rayleigh scattering cross-section is given by the formula:
     $$
     \sigma_R = \frac{8 \pi^3}{3} \left(\frac{\alpha}{\lambda}\right)^4 (1 + \delta^2)$$
+
     where:
+
     - $\sigma_R$ is the Rayleigh scattering cross-section
     - $\alpha$ is the polarizability of the molecule
 
@@ -368,15 +403,34 @@ def optical_depth(
     cross_sections: u.Quantity,
     cross_section_indices: npt.NDArray[np.integer],
 ) -> FreckllArray:
+    r"""Compute the optical depth of the atmosphere.
+
+    The optical depth is computed using the formula:
+
+    $$
+    \tau = \int n(z) \sigma(z) dz
+    $$
+
+    where:
+
+    - $\tau$ is the optical depth
+    - $n(z)$ is the number density of the species at altitude $z$
+    - $\sigma(z)$ is the cross-section of the species at altitude $z$
+
+    The integral is computed using the trapezoidal rule.
+
+
+
+    """
     dz = np.zeros_like(altitude)
     dz[:-1] = np.diff(altitude)
     dz[-1] = dz[-2]
 
     number_density_dz = number_density * dz
 
-    cross_section_density = cross_sections * number_density_dz[cross_section_indices]
+    cross_section_density = cross_sections[:, None, :] * number_density_dz[cross_section_indices, :, None]
 
-    tau = np.sum(cross_section_density, axis=0)
+    tau = np.sum(cross_section_density, axis=0).decompose()
 
     return tau
 
@@ -391,15 +445,10 @@ def radiative_transfer(
 
     Computes the radiative transfer equation for a given flux and optical depth.
 
-    The equation is given by:
-    $$
-    F_{down} = F_{top} \cdot e^{-\tau}$$
-    where:
-    - $F_{down}$ is the flux at the bottom of the atmosphere
-    - $F_{top}$ is the flux at the top of the atmosphere
-    - $\tau$ is the optical depth
     The flux is then propagated upwards and downwards through the atmosphere.
     The albedo is taken into account for the upward flux.
+
+
     Args:
         flux_top: The flux at the top of the atmosphere.
         optical_depth: The optical depth of the atmosphere.
@@ -410,10 +459,10 @@ def radiative_transfer(
 
     """
 
-    tau = np.exp(-optical_depth) / np.cos(incident_angle)
+    tau = np.exp(-optical_depth / np.cos(incident_angle))
 
-    flux_down = np.zeros_like(flux_top)
-    flux_up = np.zeros_like(flux_top)
+    flux_down = np.zeros_like(tau.value) << flux_top.unit
+    flux_up = np.zeros_like(tau.value) << flux_top.unit
 
     flux_down[-1] = flux_top * tau[-1]
     num_layers = flux_down.shape[0]
