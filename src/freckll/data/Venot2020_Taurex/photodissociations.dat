@@ -1,0 +1,55 @@
+ H2O        HV                                          H          OH                                          1    1.00d0
+ H2O        HV                                          H2         O1D                                         2    1.00d0
+ H2O        HV                                          H          H          O3P                              3    1.00d0
+ CO2        HV                                          CO         O3P                                         1    1.00d0
+ CO2        HV                                          CO         O1D                                         2    1.00d0
+ H2CO       HV                                          H2         CO                                          1    1.00d0
+ H2CO       HV                                          H          HCO                                         2    1.00d0
+ OH         HV                                          O1D        H                                           1    1.00d0
+ OOH        HV                                          OH         O3P                                         1    1.00d0
+ H2O2       HV                                          OH         OH                                          1    1.00d0
+ CO         HV                                          C          O3P                                         1    1.00d0
+ H2         HV                                          H          H                                           1    1.00d0
+ HCO        HV                                          H          CO                                          1    1.00d0
+ CH3OH      HV                                          H2CO       H2                                          1    1.00d0
+ CH3OH      HV                                          CH3        OH                                          2    1.00d0
+ CH3OOH     HV                                          CH3O       OH                                          1    1.00d0
+ CHCO       HV                                          CH         CO                                          1    1.00d0
+ CH2CO      HV                                          3CH2       CO                                          1    1.00d0
+ CH3CHO     HV                                          CH4        CO                                          1    1.00d0
+ CH3CHO     HV                                          CH3        HCO                                         2    1.00d0
+ CH3        HV                                          1CH2       H                                           1    1.00d0
+ CH4        HV                                          CH3        H                                           1    1.00d0
+ CH4        HV                                          1CH2       H2                                          2    1.00d0
+ CH4        HV                                          1CH2       H          H                                3    1.00d0
+ CH4        HV                                          3CH2       H          H                                4    1.00d0
+ CH4        HV                                          CH         H2         H                                5    1.00d0
+ C2H        HV                                          C          C          H                                1    1.00d0
+ C2H2       HV                                          C2H        H                                           1    1.00d0
+ C2H3       HV                                          C2H2       H                                           1    1.00d0
+ C2H4       HV                                          C2H2       H2                                          1    1.00d0
+ C2H4       HV                                          C2H2       H          H                                2    1.00d0
+ C2H6       HV                                          C2H4       H2                                          1    1.00d0
+ C2H6       HV                                          C2H4       H          H                                2    1.00d0
+ C2H6       HV                                          C2H2       H2         H2                               3    1.00d0
+ C2H6       HV                                          CH4        1CH2                                        4    1.00d0
+ C2H6       HV                                          CH3        CH3                                         5    1.00d0
+ N2         HV                                          N2D        N4S                                         1    1.00d0
+ NH2        HV                                          NH         H                                           1    1.00d0
+ NH3        HV                                          NH2        H                                           1    1.00d0
+ N2H4       HV                                          N2H3       H                                           1    1.00d0
+ HCN        HV                                          CN         H                                           1    1.00d0
+ HNC        HV                                          CN         H                                           1    1.00d0
+ H2CN       HV                                          HCN        H                                           1    1.00d0
+ C2N2       HV                                          CN         CN                                          1    1.00d0
+ NO         HV                                          N4S        O3P                                         1    1.00d0
+ NO2        HV                                          NO         O3P                                         1    1.00d0
+ NO2        HV                                          NO         O1D                                         2    1.00d0
+ NO3        HV                                          NO2        O3P                                         1    1.00d0
+ NO3        HV                                          NO         O2                                          2    1.00d0
+ HNO2       HV                                          NO         OH                                          1    1.00d0
+ HNO3       HV                                          NO2        OH                                          1    1.00d0
+ N2O        HV                                          N2         O1D                                         1    1.00d0
+ N2O        HV                                          N2         O1D                                         2    1.00d0
+ N2O4       HV                                          NO2        NO2                                         1    1.00d0
+ N2O3       HV                                          NO2        NO                                          1    1.00d0
