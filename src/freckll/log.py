@@ -1,6 +1,6 @@
 """Freckll Logging Module."""
-import logging
 
+import logging
 
 logging.getLogger("freckll").addHandler(logging.NullHandler())
 
