@@ -9,7 +9,12 @@ copyright: Maintained by <a href="https://ahmed-f-alrefaie.com">ahmed-f-alrefaie
 
 nav:
   - Home: index.md
-  - Modules: modules.md
+  - Modules:
+      - Reactions:
+          - Common: modules/reactions/common.md
+          - Reactions: modules/reactions/reactions.md
+          - Falloff: modules/reactions/falloff.md
+          - Photochemistry: modules/reactions/photolysis.md
 plugins:
   - search
   - mkdocstrings:
