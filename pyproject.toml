@@ -22,6 +22,7 @@ dependencies = [
     "molmass>=2024.10.25",
     "numba>=0.60.0",
     "numpy>=2.0.2",
+    "pydantic>=2.11.1",
     "scipy>=1.13.1",
 ]
 
