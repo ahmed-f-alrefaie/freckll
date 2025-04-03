@@ -3,18 +3,26 @@
  H2O        HV                                          H          H          O3P                              3    1.00d0
  CO2        HV                                          CO         O3P                                         1    1.00d0
  CO2        HV                                          CO         O1D                                         2    1.00d0
+ CO2        HV                                          CO         O3P                                         3    1.00d0
  H2CO       HV                                          H2         CO                                          1    1.00d0
  H2CO       HV                                          H          HCO                                         2    1.00d0
+ H2CO       HV                                          H          H          CO                               3    1.00d0
  OH         HV                                          O1D        H                                           1    1.00d0
+ OH         HV                                          O3P        H                                           2    1.00d0
+ OH         HV                                          O1D        H                                           3    1.00d0
  OOH        HV                                          OH         O3P                                         1    1.00d0
+ O2         HV                                          O3P        O3P                                         1    1.00d0
+ O2         HV                                          O1D        O3P                                         2    1.00d0
+ O2         HV                                          O1D        O1D                                         3    1.00d0
  H2O2       HV                                          OH         OH                                          1    1.00d0
  CO         HV                                          C          O3P                                         1    1.00d0
+ CO         HV                                          C          O1D                                         2    1.00d0
  H2         HV                                          H          H                                           1    1.00d0
+ H2         HV                                          H          H                                           2    1.00d0
  HCO        HV                                          H          CO                                          1    1.00d0
  CH3OH      HV                                          H2CO       H2                                          1    1.00d0
  CH3OH      HV                                          CH3        OH                                          2    1.00d0
  CH3OOH     HV                                          CH3O       OH                                          1    1.00d0
- CHCO       HV                                          CH         CO                                          1    1.00d0
  CH2CO      HV                                          3CH2       CO                                          1    1.00d0
  CH3CHO     HV                                          CH4        CO                                          1    1.00d0
  CH3CHO     HV                                          CH3        HCO                                         2    1.00d0
@@ -37,6 +45,8 @@
  N2         HV                                          N2D        N4S                                         1    1.00d0
  NH2        HV                                          NH         H                                           1    1.00d0
  NH3        HV                                          NH2        H                                           1    1.00d0
+ NH3        HV                                          NH         H2                                          2    1.00d0
+ NH3        HV                                          NH         H          H                                3    1.00d0
  N2H4       HV                                          N2H3       H                                           1    1.00d0
  HCN        HV                                          CN         H                                           1    1.00d0
  HNC        HV                                          CN         H                                           1    1.00d0
