@@ -161,10 +161,10 @@ def invert_reaction(
     r"""Reverses the reaction.
 
     Args:
-        thermo_products: The thermodynamic properties of the products.
-        thermo_reactants: The thermodynamic properties of the reactants.
-        k0: The low-pressure rate constant.
-        k_inf: The high-pressure rate constant.
+        thermo_inv_reactants: The thermodynamic properties of the reactants.
+        thermo_inv_products: The thermodynamic properties of the products.
+        k0: The rate constant of the reaction.
+        k_inf: The high-pressure limit of the rate constant.
         temperature: The temperature of the reaction.
 
     Returns:
