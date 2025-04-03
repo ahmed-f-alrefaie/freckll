@@ -6,7 +6,7 @@ import typing as t
 from astropy.io.typing import PathLike
 
 from ..network import ChemicalNetwork, PhotoChemistry
-from ..reactions.photo import StarSpectra
+from ..reactions.photo import PhotoMolecule, StarSpectra
 from ..species import SpeciesFormula
 
 
@@ -49,14 +49,16 @@ class VenotPhotoChemistry(PhotoChemistry):
         self,
         species_list: list[SpeciesFormula],
         photodissociation_file: PathLike,
-        cross_section_path: PathLike,
+        photomolecules: t.Optional[list[PhotoMolecule]] = None,
+        cross_section_path: t.Optional[PathLike] = None,
         star_spectra: t.Optional[StarSpectra] = None,
     ) -> None:
         """Initialize the photochemistry.
 
         Args:
             photo_dissociation_file: The path to the photodissociation data.
-            cross_section_path: The path to the cross-section data.
+            photomolecules: A list of photomolecules, previously loaded.
+            cross_section_path: The path to the cross-section data (if not passing photomolecules).
             star_spectra_path: The path to the star spectra data.
 
         """
@@ -67,12 +69,15 @@ class VenotPhotoChemistry(PhotoChemistry):
             load_photolysis_reactions,
         )
 
-        cross_sections = load_all_cross_sections(cross_section_path, species_list)
-        quantum_yields = load_all_quantum_yields(cross_section_path, cross_sections, species_list)
-        photomolecules = construct_photomolecules(cross_sections, quantum_yields)
+        if photomolecules is None:
+            cross_sections = load_all_cross_sections(cross_section_path, species_list)
+            quantum_yields = load_all_quantum_yields(cross_section_path, species_list)
+            photomolecules = construct_photomolecules(cross_sections, quantum_yields)
 
         photo_reactions = load_photolysis_reactions(
             species_list,
             photomolecules,
             photodissociation_file,
         )
+
+        super().__init__(species_list, photo_reactions, star_spectra)
