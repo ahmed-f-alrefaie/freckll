@@ -27,7 +27,7 @@ def gravity_at_height(mass: u.Quantity, radius: u.Quantity, altitude: u.Quantity
     return const.G * mass / (radius + altitude) ** 2
 
 
-def air_density(temperature: u.Quantity, pressure: u.Quantity) -> FreckllArray:
+def air_density(temperature: u.Quantity, pressure: u.Quantity) -> u.Quantity:
     r"""Compute the density of the atmosphere.
 
     The *air* density of the atmosphere is given by:
