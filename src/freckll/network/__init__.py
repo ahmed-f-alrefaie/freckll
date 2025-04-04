@@ -148,20 +148,18 @@ class PhotoChemistry:
         self,
         species_list: list[SpeciesFormula],
         photo_reaction_calls: list[PhotoReactionCall],
-        spectra: t.Optional[StarSpectra] = None,
     ) -> None:
         """Initialize the network.
 
         Args:
-            reaction_calls: The reaction calls.
-            cross_sections: The cross sections.
+            species_list: The species list.
+            photo_reaction_calls: The photo reaction calls.
 
         """
         from ..reactions.photo import rayleigh_species
 
         self.photo_reaction_calls = photo_reaction_calls
         self.working_reaction_calls = photo_reaction_calls
-        self.spectra = spectra
         self.incident_flux = None
         self.available_rayleigh = [c for c in rayleigh_species if c in species_list]
 
@@ -170,8 +168,6 @@ class PhotoChemistry:
         for c in self.available_rayleigh:
             self.species_index[c] = species_list.index(c)
 
-        if spectra is not None:
-            self.set_spectra(spectra)
 
     def interpolate_cross_sections(self, 
                                    wavelengths: u.Quantity,
@@ -220,6 +216,7 @@ class PhotoChemistry:
         """
         self.spectra = spectra
         self.incident_angle = incident_angle
+        self.planet_distance = distance
         self.incident_flux = self.spectra.incident_flux(distance)
         self.albedo = albedo
 
