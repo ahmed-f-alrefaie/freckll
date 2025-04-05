@@ -11,4 +11,18 @@ Fast Disequilibrium chemistry
 - **Github repository**: <https://github.com/ahmed-f-alrefaie/freckll/>
 - **Documentation** <https://ahmed-f-alrefaie.github.io/freckll/>
 
-# To be implemented
+
+
+## Test case
+
+```bash
+cd freckll
+pip install .
+```
+
+```bash
+cd freckll/examples/inputs
+
+python -m freckll.main -i hd209458_full.yml -o result_full.h5 --overwrite --plot
+```
+
