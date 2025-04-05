@@ -19,10 +19,10 @@ classifiers = [
 ]
 dependencies = [
     "astropy>=5.3.2",
+    "h5py>=3.13.0",
     "molmass>=2024.10.25",
     "numba>=0.60.0",
     "numpy>=2.0.2",
-    "pydantic>=2.11.1",
     "scipy>=1.13.1",
 ]
 
@@ -34,6 +34,14 @@ Documentation = "https://ahmed-f-alrefaie.github.io/FRECKLL/"
 [project.optional-dependencies]
 ace = [
     "acepython>=0.0.17",
+]
+plot = [
+    "matplotlib>=3.9.4",
+]
+
+recommended = [
+    "freckll[ace]",
+    "freckll[plot]",
 ]
 
 [dependency-groups]

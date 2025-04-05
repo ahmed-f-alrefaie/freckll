@@ -1,8 +1,8 @@
-from . import Solver, DyCallable, JacCallable, SolverOutput
+from .solver import Solver, DyCallable, JacCallable, SolverOutput
 import numpy as np
 from ..types import FreckllArray
 
-class BDF(Solver):
+class LSODA(Solver):
 
     def _run_solver(self, f: DyCallable, jac: JacCallable, y0: FreckllArray, t0: float, t1: float, 
                     num_species: int,

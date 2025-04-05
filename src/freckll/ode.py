@@ -264,15 +264,15 @@ def construct_jacobian_vertical_terms(
 
 
 def construct_jacobian_vertical_terms_sparse(
-    density: FreckllArray,
-    planet_radius: float,
-    planet_mass: float,
-    altitude: FreckllArray,
-    temperature: FreckllArray,
-    mu: FreckllArray,
-    masses: FreckllArray,
-    molecular_diffusion: FreckllArray,
-    kzz: FreckllArray,
+    density: u.Quantity,
+    planet_radius: u.Quantity,
+    planet_mass: u.Quantity,
+    altitude: u.Quantity,
+    temperature: u.Quantity,
+    mu: u.Quantity,
+    masses: u.Quantity,
+    molecular_diffusion: u.Quantity,
+    kzz: u.Quantity,
 ):
     rows, columns, data = construct_jacobian_vertical_terms(
         density,
@@ -302,7 +302,114 @@ def construct_jacobian_reaction_terms_sparse(
     return sparse.csc_matrix((data, (columns, rows)), shape=(neq, neq))
 
 
-class KineticSolver:
-    def __init__(self, network: ChemicalNetwork) -> None:
-        """Initialize the solver."""
-        self.network = network
+def construct_vertical_jacobian(vmr: FreckllArray,
+    density: u.Quantity,
+    planet_radius: u.Quantity,
+    planet_mass: u.Quantity,
+    altitude: u.Quantity,
+    temperature: u.Quantity,
+    mu: u.Quantity,
+    masses: u.Quantity,
+    molecular_diffusion: u.Quantity,
+    kzz: u.Quantity,
+) -> u.Quantity:
+    r"""Compute the diffusion flux using finite difference.
+
+    This is the term:
+
+    $$
+    \frac{d \pi}{dz}
+    $$
+    """
+    from freckll.kinetics import deltaz_terms, diffusive_terms, finite_difference_terms, general_plus_minus
+    from freckll.distill import ksum
+    from scipy.sparse import csc_matrix
+    # Compute the delta z terms
+    delta_z, delta_z_plus, delta_z_minus, inv_dz, inv_dz_plus, inv_dz_minus = deltaz_terms(altitude)
+
+    # Compute the diffusive terms
+    diffusion_plus, diffusion_minus = diffusive_terms(
+        planet_radius,
+        planet_mass,
+        altitude,
+        mu,
+        temperature,
+        masses,
+        delta_z,
+        delta_z_plus,
+        delta_z_minus,
+        inv_dz_plus,
+        inv_dz_minus,
+    )
+
+    # Compute the finite difference terms
+    fd_plus, fd_minus = finite_difference_terms(
+        altitude,
+        planet_radius,
+        inv_dz,
+        inv_dz_plus,
+        inv_dz_minus,
+    )
+
+
+    # Compute the general plus and minus terms
+    dens_plus, dens_minus = general_plus_minus(density)
+    mdiff_plus, mdiff_minus = general_plus_minus(molecular_diffusion)
+    kzz_plus, kzz_minus = general_plus_minus(kzz)
+    pd_same_p = dens_plus * (mdiff_plus * (0.5 * diffusion_plus - inv_dz_plus) - inv_dz_plus * kzz_plus) * fd_plus
+
+    pd_same_m = dens_minus * (mdiff_minus * (0.5 * diffusion_minus + inv_dz_minus) + inv_dz_minus * kzz_minus) * fd_minus
+
+    pd_same = pd_same_p + pd_same_m
+    pd_p = dens_minus * (mdiff_minus * (0.5 * diffusion_minus - inv_dz_minus) - inv_dz_minus * kzz_minus) * fd_minus
+    pd_m = dens_plus * (mdiff_plus * (0.5 * diffusion_plus + inv_dz_plus) + inv_dz_plus * kzz_plus) * fd_plus
+
+    pd_same[:, 0] = dens_plus[0] * (mdiff_plus[:, 0] * (0.5 * diffusion_plus[:, 0] - inv_dz[0]) - inv_dz[0] * kzz_plus[0]) * fd_plus[0]
+
+    pd_m[:, 0] = dens_plus[0] * (mdiff_plus[:, 0] * (0.5 * diffusion_plus[:, 0] + inv_dz[0]) + inv_dz[0] * kzz_plus[0]) * fd_plus[0]
+
+    pd_same[:, -1] = dens_minus[-1] * (mdiff_minus[:, -1] * (0.5 * diffusion_minus[:, -1] + inv_dz[-1]) + inv_dz[-1] * kzz_minus[-1]) * fd_minus[-1]
+
+    pd_p[:, -1] = dens_minus[-1] * (mdiff_minus[:, -1] * (0.5 * diffusion_minus[:, -1] - inv_dz[-1]) - inv_dz[-1] * kzz_minus[-1]) * fd_minus[-1]
+    # pd_p[:,-1] =  pd_same[:, -1]
+
+        # pd_m[:,:-1]/=density[1:]
+    pd_same = (pd_same / density).to(1/u.s).value
+    
+    pd_p = (pd_p / density).to(1/u.s).value 
+    
+    pd_m = (pd_m / density).to(1/u.s).value
+
+    
+
+    num_species, num_layers = pd_same.shape
+    same_layer = np.arange(0, num_layers)
+    plus_one = np.arange(1, num_layers)
+    minus_one = np.arange(0, num_layers - 1)
+
+    neq = num_species * num_layers
+
+    rows = []
+    cols = []
+    data = []
+    for x in range(num_species):
+        species_index = compute_index(x, same_layer, num_species, num_layers)
+        rows.append(species_index)
+        cols.append(species_index)
+        data.append(pd_same[x, :])
+
+        plus_index = compute_index(x, plus_one, num_species, num_layers)
+        minus_index = compute_index(x, minus_one, num_species, num_layers)
+        rows.append(species_index[1:])
+        cols.append(minus_index)
+        data.append(pd_m[x, :-1])
+
+        rows.append(species_index[:-1])
+        cols.append(plus_index)
+        data.append(pd_p[x, 1:])
+    rows = np.concatenate(rows)
+    cols = np.concatenate(cols)
+    data = np.concatenate(data)
+    return csc_matrix((data, (cols, rows)), shape=(neq, neq))
+
+

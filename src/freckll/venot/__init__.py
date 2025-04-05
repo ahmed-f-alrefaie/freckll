@@ -51,15 +51,14 @@ class VenotPhotoChemistry(PhotoChemistry):
         photodissociation_file: PathLike,
         photomolecules: t.Optional[list[PhotoMolecule]] = None,
         cross_section_path: t.Optional[PathLike] = None,
-        star_spectra: t.Optional[StarSpectra] = None,
     ) -> None:
         """Initialize the photochemistry.
 
         Args:
+            species_list: The list of species. Must come from a chemical network.
             photo_dissociation_file: The path to the photodissociation data.
             photomolecules: A list of photomolecules, previously loaded.
             cross_section_path: The path to the cross-section data (if not passing photomolecules).
-            star_spectra_path: The path to the star spectra data.
 
         """
         from .photo import (
@@ -80,4 +79,4 @@ class VenotPhotoChemistry(PhotoChemistry):
             photodissociation_file,
         )
 
-        super().__init__(species_list, photo_reactions, star_spectra)
+        super().__init__(species_list, photo_reactions)

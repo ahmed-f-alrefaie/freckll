@@ -1,9 +1,13 @@
-from . import Solver, DyCallable, JacCallable, SolverOutput, convergence_test, output_step
+from .solver import Solver, DyCallable, JacCallable, SolverOutput, convergence_test, output_step
 import numpy as np
 from ..types import FreckllArray
 from typing import Optional
 from astropy import units as u
 import time
+from collections import deque
+from ..kinetics import AltitudeSolveError
+from ..ode import convert_y_to_fm, convert_fm_to_y
+from ..distill import ksum
 def update_timestep(timestep: float, rtol: float, error: float):
     """Updates the timestep based on the error and the desired tolerance.
     
@@ -30,7 +34,7 @@ def step_second_order_rosenbrock(f: DyCallable, jac: JacCallable, y: FreckllArra
     gamma = 1 + 1/math.sqrt(2)
     lhs = (I - gamma*h*jac(0, y))
     # Supress RuntimeWarning
-    with np.errstate(divide='ignore', invalid='ignore'):
+    with np.errstate(all="ignore"):
         rhs = f(t, y)
 
         k1 = spla.spsolve(lhs, rhs, use_umfpack=True)
@@ -104,7 +108,7 @@ class Rosenbrock(Solver):
                     timestep_reject_factor: float = 0.1,
                     minimum_step: float = 1e-16,
                     tiny: float = 1e-50,
-                    
+                    nevals: int = 200,
                     strict: bool = False,
                     maxiter: Optional[int] = 100,
                     max_solve_time: Optional[u.Quantity] = None,
@@ -126,10 +130,12 @@ class Rosenbrock(Solver):
             timestep_reject_factor: The factor to reduce the timestep by on rejection.
             minimum_step: The minimum step size.
             tiny: A small value to avoid division by zero.
+            neval: The number of time evaluations to store.
             strict: If True, reject negative values.
             maxiter: The maximum number of iterations.
             max_solve_time: The maximum time to spend solving the ODE.
         """
+        import math
 
         h = initial_step
         y = np.copy(y0)
@@ -137,8 +143,16 @@ class Rosenbrock(Solver):
         f_eval = 0
         jac_eval = 0
 
+
+
         ys = [y]
         ts = [t0]
+
+        track_y = deque(maxlen=3)
+        track_t = deque(maxlen=3)
+        track_y.append(y)
+        track_t.append(t0)
+    
 
         t = t0
         iterations = 0
@@ -149,25 +163,41 @@ class Rosenbrock(Solver):
         
         start_time = time.time()
 
+        start_t = math.log10(max(t0, 1e-6))
+        end_t = math.log10(t1)
+        t_evals = np.logspace(start_t, end_t, nevals)
+        t_eval_index = 0
+        while t < t1:
 
-        while True:
+
             # Step the solver
             f_eval += 2
             jac_eval += 1
-            result = step_second_order_rosenbrock(f, jac, y,t, h)
-
+            iterations += 1
             current_time = time.time() - start_time
-            # Reject
+            # Break if the maximum number of iterations is reached
+            if maxiter and iterations > maxiter:
+                self.info("Maximum iterations reached")
+                break
+
             if max_solve_time is not None and current_time > max_solve_time:
                 self.info("Maximum solve time reached")
                 success = False
                 break
 
-            iterations += 1
-            # Break if the maximum number of iterations is reached
-            if maxiter and iterations > maxiter:
-                self.info("Maximum iterations reached")
-                break
+            try:
+                result = step_second_order_rosenbrock(f, jac, y,t, h)
+            except AltitudeSolveError:
+                # If we get an altitude solve error, we need to reject the step
+                self.info("Altitude solve error")
+                h = h * timestep_reject_factor
+                continue
+            
+            # Reject
+ 
+
+
+
 
             # Reject the step if the result is None (due to NaN or Inf)
             if result is None:
@@ -177,14 +207,21 @@ class Rosenbrock(Solver):
             # Check if the step is valid
             y_new, error = result
 
-            # If we are under strict conditions then reject the step if valeus are negative.
             if not strict:
                 y_new = np.maximum(y_new, tiny)
-        
+                # fm = convert_y_to_fm(y_new, num_species, self.kzz.size)
+
+                # fm = fm/ksum(fm, k=4)
+
+                # y_new = convert_fm_to_y(fm)
+
+            # If we are under strict conditions then reject the step if valeus are negative.
             test_f = f(t, y_new)
 
+    
             # Check for NaN or Inf in the new values
             if np.any(np.isnan(y_new) | np.isinf(y_new) | np.isnan(test_f) | (y_new < 0)):
+                self.info("Reducing step size")
                 # Reject the step and reduce the timestep
                 h = h * timestep_reject_factor
                 # If the new step is too small, 
@@ -198,11 +235,11 @@ class Rosenbrock(Solver):
 
             
             # Accept the step
-            ys.append(y_new)
+            track_y.append(y_new)
             y = np.copy(y_new)
 
             t += h
-            ts.append(t)
+            track_t.append(t)
 
             # Determine the new timestep
             error[y_new < atol] = 0
@@ -212,15 +249,32 @@ class Rosenbrock(Solver):
             h = update_timestep(h, rtol, delta)
             output_step(t, test_f, self)
 
+            while t_eval_index < len(t_evals) and t >= t_evals[t_eval_index]:
+                # We need to interpolate if we've stepped past the t_eval point
+                if len(ts) >= 2:  # Need at least two points to interpolate
+                    t_prev = track_t[-2]
+                    y_prev = track_y[-2]
+                    # Linear interpolation between previous and current point
+                    alpha = (t_evals[t_eval_index] - t_prev) / (t - t_prev)
+                    y_interp = y_prev + alpha * (y - y_prev)
+                    ys.append(y_interp)
+                    ts.append(t_evals[t_eval_index])
+                else:
+                    # If this is the first step, just use the current value
+                    ys.append(y)
+                    ts.append(t_evals[t_eval_index])
+                t_eval_index += 1
             if t >= t1:
                 self.info("Reached the end of the integration range")
                 success = True
                 break
-            if convergence_test(ys, ts, y0, self, atol, df_criteria, dfdt_criteria):
+            if convergence_test(track_y, track_t, y0, self, atol, df_criteria, dfdt_criteria):
                 self.info("Converged to the solution")
                 success = True
                 break
-
+        if t != ts[-1]:
+            ys.append(y)
+            ts.append(t)
 
         return {
             "num_dndt_evals": f_eval,

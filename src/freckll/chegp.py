@@ -9,14 +9,13 @@ from .types import FreckllArray
 
 
 # Rewrite
-def compute_coeffs(fm, altitude, Ro, go, density, masses, mu, T, diffusion, Kzz):
+def compute_coeffs(fm, altitude, Ro, go, density, masses, mu, T, diffusion, Kzz, alpha=0.0):
     import numpy as np
 
     k_boltz_si = 1.380662e-23
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         k_b = k_boltz_si * 1.0e4
-        alpha = 0.0
 
         g_alt = go
         delta_z = np.zeros_like(T)
@@ -327,8 +326,8 @@ def compute_jacobian_sparse(
     Ro = Ro.to(u.km).value
     planet_mass = planet_mass.to(u.kg).value
     density = density.to(1 / u.cm**3).value
-    masses = masses.to(u.g).value
-    mu = mu.to(u.g).value
+    masses = masses.to(u.kg).value
+    mu = mu.to(u.kg).value
     T = T.to(u.K).value
     diffusion = diffusion.to(u.cm**2 / u.s).value
     Kzz = Kzz.to(u.cm**2 / u.s).value

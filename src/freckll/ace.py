@@ -10,6 +10,12 @@ from .species import SpeciesFormula
 from .types import FreckllArrayInt
 
 
+def default_therm_file() -> pathlib.Path:
+    """Returns the default thermodynamic file for ACE."""
+    import importlib.resources
+    return importlib.resources.files("freckll.data") / "NASA.therm"
+
+
 @contextmanager
 def create_composes(
     composition: list[SpeciesFormula],
@@ -42,7 +48,7 @@ def equil_chemistry_ace(
     temperature: u.Quantity,
     pressure: u.Quantity,
     composition: list[SpeciesFormula],
-    therm_file: pathlib.Path,
+    therm_file: t.Optional[pathlib.Path] = None,
     elements: t.Sequence[str] = ("H", "He", "C", "N", "O"),
     abundances: t.Sequence[float] = (
         12,
@@ -71,11 +77,14 @@ def equil_chemistry_ace(
 
     vmr = np.full(shape=(len(composition), len(temperature)), fill_value=1e-50)
 
+    if therm_file is None:
+        therm_file = default_therm_file()
+
     with create_composes(composition, use_input_formula, composes_elements) as (
         specfile,
         indices,
     ):
-        species, mix_profile, mmw = run_ace(
+        _, mix_profile, _= run_ace(
             temperature,
             pressure,
             elements=elements,
@@ -85,4 +94,4 @@ def equil_chemistry_ace(
         )
         vmr[indices] = mix_profile
 
-    return vmr, mmw
+    return vmr

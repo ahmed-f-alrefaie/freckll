@@ -1,0 +1,58 @@
+
+planet:
+  mass: 0.714 Mjup
+  radius: 1.38 Rjup
+  distance: 0.04747 AU
+  albedo: 0.0
+
+star:
+  incident_angle: 45 deg
+  spectrum: 
+    format: rescale
+    from_star: sun
+    temperature: 6117 K
+    radius: 1.16 Rsun
+  
+# Built in format
+network: venot-methanol-2023
+photochemistry: venot-methanol-2023-photo
+
+thermochemistry:
+  format: ace
+  abundances: [ 12.0, 10.925, 9.168, 7.86, 8.633]
+  elements: [H, He, C, N, O]
+  
+
+atmosphere:
+  tp_profile: 
+    format: from-file
+    filename: tpprofile.csv
+    temperature_column: 1
+    pressure_column: 0
+    comments: "#"
+    temperature_unit: K
+    pressure_unit: mbar
+  
+  kzz:
+    format: from-file
+    filename: kzz.csv
+    kzz_column: 1
+    pressure_column: 0
+    comments: "#"
+    kzz_unit: cm2/s
+    pressure_unit: mbar
+
+
+solver:
+  method: rosenbrock
+  t_span: [0.0, 1e10]
+  max_iter: 100
+  nevals: 200
+  dn_crit: 1e-3
+  dndt_crit: 1e-6
+  max_solve_time: 1 hour
+  rtol: 1e-2
+  atol: 1e-25
+  maxiter: 1000
+  
+

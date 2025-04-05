@@ -6,6 +6,10 @@ from astropy import units as u
 
 from .types import FreckllArray
 
+class AltitudeSolveError(Exception):
+    pass
+
+
 
 def gravity_at_height(mass: u.Quantity, radius: u.Quantity, altitude: u.Quantity) -> u.Quantity:
     r"""Compute the gravity at a given altitude.
@@ -115,9 +119,11 @@ def solve_altitude_profile(
     P_min = pressures_sorted.min()
     P_span = (P_surface, P_min)
     initial_z = [0.0]  # Starting altitude at surface
-
+    
     # Solve the ODE
     sol = solve_ivp(dzdP, P_span, initial_z, dense_output=True)
+    if sol.success is False:
+        raise AltitudeSolveError
     # Generate altitude at the original pressure points (interpolate if necessary)
     # Reverse pressures to increasing order for interpolation
     P_eval = np.sort(pressures)
@@ -146,22 +152,28 @@ def deltaz_terms(
 
 
     """
-    # Compute delta z terms
 
-    altitude_cm = altitude
-    delta_z = np.append(np.diff(altitude_cm), altitude_cm[-1] - altitude_cm[-2])
 
-    delta_z_plus = np.diff(altitude_cm, append=0.0 << altitude_cm.unit)
-    delta_z_minus = np.diff(altitude_cm, prepend=0.0 << altitude_cm.unit)
+    delta_z = np.zeros_like(altitude)
+    delta_z_p = np.zeros_like(altitude)
+    delta_z_m = np.zeros_like(altitude)
 
-    inv_dz = 2 / (delta_z_plus + delta_z_minus)
-    inv_dz[0] = 1 / delta_z[0]
-    inv_dz[-1] = 1 / delta_z[-1]
+    delta_z_p[:-1] = altitude[1:] - altitude[:-1]
+    delta_z_m[1:] = altitude[1:] - altitude[:-1]
 
-    inv_dz_minus = 1 / delta_z_minus[1:]
-    inv_dz_plus = 1 / delta_z_plus[:-1]
+    delta_z[:-1] = altitude[1:] - altitude[:-1]
+    delta_z[-1] = altitude[-1] - altitude[-2]
+    delta_z[0] = altitude[1] - altitude[0]
 
-    return delta_z, delta_z_plus, delta_z_minus, inv_dz, inv_dz_plus, inv_dz_minus
+    inv_dz = 1.0 / ((0.5 * delta_z_p + 0.5 * delta_z_m))
+    inv_dz[0] = 1.0 / (delta_z[0])
+    inv_dz[-1] = 1.0 / (delta_z[-1])
+
+    inv_dz_m = 1.0 / (delta_z_m)
+    inv_dz_p = 1.0 / (delta_z_p)
+
+
+    return delta_z, delta_z_p, delta_z_m, inv_dz, inv_dz_p, inv_dz_m
 
 
 def diffusive_terms(
@@ -204,9 +216,9 @@ def diffusive_terms(
     """
 
     # cm/m2
-    central_g: FreckllArray = gravity_at_height(planet_mass, planet_radius, altitude)
-    plus_g: FreckllArray = gravity_at_height(planet_mass, planet_radius, altitude + delta_z_plus)
-    minus_g: FreckllArray = gravity_at_height(planet_mass, planet_radius, altitude - delta_z_minus)
+    central_g = gravity_at_height(planet_mass, planet_radius, altitude)
+    plus_g = gravity_at_height(planet_mass, planet_radius, altitude + delta_z_plus)
+    minus_g = gravity_at_height(planet_mass, planet_radius, altitude - delta_z_minus)
 
     # total scaleheight
     h_total = scaleheight(temperature, central_g, mu)
@@ -245,10 +257,10 @@ def diffusive_terms(
 
     # temperature terms
     temperature_factor = (temperature[1:] - temperature[:-1]) / (temperature[1:] + temperature[:-1])
-    t_diffusion_plus = 2.0 * alpha * inv_dz_plus * temperature_factor
-    t_diffusion_minus = 2.0 * alpha * inv_dz_minus * temperature_factor
+    t_diffusion_plus = 2.0 * alpha * inv_dz_plus[:-1] * temperature_factor
+    t_diffusion_minus = 2.0 * alpha * inv_dz_minus[1:] * temperature_factor
 
-    #    dip[:, :-1] = (
+    #    diffusion_plus[:, :-1] = (
     #         2.0 / (hip[:, :-1] + hi[:, :-1]) - 2.0 / (hap[:-1] + ha[:-1])
     #     ) + 2.0 * alpha * inv_dz_p[:-1] * (T[1:] - T[:-1]) / (T[1:] + T[:-1])
 
@@ -285,17 +297,12 @@ def finite_difference_terms(
         inv_dz_plus: The inverse delta z plus term in cm^-1.
         inv_dz_minus: The inverse delta z minus term in cm^-1.
     """
-    altitude_cm = altitude
-    radius_cm = radius
-    fd_plus = np.zeros_like(inv_dz) << inv_dz.unit
-    fd_minus = np.zeros_like(inv_dz) << inv_dz.unit
+    fd_plus = (1 + 0.5 / ((radius + altitude) * inv_dz_plus)) ** 2 * inv_dz
+    fd_minus = -((1 - 0.5 / ((radius + altitude) * inv_dz_minus)) ** 2) * inv_dz
 
-    fd_plus[:-1] = (1 + 0.5 / ((radius_cm + altitude_cm[:-1]) * inv_dz_plus)) ** 2 * inv_dz[:-1]
-
-    fd_minus[1:] = -((1 - 0.5 / ((radius_cm + altitude_cm[1:]) * inv_dz_minus)) ** 2) * inv_dz[1:]
     # Handle boundaries
-    fd_minus[0] = -((1 - 0.5 / ((radius_cm + altitude_cm[0]) * inv_dz[0])) ** 2) * inv_dz[0]
-    fd_plus[-1] = (1 + 0.5 / ((radius_cm + altitude_cm[-1]) * inv_dz[-1])) ** 2 * inv_dz[-1]
+    fd_minus[0] = -((1 - 0.5 / ((radius + altitude[0]) * inv_dz[0])) ** 2) * inv_dz[0]
+    fd_plus[-1] = (1 + 0.5 / ((radius + altitude[-1]) * inv_dz[-1])) ** 2 * inv_dz[-1]
 
     return fd_plus, fd_minus
 
@@ -344,9 +351,10 @@ def vmr_terms(
 
     """
     vmr_diff = np.diff(vmr, axis=-1)
-
-    dy_plus = (vmr_diff) * inv_dz_plus
-    dy_minus = (vmr_diff) * inv_dz_minus
+    dy_plus = np.zeros(vmr.shape) << inv_dz_plus.unit
+    dy_minus = np.zeros(vmr.shape) << inv_dz_minus.unit
+    dy_plus[:,:-1] = (vmr_diff) * inv_dz_plus[:-1]
+    dy_minus[:, 1:] = (vmr_diff) * inv_dz_minus[1:]
 
     return dy_plus, dy_minus
 
@@ -406,37 +414,42 @@ def diffusion_flux(
     mdiff_plus, mdiff_minus = general_plus_minus(molecular_diffusion)
     kzz_plus, kzz_minus = general_plus_minus(kzz)
 
-    plus_term = dens_plus[1:-1] * (
-        mdiff_plus[..., 1:-1] * ((vmr[..., 2:] + vmr[:, 1:-1]) * 0.5 * diffusion_plus[..., 1:-1] + dy_plus[..., 1:])
-        + kzz_plus[..., 1:-1] * dy_plus[..., 1:]
-    )
+    diff_flux = np.zeros(vmr.shape) << (1/(u.cm**3 * u.s))
 
-    minus_term = dens_minus[1:-1] * (
-        mdiff_minus[..., 1:-1]
-        * ((vmr[..., 1:-1] + vmr[..., :-2]) * 0.5 * diffusion_minus[..., 1:-1] + dy_minus[..., :-1])
-        + kzz_minus[..., 1:-1] * dy_minus[..., :-1]
-    )
-
-    diffusive_flux = np.zeros(vmr.shape) << (plus_term.unit * fd_plus.unit)
-
-    diffusive_flux[..., 1:-1] = plus_term * fd_plus[..., 1:-1] + minus_term * fd_minus[..., 1:-1]
-
-    # Handle boundaries
-    diffusive_flux[..., 0] = (
-        dens_plus[..., 0]
+    diff_flux[:, 1:-1] += (
+        dens_plus[1:-1]
         * (
-            mdiff_plus[..., 0] * ((vmr[..., 1] + vmr[..., 0]) * 0.5 * diffusion_plus[..., 0] + dy_plus[..., 0])
-            + kzz_plus[..., 0] * dy_plus[..., 0]
+            mdiff_plus[:, 1:-1]
+            * ((vmr[:, 2:] + vmr[:, 1:-1]) * 0.5 * diffusion_plus[:, 1:-1] + dy_plus[:, 1:-1])
+            + kzz_plus[1:-1] * dy_plus[:, 1:-1]
         )
-        * fd_plus[..., 0]
-    )
-    diffusive_flux[..., -1] = (
-        dens_minus[..., -1]
+        * fd_plus[1:-1]
+        + dens_minus[1:-1]
         * (
-            mdiff_minus[..., -1] * ((vmr[..., -1] + vmr[..., -2]) * 0.5 * diffusion_minus[..., -1] + dy_minus[..., -1])
-            + kzz_minus[..., -1] * dy_minus[..., -1]
+            mdiff_minus[:, 1:-1]
+            * ((vmr[:, 1:-1] + vmr[:, :-2]) * 0.5 * diffusion_minus[:, 1:-1] + dy_minus[:, 1:-1])
+            + kzz_minus[1:-1] * dy_minus[:, 1:-1]
         )
-        * fd_minus[..., -1]
+        * fd_minus[1:-1]
+    )
+    diff_flux[:, 0] += (
+        dens_plus[0]
+        * (
+            mdiff_plus[:, 0] * ((vmr[:, 1] + vmr[:, 0]) * 0.5 * diffusion_plus[:, 0] + dy_plus[:, 0])
+            + kzz_plus[0] * dy_plus[:, 0]
+        )
+        * fd_plus[0]
+    )
+    diff_flux[:, -1] += (
+        fd_minus[-1]
+        * dens_minus[-1]
+        * (
+            mdiff_minus[:, -1] * ((vmr[:, -1] + vmr[:, -2]) * 0.5 * diffusion_minus[:, -1] + dy_minus[:, -1])
+            + kzz_minus[-1] * dy_minus[:, -1]
+        )
     )
 
-    return diffusive_flux
+    return diff_flux
+
+
+

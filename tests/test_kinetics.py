@@ -175,11 +175,11 @@ def test_deltaz_pychegp(coeff_inputs):
 
     assert inv_dz_p.shape == indz_m.shape
 
-    np.testing.assert_allclose(dz_p[:-1].value, chegp[0][:-1])
-    np.testing.assert_allclose(dz_m[1:].value, chegp[1][1:])
+    np.testing.assert_allclose(dz_p.value, chegp[0])
+    np.testing.assert_allclose(dz_m.value, chegp[1])
     np.testing.assert_allclose(inv_dz.to(1 / u.cm).value, chegp[2])
-    np.testing.assert_allclose(inv_dz_p.to(1 / u.cm).value, chegp[3][:-1])
-    np.testing.assert_allclose(indz_m.to(1 / u.cm).value, chegp[4][1:])
+    np.testing.assert_allclose(inv_dz_p.to(1 / u.cm).value, chegp[3])
+    np.testing.assert_allclose(indz_m.to(1 / u.cm).value, chegp[4])
 
 
 def test_fd_terms(coeff_inputs):
@@ -220,9 +220,9 @@ def test_diffusive_terms(coeff_inputs):
     planet_mass = coeff_inputs[-1] << u.kg
 
     altitude = coeff_inputs[1] << u.km
-    mu = coeff_inputs[6] << u.kg
+    mu = coeff_inputs[6] << u.g
     T = coeff_inputs[7] << u.K
-    masses = coeff_inputs[5] << u.kg
+    masses = coeff_inputs[5] << u.g
 
     delta_z, delta_z_p, delta_z_m, inv_dz, inv_dz_p, inv_dz_m = deltaz_terms(altitude)
 
@@ -240,8 +240,8 @@ def test_diffusive_terms(coeff_inputs):
         inv_dz_m,
     )
 
-    np.testing.assert_allclose(diffusion_plus[..., :-1].to(1 / u.cm).value, dip[..., :-1], rtol=1e-5)
-    np.testing.assert_allclose(diffusion_minus[..., 1:].to(1 / u.cm).value, dim[..., 1:], rtol=1e-5)
+    np.testing.assert_allclose(diffusion_plus.to(1 / u.m).value[...,:-1], dip[...,:-1], rtol=1e-5)
+    np.testing.assert_allclose(diffusion_minus.to(1 / u.m).value, dim, rtol=1e-5)
 
 
 def test_density_mdiffuse_kzz_terms(coeff_inputs):
@@ -280,8 +280,8 @@ def test_vmr_terms(coeff_inputs):
 
     vmr_plus, vmr_minus = vmr_terms(fm, inv_dz_p, inv_dz_m)
 
-    np.testing.assert_allclose(vmr_plus.to(1 / u.cm).value, dyp[..., :-1])
-    np.testing.assert_allclose(vmr_minus.to(1 / u.cm).value, dym[..., 1:])
+    np.testing.assert_allclose(vmr_plus.to(1 / u.cm).value, dyp)
+    np.testing.assert_allclose(vmr_minus.to(1 / u.cm).value, dym)
 
 
 def test_diffusive_flux_no_diffusion(coeff_inputs):
@@ -331,8 +331,8 @@ def test_diffusive_flux_no_diffusion(coeff_inputs):
     planet_mass = coeff_inputs[-1] << u.kg
     altitude = coeff_inputs[1] << u.km
     temperature = coeff_inputs[7] << u.K
-    mu = coeff_inputs[6] << u.kg
-    masses = coeff_inputs[5] << u.kg
+    mu = coeff_inputs[6] << u.g
+    masses = coeff_inputs[5] << u.g
     molecular_diffusion = coeff_inputs[8] * 0 << u.cm**2 / u.s
     kzz = coeff_inputs[9] << u.cm**2 / u.s
 
@@ -396,9 +396,9 @@ def test_diffusive_flux_w_diffusion(coeff_inputs):
     planet_mass = coeff_inputs[-1] << u.kg
     altitude = coeff_inputs[1] << u.km
     temperature = coeff_inputs[7] << u.K
-    mu = coeff_inputs[6] << u.kg
-    masses = coeff_inputs[5] << u.kg
-    molecular_diffusion = coeff_inputs[8] << u.m**2 / u.s
+    mu = coeff_inputs[6] << u.g
+    masses = coeff_inputs[5] << u.g
+    molecular_diffusion = coeff_inputs[8] << u.cm**2 / u.s
     kzz = coeff_inputs[9] << u.cm**2 / u.s
 
     diff_flux = (

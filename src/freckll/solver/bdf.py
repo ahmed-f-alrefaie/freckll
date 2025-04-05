@@ -1,4 +1,4 @@
-from . import Solver, DyCallable, JacCallable, SolverOutput
+from .solver import Solver, DyCallable, JacCallable, SolverOutput
 import numpy as np
 from ..types import FreckllArray
 

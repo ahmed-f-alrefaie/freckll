@@ -9,6 +9,7 @@ copyright: Maintained by <a href="https://ahmed-f-alrefaie.com">ahmed-f-alrefaie
 
 nav:
   - Home: index.md
+  - Installation: installation.md
   - Modules:
       - Reactions:
           - Common: modules/reactions/common.md
@@ -58,3 +59,4 @@ markdown_extensions:
       permalink: true
   - pymdownx.arithmatex:
       generic: true
+  - attr_list
