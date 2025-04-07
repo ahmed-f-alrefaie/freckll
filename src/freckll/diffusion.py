@@ -110,7 +110,7 @@ def molecular_diffusion(
     diff_mol[index_2, layer_idx] = diff_1[index_2, layer_idx]
     diff_mol[index_1, layer_idx] = 0.0
 
-    return diff_mol*0 << u.cm**2 / u.s
+    return diff_mol << u.cm**2 / u.s
 
 
 def molecular_diffusion_II(

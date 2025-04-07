@@ -47,6 +47,13 @@ _log = logging.getLogger("freckll")
     default="freckll",
     help="Prefix for the plot filenames.",
 )
+@click.option(
+    "--animate",
+    is_flag=True,
+    default=False,
+    help="Animate the results.",
+)
+
 def freckll_cli(input: pathlib.Path | str,
                 output: pathlib.Path | str,
                 overwrite: bool = False,
@@ -54,6 +61,7 @@ def freckll_cli(input: pathlib.Path | str,
                 plot_path: pathlib.Path | str = None,
 
                 plot_prefix: str = None,
+                animate: bool = False,
                 ) -> None:
     """Run the Freckll simulation."""
     import logging
@@ -103,6 +111,17 @@ def freckll_cli(input: pathlib.Path | str,
         fig = plot_solution_combined(result, figsize=(10, 10))
         fig.savefig(plot_path / f"{plot_prefix}solution{plot_suffix}.png", dpi=300)
         _log.info("Plotting complete.")
+
+    if animate:
+        from .plot import animate_vmr
+        plot_path = pathlib.Path(plot_path)
+        plot_prefix = f"{plot_prefix}_"
+        plot_suffix = "" if result["success"] else "_failed"
+        animate_path = plot_path / f"{plot_prefix}animation{plot_suffix}.mp4"
+        ani = animate_vmr(result["vmr"],result["times"],result["pressure"],result["species"],initial_vmr=result["initial_vmr"])
+        ani.save(animate_path, fps=30, dpi=300)
+        _log.info("Animation complete.")
+
 
     _log.info("End Date: %s", datetime.datetime.now().isoformat())
 

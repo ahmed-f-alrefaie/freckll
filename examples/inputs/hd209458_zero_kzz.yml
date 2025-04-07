@@ -29,19 +29,19 @@ atmosphere:
     temperature_unit: K
     pressure_unit: mbar
   
-  kzz: 1e6 cm2/s
+  kzz: 0 cm2/s
 
 
 solver:
-  method: vode
+  method: rosenbrock
   t_span: [0.0, 1e10]
-  max_iter: 100
-  nevals: 200
+  nevals: 100
   dn_crit: 1e-3
   dndt_crit: 1e-6
-  max_solve_time: 2 minute
+  max_solve_time: 1 minute
   rtol: 1e-2
   atol: 1e-25
   maxiter: 300
+  strict: false
   
 
