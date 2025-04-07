@@ -190,6 +190,7 @@ class Rosenbrock(Solver):
             except AltitudeSolveError:
                 # If we get an altitude solve error, we need to reject the step
                 self.info("Altitude solve error")
+                self.info("Y values: %s %s", y.min(), y.max())
                 h = h * timestep_reject_factor
                 continue
             
@@ -232,14 +233,19 @@ class Rosenbrock(Solver):
                 h = max(h, minimum_step)
                 continue
             
-
+            if h == 0:
+                self.info("Zero step size")
+                break
             
             # Accept the step
             track_y.append(y_new)
             y = np.copy(y_new)
 
+            
             t += h
             track_t.append(t)
+                
+
 
             # Determine the new timestep
             error[y_new < atol] = 0
@@ -268,6 +274,9 @@ class Rosenbrock(Solver):
                 self.info("Reached the end of the integration range")
                 success = True
                 break
+
+            
+
             if convergence_test(track_y, track_t, y0, self, atol, df_criteria, dfdt_criteria):
                 self.info("Converged to the solution")
                 success = True
