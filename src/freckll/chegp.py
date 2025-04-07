@@ -326,8 +326,8 @@ def compute_jacobian_sparse(
     Ro = Ro.to(u.km).value
     planet_mass = planet_mass.to(u.kg).value
     density = density.to(1 / u.cm**3).value
-    masses = masses.to(u.kg).value
-    mu = mu.to(u.kg).value
+    masses = masses.to(u.g).value
+    mu = mu.to(u.g).value
     T = T.to(u.K).value
     diffusion = diffusion.to(u.cm**2 / u.s).value
     Kzz = Kzz.to(u.cm**2 / u.s).value
@@ -362,8 +362,8 @@ def compute_dndt_vertical(
     Ro = Ro.to(u.km).value
     planet_mass = planet_mass.to(u.kg).value
     density = density.to(1 / u.cm**3).value
-    masses = masses.to(u.kg).value
-    mu = mu.to(u.kg).value
+    masses = masses.to(u.g).value
+    mu = mu.to(u.g).value
     T = T.to(u.K).value
     diffusion = diffusion.to(u.cm**2 / u.s).value
     Kzz = Kzz.to(u.cm**2 / u.s).value
