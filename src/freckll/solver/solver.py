@@ -132,10 +132,11 @@ def dndt(t: float, y: FreckllArray,
             network: Optional[ChemicalNetwork] = None,
             photochemistry: Optional[Optional[PhotoChemistry]] = None,
             vmr_shape: Optional[tuple[int, ...]] = None,
+            enable_diffusion: bool = True,
             ) -> FreckllArray:
     """Calculate the rate of change of the VMR."""
     from ..diffusion import molecular_diffusion
-    from ..kinetics import solve_altitude_profile
+    from ..kinetics import solve_altitude_profile, alpha_term
 
     from ..ode import convert_y_to_fm, convert_fm_to_y, construct_reaction_terms
     from ..chegp import compute_dndt_vertical
@@ -147,10 +148,9 @@ def dndt(t: float, y: FreckllArray,
 
     density = density.to(u.cm**-3)
     masses = masses
-#
+#   
+    
     nlayers = density.size
-
-    vmr = convert_y_to_fm(y, len(network.species), nlayers)
     mu = ksum(masses[:, None].value * vmr, k=4) << masses.unit
 
     altitude = solve_altitude_profile(
@@ -162,7 +162,10 @@ def dndt(t: float, y: FreckllArray,
 
     mole_diffusion = molecular_diffusion(
         network.species, number_density, temperature, pressure
-    )
+    )*float(enable_diffusion)
+
+    alpha=alpha_term(network.species, vmr)
+
 
     vert_term = compute_dndt_vertical(
         vmr,
@@ -174,7 +177,8 @@ def dndt(t: float, y: FreckllArray,
         mu,
         temperature,
         mole_diffusion,
-        kzz
+        kzz,
+        alpha=alpha,
     )
 
     
@@ -186,6 +190,8 @@ def dndt(t: float, y: FreckllArray,
     products, loss = map_production_loss(reactions)
     reaction_term =construct_reaction_terms(products, loss, network.species , density.size, k=4)
     final = (reaction_term) / density.value + vert_term
+
+    #final[vmr < 0] = 0
 
     return convert_fm_to_y(final)
 
@@ -200,11 +206,12 @@ def jac(t: float, y: FreckllArray,
     network: Optional[ChemicalNetwork] = None,
     photochemistry: Optional[Optional[PhotoChemistry]] = None,
     vmr_shape: Optional[tuple[int, ...]] = None,
+    enable_diffusion: bool = True,
     ) -> FreckllArray:
     from freckll.ode import construct_jacobian_reaction_terms_sparse, convert_y_to_fm
     from freckll.constants import AMU
     from ..network import map_production_loss
-    from freckll.kinetics import solve_altitude_profile
+    from freckll.kinetics import solve_altitude_profile, alpha_term
     from freckll.chegp import compute_jacobian_sparse
     from freckll.distill import ksum
     from freckll.diffusion import molecular_diffusion
@@ -214,7 +221,7 @@ def jac(t: float, y: FreckllArray,
     # altitude = altitude << u.km
     nlayers = density.size
     kzz = kzz.to(u.cm**2 / u.s)
-    vmr = convert_y_to_fm(y, len(network.species), nlayers)
+    vmr = convert_y_to_fm(y, *vmr_shape)
     mu = ksum(masses[:, None].value * vmr, k=4) << masses.unit
     number_density = density*vmr
     altitude = solve_altitude_profile(
@@ -223,7 +230,7 @@ def jac(t: float, y: FreckllArray,
 
     mole_diffusion = molecular_diffusion(
         network.species, number_density, temperature, pressure
-    )
+    )*float(enable_diffusion)
 
 
     reactions = network.compute_reactions(vmr, with_production_loss=False)
@@ -235,6 +242,9 @@ def jac(t: float, y: FreckllArray,
     _, loss = map_production_loss(reactions)
     react_mat = construct_jacobian_reaction_terms_sparse(loss, network.species, number_density.value)
 
+    alpha=alpha_term(network.species, vmr)
+
+
     vert_mat = compute_jacobian_sparse(
         vmr,
         altitude,
@@ -245,9 +255,16 @@ def jac(t: float, y: FreckllArray,
         mu,
         temperature,
         mole_diffusion,
-        kzz)
+        kzz,
+        alpha=alpha,)
+
+
 
     return vert_mat + react_mat
+
+
+
+
 
 class Solver(Loggable):
 
@@ -264,6 +281,7 @@ class Solver(Loggable):
         self.kzz: Optional[u.Quantity] = None
         self.planet_radius: Optional[u.Quantity] = None
         self.planet_mass: Optional[u.Quantity] = None
+        self.alpha: float | FreckllArray = 0.0
 
     def set_network(self,
                     network: ChemicalNetwork,
@@ -297,7 +315,8 @@ class Solver(Loggable):
         pressure: Optional[u.Quantity] = None, 
         kzz: Optional[u.Quantity] = None,   
         planet_radius: Optional[u.Quantity] = None,
-        planet_mass: Optional[u.Quantity] = None) -> None:
+        planet_mass: Optional[u.Quantity] = None,
+        alpha: Optional[float | FreckllArray]= None) -> None:
         """Set the system parameters.
         
         Args:
@@ -312,6 +331,7 @@ class Solver(Loggable):
         self.kzz = kzz if kzz is not None else self.kzz
         self.planet_radius = planet_radius if planet_radius is not None else self.planet_radius
         self.planet_mass = planet_mass if planet_mass is not None else self.planet_mass
+
         self.debug("Setting system parameters: temperature: %s, pressure: %s, kzz: %s", temperature, pressure, kzz)
         self.debug("Planet radius: %s, planet mass: %s", planet_radius, planet_mass)
         self.info("System parameters set. Compiling reactions.")
@@ -327,6 +347,7 @@ class Solver(Loggable):
     def solve(self,
               vmr: FreckllArray,
               t_span: tuple[float, float],
+              enable_diffusion: bool = False,
               atol: float = 1e-25,
               rtol: float = 1e-2,
               df_criteria: float = 1e-3,
@@ -339,6 +360,7 @@ class Solver(Loggable):
         Args:
             vmr: The initial VMR.
             t_span: The time span.
+            enable_diffusion: Whether to enable diffusion.
             atol: The absolute tolerance.
             rtol: The relative tolerance.
             df_criteria: The criteria for convergence.
@@ -366,6 +388,8 @@ class Solver(Loggable):
             network=self.network,
             photochemistry=self.photochemistry,
             vmr_shape=vmr.shape,
+            enable_diffusion=enable_diffusion,
+            
 
         )
 
@@ -381,6 +405,7 @@ class Solver(Loggable):
             network=self.network,
             photochemistry=self.photochemistry,
             vmr_shape=vmr.shape,
+            enable_diffusion=enable_diffusion,
         )
 
         self.debug("Solving with %s solver", self.__class__.__name__)
@@ -449,7 +474,7 @@ class Solver(Loggable):
             **stellar_data,
         }
 
-        return result
+        return result 
         
 
 
