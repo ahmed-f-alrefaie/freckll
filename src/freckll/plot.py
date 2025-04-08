@@ -134,7 +134,7 @@ def animate_vmr(
     mol_index = [species.index(x) for x in species if x in species_to_plot]
     for x in mol_index:
         if initial_vmr is not None:
-            ax.plot(initial_vmr[x], pressure.value, label=species[x], alpha=0.5)
+            ax.plot(initial_vmr[x], pressure.value, alpha=0.5)
             line, = ax.plot([], [], label=species[x], color=ax.lines[-1].get_color())
         else:
             line = ax.plot(initial_vmr[x], pressure.value,'--', alpha=0.5)
