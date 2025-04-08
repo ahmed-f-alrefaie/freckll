@@ -177,11 +177,13 @@ class Rosenbrock(Solver):
             current_time = time.time() - start_time
             # Break if the maximum number of iterations is reached
             if maxiter and iterations > maxiter:
+                ys.append(y)
                 self.info("Maximum iterations reached")
                 break
 
             if max_solve_time is not None and current_time > max_solve_time:
                 self.info("Maximum solve time reached")
+                ys.append(y)
                 success = False
                 break
 
@@ -207,6 +209,8 @@ class Rosenbrock(Solver):
 
             # Check if the step is valid
             y_new, error = result
+
+    
 
             if not strict:
                 y_new = np.maximum(y_new, tiny)
@@ -235,6 +239,7 @@ class Rosenbrock(Solver):
             
             if h == 0:
                 self.info("Zero step size")
+                ys.append(y)
                 break
             
             # Accept the step
@@ -285,12 +290,22 @@ class Rosenbrock(Solver):
             ys.append(y)
             ts.append(t)
 
+        extra = {
+
+        }
+
+        if not success:
+            extra["dndt"] = f(t, y)
+            extra["jac"] = jac(t, y)
+
+
         return {
             "num_dndt_evals": f_eval,
             "num_jac_evals": jac_eval,
             "success": success,
             "times": ts,
             "y": ys,
+            **extra,
         }
 
 
