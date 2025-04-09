@@ -10,6 +10,7 @@ from .types import FreckllArray
 
 @dataclass
 class NasaCoeffs:
+    """Dataclass to store NASA coefficients."""
     species: SpeciesFormula
     x1: float
     x2: float
