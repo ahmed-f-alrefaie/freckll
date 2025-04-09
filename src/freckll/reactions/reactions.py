@@ -18,6 +18,20 @@ def arrhenius_constant(
 ) -> FreckllArray:
     """Computes Arrhenius rate constants for low and high pressure limits.
 
+    Formula is as follows:
+
+    $$
+    k = A T^n \exp(-E_r/T)
+    $$
+
+    where:
+    - $k$ is the rate constant
+    - $A$ is the pre-exponential factor
+    - $T$ is the temperature
+    - $n$ is the temperature exponent
+    - $E_r$ is the activation energy
+    - $k$ is the rate constant
+
     Args:
         a: The pre-exponential factor.
         n: The temperature exponent
@@ -158,6 +172,42 @@ def decomposition_k0kinf_reaction(
     thermo_reactants: FreckllArray,
     thermo_products: FreckllArray,
 ) -> ReactionFunction:
+    """Decomposition reaction rate constant.
+    
+
+    This the Arrheniues rate with the low-pressure and high pressure
+    limits
+    The low pressure limit is:
+    $$
+    k_0 = A_0 T^{n_0} \exp(-E_{r0}/T)
+    $$
+    The high pressure limit is:
+    $$
+    k_\infty = A_i T^{n_i} \exp(-E_{ri}/T)
+    $$
+
+    Additionally you can also provide a falloff function to calculate
+    the falloff term.
+
+    Args:
+        k0_coeffs: The low-pressure rate constant coefficients.
+        kinf_coeffs: The high-pressure rate constant coefficients.
+        falloff_coeffs: The falloff coefficients.
+        efficiency: The efficiency of the reaction.
+        invert: Whether to invert the reaction.
+        falloff_function: The falloff function to use.
+        reactants: The reactants of the reaction.
+        products: The products of the reaction.
+        temperature: The temperature of the species.
+        pressure: The pressure of the species.
+        concentration: The concentration of the species.
+        thermo_reactants: The thermodynamic properties of the reactants.
+        thermo_products: The thermodynamic properties of the products.
+
+    Returns:
+        A function that takes the concentration of the species and returns the rate
+    
+    """
     # k0 terms
     a0, n0, er0, _, _ = k0_coeffs
     # kinf terms
@@ -289,8 +339,9 @@ def corps_reaction(
     pressure: FreckllArray,
     thermo_reactants: FreckllArray,
     thermo_products: FreckllArray,
-) -> list[FreckllArray]:
+) -> ReactionFunction
     """Many body reaction rate constant.
+
 
     Args:
         k0_coeffs: The low-pressure rate constant coefficients.
@@ -304,8 +355,7 @@ def corps_reaction(
         thermo_products: The thermodynamic properties of the products.
 
     Returns:
-        k_rate: The rate constant of the reaction.
-        inv_k_rate: The inverted rate constant of the reaction. (if ``invert`` is True)
+        A function that takes the concentration of the species and returns the rate
 
     """
     a0, n0, er0, _, _ = k0_coeffs
@@ -374,8 +424,7 @@ def de_excitation_reaction(
         thermo_products: The thermodynamic properties of the products.
 
     Returns:
-        k_rate: The rate constant of the reaction.
-        inv_k_rate: The inverted rate constant of the reaction. (if ``invert`` is True)
+        A function that takes the concentration of the species and returns the rate
 
     """
     a0, n0, er0, _, _ = k0_coeffs
@@ -440,8 +489,7 @@ def k0_reaction(
         thermo_products: The thermodynamic properties of the products.
 
     Returns:
-        k_rate: The rate constant of the reaction.
-        inv_k_rate: The inverted rate constant of the reaction. (if ``invert`` is True)
+        A function that takes the concentration of the species and returns the rate
 
     """
     a0, n0, er0, _, _ = k0_coeffs
@@ -506,8 +554,7 @@ def decomposition_k0_reaction(
         thermo_products: The thermodynamic properties of the products.
 
     Returns:
-        k_rate: The rate constant of the reaction.
-        inv_k_rate: The inverted rate constant of the reaction. (if ``invert`` is True)
+        A function that takes the concentration of the species and returns the rate
 
     """
     a0, n0, er0, _, _ = k0_coeffs
@@ -556,7 +603,7 @@ def manybody_plog_reaction(
     pressure: FreckllArray,
     thermo_reactants: FreckllArray,
     thermo_products: FreckllArray,
-) -> list[FreckllArray]:
+) -> ReactionFunction:
     """Many body reaction rate constant.
 
     Args:
@@ -575,8 +622,7 @@ def manybody_plog_reaction(
         thermo_products: The thermodynamic properties of the products.
 
     Returns:
-        k_rate: The rate constant of the reaction.
-        inv_k_rate: The inverted rate constant of the reaction. (if ``invert`` is True)
+        A function that takes the concentration of the species and returns the rate
 
     """
     from scipy.interpolate import RectBivariateSpline
@@ -634,7 +680,7 @@ def decomposition_plog(
     pressure: FreckllArray,
     thermo_reactants: FreckllArray,
     thermo_products: FreckllArray,
-) -> list[FreckllArray]:
+) -> ReactionFunction:
     """Decomposition reaction rate constant.
 
     Args:
@@ -649,8 +695,7 @@ def decomposition_plog(
         thermo_products: The thermodynamic properties of the products.
 
     Returns:
-        k_rate: The rate constant of the reaction.
-        inv_k_rate: The inverted rate constant of the reaction. (if ``invert`` is True)
+        A function that takes the concentration of the species and returns the rate
     """
     from scipy.interpolate import RectBivariateSpline
 
