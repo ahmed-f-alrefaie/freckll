@@ -66,7 +66,9 @@ def molecular_diffusion(
     temperature: u.Quantity,
     pressure: u.Quantity,
 ) -> u.Quantity:
-    """Compute the molecular diffusion term for a species.
+    """Compute the molecular diffusion term for a species using the 
+    Fuller diffusion model.
+
 
     Args:
         species: The species to compute the molecular diffusion term.
