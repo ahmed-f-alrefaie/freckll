@@ -3,7 +3,7 @@
 import numpy as np
 from astropy import constants as const
 from astropy import units as u
-
+from .species import SpeciesFormula
 from .types import FreckllArray
 
 class AltitudeSolveError(Exception):
@@ -16,8 +16,9 @@ def gravity_at_height(mass: u.Quantity, radius: u.Quantity, altitude: u.Quantity
 
     The gravity at a given altitude is given by:
 
-    ..math::
+    $$
         g = \frac{Gm}{r^2}
+    $$
 
     Where $G$ is the gravitational constant, $m$ is the mass of the planet,
     and $r$ is the radius of the planet.
@@ -36,10 +37,11 @@ def air_density(temperature: u.Quantity, pressure: u.Quantity) -> u.Quantity:
 
     The *air* density of the atmosphere is given by:
 
-    ..math::
-        \rho = \frac{P}{kT}
+    $$
+        \rho = \frac{P}{k_BT}
+    $$
 
-    Where $P$ is the pressure, $k$ is the Boltzmann constant, and $T$ is the temperature.
+    Where $P$ is the pressure, $k_B$ is the Boltzmann constant, and $T$ is the temperature.
 
     """
     return pressure / (const.k_B * temperature)
@@ -50,10 +52,11 @@ def scaleheight(temperature: u.Quantity, gravity: u.Quantity, mass: u.Quantity) 
 
     The scale height is given by:
 
-    ..math::
-        H = \frac{kT}{mg}
+    $$
+        H = \frac{k_BT}{mg}
+    $$
 
-    Where $k$ is the Boltzmann constant, $T$ is the temperature,
+    Where $k_B$ is the Boltzmann constant, $T$ is the temperature,
     $m$ is the molar mass, and $g$ is the gravity.
 
     Args:
@@ -67,7 +70,7 @@ def scaleheight(temperature: u.Quantity, gravity: u.Quantity, mass: u.Quantity) 
 
 def solve_altitude_profile(
     temperature: u.Quantity, mu: u.Quantity, pressures: u.Quantity, planet_mass: u.Quantity, planet_radius: u.Quantity
-):
+) -> u.Quantity:
     r"""Solve altitude corresponding to given pressure levels.
 
     Solves the hydrostatic equilibrium equation to compute the altitude corresponding to the given pressure levels.
@@ -79,7 +82,7 @@ def solve_altitude_profile(
 
     Args:
         temperature: Temperature profile as a function of pressure.
-        mu_profile: Mean molecular weight profile as a function of pressure.
+        mu: Mean molecular weight profile as a function of pressure.
         pressures: Pressure levels.
         planet_mass: Mass of the planet.
         planet_radius: Radius of the planet.
@@ -136,12 +139,33 @@ def solve_altitude_profile(
 def deltaz_terms(
     altitude: u.Quantity,
 ) -> tuple[FreckllArray, FreckllArray, FreckllArray, FreckllArray, FreckllArray, FreckllArray]:
-    """Compute the delta z terms.
+    r"""Compute the delta z terms.
+    Computes the delta z terms for the finite difference scheme.
+    The delta z terms are given by:
+    $$
+        \Delta z = z_{i+1} - z_i
+    $$
+    $$
+        \Delta z_{+} = z_{i+1} - z_i
+    $$
+    $$
+        \Delta z_{-} = z_i - z_{i-1}
+    $$
 
-    Returns everything in $cm$.
+    and the inverse delta z terms are given by:
+    $$
+        \frac{1}{\Delta z} = \frac{1}{z_{i+1} - z_i}
+    $$
+    $$
+        \frac{1}{\Delta z_{+}} = \frac{1}{z_{i+1} - z_i}
+    $$
+    $$
+        \frac{1}{\Delta z_{-}} = \frac{1}{z_i - z_{i-1}}
+    $$
+
 
     Args:
-        altitude: The altitude in km
+        altitude: The altitude 
 
     Returns:
         delta_z_plus: The delta z plus term.
@@ -207,6 +231,7 @@ def diffusive_terms(
         mu: The mean molecular weight in kg.
         temperature: The temperature in K.
         masses: The molar masses in kg.
+        delta_z: The delta z term.
         delta_z_plus: The delta z plus term.
         delta_z_minus: The delta z minus term.
         inv_dz_plus: The inverse delta z plus term.
@@ -286,13 +311,21 @@ def finite_difference_terms(
     inv_dz_plus: u.Quantity,
     inv_dz_minus: u.Quantity,
 ) -> tuple[u.Quantity, u.Quantity]:
-    """Compute finite difference terms.
+    r"""Compute finite difference terms.
+
+
+    Computes the finite difference terms for the diffusion flux.
+    The finite difference terms are given by:
+
+    \begin{align}
+       c^{+} &= \frac{(1 + \frac{0.5 \Delta z}{R + z})^2}{\Delta z}\\
+       c^{-} &= -\frac{(1 - \frac{0.5 \Delta z}{R + z})^2}{\Delta z}
+    \end{align}
+
 
     Args:
         altitude: Altitude in km.
         radius: Radius of the planet in km.
-        delta_z_plus: The delta z plus term in cm.
-        delta_z_minus: The delta z minus term in cm.
         inv_dz: The inverse delta z term in cm^-1.
         inv_dz_plus: The inverse delta z plus term in cm^-1.
         inv_dz_minus: The inverse delta z minus term in cm^-1.
@@ -310,7 +343,19 @@ def finite_difference_terms(
 def general_plus_minus(
     array: u.Quantity,
 ) -> tuple[u.Quantity, u.Quantity]:
-    """Compute the plus and minus terms.
+    r"""Compute the plus and minus terms.
+
+    Computes general plus minus terms
+
+    Generally defined as:
+    $$
+       a_{+} = \frac{1}{2} \left( a_{i+1} + a_{i} \right)
+    $$
+    $$
+       a_{-} = \frac{1}{2} \left( a_{i} + a_{i-1} \right)
+    $$
+    Where $a$ is the array.
+
 
     Args:
         array: The array to compute the plus and minus terms.
@@ -361,23 +406,52 @@ def vmr_terms(
 
 def diffusion_flux(
     vmr: FreckllArray,
-    density: FreckllArray,
-    planet_radius: float,
-    planet_mass: float,
-    altitude: FreckllArray,
-    temperature: FreckllArray,
-    mu: FreckllArray,
-    masses: FreckllArray,
-    molecular_diffusion: FreckllArray,
-    kzz: FreckllArray,
-) -> FreckllArray:
+    density: u.Quantity,
+    planet_radius: u.Quantity,
+    planet_mass: u.Quantity,
+    altitude: u.Quantity,
+    temperature: u.Quantity,
+    mu: u.Quantity,
+    masses: u.Quantity,
+    molecular_diffusion: u.Quantity,
+    kzz: u.Quantity,
+) -> u.Quantity:
     r"""Compute the diffusion flux using finite difference.
 
-    This is the term:
+    This is the term $\frac{d \phi}{dz}$ term in the full kinetic equation where $\phi$ is the diffusion flux:
 
     $$
-    \frac{d \pi}{dz}
+    \phi_i = -(D_i + K_{zz})n_t \frac{dy_i}{dz} - D_in_t(\frac{1}{H_0} - \frac{1}{H_i}-\frac{\alpha_i}{T}\frac{d T}{dz})
     $$
+
+    Where
+
+    - $D_i$ is the diffusion coefficient for species $i$,
+    - $K_{zz}$ is the eddy diffusion coefficient,
+    - $n_t$ is the total number density,
+    - $H_0$ is the scale height of the atmosphere,
+    - $H_i$ is the scale height of species $i$,
+    - $\alpha_i$ is the thermal diffusion coefficient for species $i$,
+    - $T$ is the temperature,
+    - $y_i$ is the volume mixing ratio of species $i$,
+
+
+    Args:
+        vmr: The volume mixing ratio.
+        density: The density of the atmosphere.
+        planet_radius: The radius of the planet.
+        planet_mass: The mass of the planet.
+        altitude: The altitude in km.
+        temperature: The temperature in K.
+        mu: The mean molecular weight in kg.
+        masses: The molar masses in kg.
+        molecular_diffusion: The molecular diffusion coefficient.
+        kzz: The eddy diffusion coefficient.
+    Returns:
+        The diffusion flux. $\frac{d \phi}{dz}$
+
+
+
     """
     # Compute the delta z terms
     delta_z, delta_z_plus, delta_z_minus, inv_dz, inv_dz_plus, inv_dz_minus = deltaz_terms(altitude)
@@ -450,6 +524,44 @@ def diffusion_flux(
     )
 
     return diff_flux
+
+
+def alpha_term(species: list[SpeciesFormula], vmr: FreckllArray) -> FreckllArray:
+    r"""Compute the thermal diffusion coefficient.
+
+    The alpha term is given by:
+
+    $$
+        \alpha = \frac{1}{\sum_i \frac{y_i}{\mu_i}}
+    $$
+
+    Where $y_i$ is the volume mixing ratio of species $i$ and $\mu_i$ is the mean molecular weight of species $i$.
+
+    Args:
+        species: The list of species.
+        vmr: The volume mixing ratio.
+
+    Returns:
+        The alpha term.
+    """
+    alpha = np.full_like(vmr, 0.25)
+
+    if "H" in species:
+        index = species.index("H")
+        alpha[index] = -0.1*(1-vmr[index])
+
+    if "He" in species:
+        index = species.index("He")
+        alpha[index] = 0.145*(1-vmr[index])
+
+    if "H2" in species:
+        index = species.index("H2")
+        alpha[index] = -0.38
+
+
+    return alpha
+    
+
 
 
 
