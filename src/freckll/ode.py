@@ -78,6 +78,15 @@ def construct_jacobian_reaction_terms(
     number_density: FreckllArray,
     k: int = 4,
 ) -> tuple[list[FreckllArrayInt], list[FreckllArrayInt], FreckllArray]:
+    """Construct the Jacobian for the reaction terms.
+    
+    Args:
+        loss_reactions: The loss reactions for the species.
+        species: The list of species.
+        number_density: The number density of the species.
+        k: K-sum number (higher is more accurate)
+    
+    """
     from collections import defaultdict
 
     # Construct the reaction terms
@@ -136,103 +145,67 @@ def construct_jacobian_vertical_terms(
     from freckll import kinetics
 
     atmos_shape = masses.shape + mu.shape
+    with np.errstate(all="ignore"):
+        delta_z, delta_z_plus, delta_z_minus, inv_dz, inv_dz_plus, inv_dz_minus = kinetics.deltaz_terms(altitude)
 
-    delta_z, delta_z_plus, delta_z_minus, inv_dz, inv_dz_plus, inv_dz_minus = kinetics.deltaz_terms(altitude)
 
-    fd_plus, fd_minus = kinetics.finite_difference_terms(
-        altitude,
-        planet_radius,
-        inv_dz,
-        inv_dz_plus,
-        inv_dz_minus,
-    )
-
-    diffusion_plus, diffusion_minus = kinetics.diffusive_terms(
-        planet_radius,
-        planet_mass,
-        altitude,
-        mu,
-        temperature,
-        masses,
-        delta_z,
-        delta_z_plus,
-        delta_z_minus,
-        inv_dz_plus,
-        inv_dz_minus,
-    )
-
-    dens_plus, dens_minus = kinetics.general_plus_minus(density)
-    mdiff_plus, mdiff_minus = kinetics.general_plus_minus(molecular_diffusion)
-    kzz_plus, kzz_minus = kinetics.general_plus_minus(kzz)
-
-    vt_same_layer = np.zeros(atmos_shape, dtype=np.float64) << 1 / (u.cm**3 * u.s)
-
-    # Same layer
-    vt_same_layer_p = (
-        dens_plus[..., :-1]
-        * (mdiff_plus[..., :-1] * (0.5 * diffusion_plus[..., :-1] - inv_dz_plus) - inv_dz_plus * kzz_plus[..., :-1])
-        * fd_plus[..., :-1]
-    )
-
-    vt_same_layer_m = (
-        dens_minus[..., 1:]
-        * (mdiff_minus[..., 1:] * (0.5 * diffusion_minus[..., 1:] + inv_dz_minus) + inv_dz_minus * kzz_minus[..., 1:])
-        * fd_minus[..., 1:]
-    )
-
-    vt_same_layer[..., :-1] = vt_same_layer_p
-    vt_same_layer[..., 1:] += vt_same_layer_m
-
-    vt_same_layer[..., 0] = (
-        dens_plus[..., 0]
-        * (mdiff_plus[..., 0] * (0.5 * diffusion_plus[..., 0] - inv_dz[..., 0]) - inv_dz[..., 0] * kzz_plus[..., 0])
-        * fd_plus[..., 0]
-    )
-
-    vt_same_layer[..., -1] = (
-        dens_minus[..., -1]
-        * (
-            mdiff_minus[..., -1] * (0.5 * diffusion_minus[..., -1] - inv_dz_minus[..., -1])
-            - inv_dz_minus[..., -1] * kzz_minus[..., -1]
+        fd_plus, fd_minus = kinetics.finite_difference_terms(
+            altitude,
+            planet_radius,
+            inv_dz,
+            inv_dz_plus,
+            inv_dz_minus,
         )
-        * fd_minus[..., -1]
-    )
 
-    # +1 layer
-    vt_plus_layer = dens_minus * (mdiff_minus * (0.5 * diffusion_minus - inv_dz) - inv_dz * kzz_minus) * fd_minus
-
-    vt_plus_layer[..., -1] = (
-        dens_minus[..., -1]
-        * (
-            mdiff_minus[..., -1] * (0.5 * diffusion_minus[..., -1] - inv_dz_minus[..., -1])
-            - inv_dz_minus[..., -1] * kzz_minus[..., -1]
+        diffusion_plus, diffusion_minus = kinetics.diffusive_terms(
+            planet_radius,
+            planet_mass,
+            altitude,
+            mu,
+            temperature,
+            masses,
+            delta_z,
+            delta_z_plus,
+            delta_z_minus,
+            inv_dz_plus,
+            inv_dz_minus,
         )
-        * fd_minus[..., -1]
-    )
 
-    # -1 layer
-    vt_minus_layer = dens_plus * (mdiff_plus * (0.5 * diffusion_plus + inv_dz) + inv_dz * kzz_plus) * fd_plus
+        dens_plus, dens_minus = kinetics.general_plus_minus(density)
+        mdiff_plus, mdiff_minus = kinetics.general_plus_minus(molecular_diffusion)
+        kzz_plus, kzz_minus = kinetics.general_plus_minus(kzz)
 
-    vt_minus_layer[..., 0] = (
-        dens_plus[..., 0]
-        * (mdiff_plus[..., 0] * (0.5 * diffusion_plus[..., 0] + inv_dz[..., 0]) + inv_dz[..., 0] * kzz_plus[..., 0])
-        * fd_plus[..., 0]
-    )
 
-    vt_minus_layer[:, -1] = 0.0
+        pd_same_p = dens_plus * (mdiff_plus * (0.5 * diffusion_plus - inv_dz_plus) - inv_dz_plus * kzz_plus) * fd_plus
 
-    # Now its time to construct the Jacobian
-    vt_same_layer /= density
-    vt_plus_layer /= density
-    vt_minus_layer /= density
-    vt_minus_layer = vt_minus_layer[..., :-1]
-    vt_plus_layer = vt_plus_layer[..., 1:]
+        pd_same_m = dens_minus * (mdiff_minus * (0.5 * diffusion_minus + inv_dz_minus) + inv_dz_minus * kzz_minus) * fd_minus
 
-    vt_same_layer = vt_same_layer.decompose().value
-    vt_plus_layer = vt_plus_layer.decompose().value
-    vt_minus_layer = vt_minus_layer.decompose().value
+        pd_same = pd_same_p + pd_same_m
+        pd_p = dens_minus * (mdiff_minus * (0.5 * diffusion_minus - inv_dz_minus) - inv_dz_minus * kzz_minus) * fd_minus
+        pd_m = dens_plus * (mdiff_plus * (0.5 * diffusion_plus + inv_dz_plus) + inv_dz_plus * kzz_plus) * fd_plus
 
-    num_species, num_layers = vt_same_layer.shape
+        pd_same[:, 0] = dens_plus[0] * (mdiff_plus[:, 0] * (0.5 * diffusion_plus[:, 0] - inv_dz[0]) - inv_dz[0] * kzz_plus[0]) * fd_plus[0]
+
+        pd_m[:, 0] = dens_plus[0] * (mdiff_plus[:, 0] * (0.5 * diffusion_plus[:, 0] + inv_dz[0]) + inv_dz[0] * kzz_plus[0]) * fd_plus[0]
+
+        pd_same[:, -1] = dens_minus[-1] * (mdiff_minus[:, -1] * (0.5 * diffusion_minus[:, -1] + inv_dz[-1]) + inv_dz[-1] * kzz_minus[-1]) * fd_minus[-1]
+
+        pd_p[:, -1] = dens_minus[-1] * (mdiff_minus[:, -1] * (0.5 * diffusion_minus[:, -1] - inv_dz[-1]) - inv_dz[-1] * kzz_minus[-1]) * fd_minus[-1]
+        # pd_p[:,-1] =  pd_same[:, -1]
+        #pd_p[:, 0] = 0.0
+        # pd_m[:, 0] = pd_same[:, 0]
+        #pd_m[:, -1] = 0.0
+
+        # Now its time to construct the Jacobian
+        pd_same /= density
+        pd_p /= density
+        pd_m /= density
+
+    pd_same = pd_same.decompose().value
+    pd_p = pd_p.decompose().value
+    pd_m = pd_m.decompose().value
+
+    num_species, num_layers = pd_same.shape
 
     rows = []
     columns = []
@@ -247,18 +220,18 @@ def construct_jacobian_vertical_terms(
         spec_index = compute_index(x, same_layer, num_species, num_layers)
         rows.append(spec_index)
         columns.append(spec_index)
-        data.append(vt_same_layer[x])
+        data.append(pd_same[x])
 
         plus_index = compute_index(x, plus_one, num_species, num_layers)
         minus_index = compute_index(x, minus_one, num_species, num_layers)
 
         rows.append(spec_index[1:])
         columns.append(minus_index)
-        data.append(vt_minus_layer[x])
+        data.append(pd_m[x,:-1])
 
         rows.append(spec_index[:-1])
         columns.append(plus_index)
-        data.append(vt_plus_layer[x])
+        data.append(pd_p[x,1:])
 
     return np.concatenate(rows), np.concatenate(columns), np.concatenate(data)
 

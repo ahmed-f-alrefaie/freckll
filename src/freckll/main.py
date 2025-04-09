@@ -63,7 +63,18 @@ def freckll_cli(input: pathlib.Path | str,
                 plot_prefix: str = None,
                 animate: bool = False,
                 ) -> None:
-    """Run the Freckll simulation."""
+    """Run the Freckll simulation.
+    
+    Args:
+        input: Path to the input file.
+        output: Path to the output file.
+        overwrite: Overwrite the output file if it exists.
+        plot: Plot the results.
+        plot_path: Path to save the plots.
+        plot_prefix: Prefix for the plot filenames.
+        animate: Animate the results.
+    
+    """
     import logging
     from .io.dispatcher import load_and_run_input
     from .io.output import write_solution_h5py
