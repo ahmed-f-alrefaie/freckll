@@ -16,6 +16,7 @@ class Vode(Solver):
                     nevals:int=200,
                     max_solve_time: Optional[u.Quantity] = None,
                     max_retries:int=10,
+                    
                     **kwargs)-> SolverOutput:
         """Run the VODE solver.
         
@@ -87,7 +88,7 @@ class Vode(Solver):
                 current_t = t_eval[time_idx]
             else:
                 current_t = soln.t
-                current_y = np.maximum(soln.y, 1e-50)
+                current_y = soln.y
                 soln = ode(f,banded_jac).set_integrator("vode", **options)
                 soln.set_initial_value(current_y, current_t)
                 max_retries += 1
