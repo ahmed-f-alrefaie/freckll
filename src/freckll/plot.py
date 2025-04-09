@@ -159,11 +159,23 @@ def animate_vmr(
 
 
 def plot_mu(final_vmr: FreckllArray,
-            masses: FreckllArray,
+            masses: u.Quantity,
             pressure: u.Quantity,
             initial_vmr: FreckllArray | None = None, 
             ax: plt.Axes | None = None,) -> plt.Axes:
-    """Plot the mean molecular weight."""
+    """Plot the mean molecular weight.
+    
+    Args:
+        final_vmr: Final volume mixing ratio.
+        masses: Molecular masses of the species.
+        pressure: Pressure profile.
+        initial_vmr: Initial volume mixing ratio. If None, do not plot.
+        ax: Matplotlib Axes object to plot on. If None, create a new one.
+    
+    Returns:
+        Matplotlib Axes object with the plot.
+    
+    """
     import numpy as np
     if ax is None:
         fig, ax = plt.subplots()
