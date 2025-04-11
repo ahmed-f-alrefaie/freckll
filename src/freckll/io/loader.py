@@ -173,9 +173,11 @@ def star_spectra_loader(
     
     Args:
         filename: Path to the csv file.
-        kzz_column: Column index for kzz. 0 being first
-        pressure_column: Column index for pressure. 0 being first
-        kzz_unit: Unit for kzz.
+        flux_column: Column index for flux. 0 being first
+        spectral_column: Column index for spectral. 0 being first
+        flux_unit: Unit for flux.
+        spectral_unit: Unit for spectral.
+        reference_distance: Reference distance for the flux.
         skiprows: Number of rows to skip at the beginning of the file.
         delimiter: Delimiter used in the file.
         comments: Comment character in the file.
