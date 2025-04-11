@@ -11,11 +11,15 @@ nav:
   - Home: index.md
   - Installation: installation.md
   - Modules:
+      - IO: 
+          - Loader: modules/io/loader.md
       - Reactions:
           - Common: modules/reactions/common.md
           - Reactions: modules/reactions/reactions.md
           - Falloff: modules/reactions/falloff.md
           - Photochemistry: modules/reactions/photolysis.md
+      - Kinetics: modules/kinetics.md
+      - ODE: modules/ode.md
 plugins:
   - search
   - mkdocstrings:
