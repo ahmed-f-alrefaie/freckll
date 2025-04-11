@@ -16,7 +16,7 @@ def arrhenius_constant(
     er: float | FreckllArray,
     temperature: FreckllArray,
 ) -> FreckllArray:
-    """Computes Arrhenius rate constants for low and high pressure limits.
+    r"""Computes Arrhenius rate constants for low and high pressure limits.
 
     Formula is as follows:
 
@@ -172,7 +172,7 @@ def decomposition_k0kinf_reaction(
     thermo_reactants: FreckllArray,
     thermo_products: FreckllArray,
 ) -> ReactionFunction:
-    """Decomposition reaction rate constant.
+    r"""Decomposition reaction rate constant.
     
 
     This the Arrheniues rate with the low-pressure and high pressure
@@ -339,7 +339,7 @@ def corps_reaction(
     pressure: FreckllArray,
     thermo_reactants: FreckllArray,
     thermo_products: FreckllArray,
-) -> ReactionFunction
+) -> ReactionFunction:
     """Many body reaction rate constant.
 
 
@@ -350,7 +350,6 @@ def corps_reaction(
         products: The products of the reaction.
         temperature: The temperature of the species.
         pressure: The pressure of the species.
-        concentration: The concentration of the species.
         thermo_reactants: The thermodynamic properties of the reactants.
         thermo_products: The thermodynamic properties of the products.
 
@@ -419,7 +418,6 @@ def de_excitation_reaction(
         products: The products of the reaction.
         temperature: The temperature of the species.
         pressure: The pressure of the species.
-        concentration: The concentration of the species.
         thermo_reactants: The thermodynamic properties of the reactants.
         thermo_products: The thermodynamic properties of the products.
 
