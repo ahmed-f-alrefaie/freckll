@@ -102,3 +102,16 @@ def rescale_star_spectrum(
         reference_distance=star_spectrum.reference_distance,
     )
 
+
+
+def interpolate_pressure(
+        pressure: u.Quantity, data: u.Quantity,
+        new_pressure: u.Quantity, 
+) -> u.Quantity:
+    from scipy.interpolate import interp1d
+
+    pressure = pressure.to(new_pressure.unit)
+    data_f = interp1d(np.log10(pressure.value), data.value)
+    data = data_f(np.log10(new_pressure.value)) << data.unit
+
+    return data
