@@ -66,9 +66,20 @@ dev = [
 ]
 
 [build-system]
-requires = ["setuptools >= 61.0"]
-build-backend = "setuptools.build_meta"
+build-backend  = 'hatchling.build'
+requires       = ['hatchling']
 
+[tool.hatch.build.targets.sdist]
+include = [
+  "src/freckll/data/*",
+  "src/freckll/**/*.py",
+]
+
+[tool.hatch.build.targets.wheel]
+include = [
+  "src/freckll/data/*",
+  "src/freckll/**/*.py",
+]
 
 
 [tool.mypy]
@@ -146,3 +157,4 @@ skip_empty = true
 [tool.coverage.run]
 branch = true
 source = ["src"]
+
