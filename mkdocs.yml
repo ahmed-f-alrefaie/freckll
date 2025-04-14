@@ -15,9 +15,10 @@ nav:
   - FRECKLL CLI:
       - CLI program: cli/cli.md
       - Input file: cli/inputfile.md
+  - Porting Networks: development/portingnetworks.md
   - Development:
       - Contributing: development/CONTRIBUTING.md
-      - Porting Networks: development/portingnetworks.md
+
       - Code of Conduct: development/codeofconduct.md
   - Modules:
       - IO:
