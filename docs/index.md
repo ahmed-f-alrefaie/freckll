@@ -13,7 +13,7 @@ with photochemistry can be solved to steady state in as little as 42 seconds and
 ![HD 209458 b](assets/full_hd209_light.gif#only-light)
 ![HD 209458 b](assets/full_hd209_dark.gif#only-dark)
 
-Head to the [Quickstart](quickstart.md) to get started or try the [Colab]() notebook from your web-browser!
+Head to the [Getting Started](gettingstarted.md) to get started or try the [Colab]() notebook from your web-browser!
 
 ## References
 

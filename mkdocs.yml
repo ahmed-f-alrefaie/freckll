@@ -26,6 +26,7 @@ nav:
           - Common: modules/reactions/common.md
           - Reactions: modules/reactions/reactions.md
           - Falloff: modules/reactions/falloff.md
+          - Data: modules/reactions/data.md
           - Photochemistry: modules/reactions/photolysis.md
       - Kinetics: modules/kinetics.md
       - ODE: modules/ode.md

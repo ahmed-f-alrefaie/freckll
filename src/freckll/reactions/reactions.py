@@ -85,7 +85,8 @@ def k0kinf_reaction(
         products: The products of the reaction.
         temperature: The temperature of the species.
         pressure: The pressure of the species.
-        concentration: The concentration of the species.
+        thermo_reactants: The thermodynamic properties of the reactants.
+        thermo_products: The thermodynamic properties of the products.
 
     Returns:
         k_rate: The rate constant of the reaction.
@@ -200,7 +201,6 @@ def decomposition_k0kinf_reaction(
         products: The products of the reaction.
         temperature: The temperature of the species.
         pressure: The pressure of the species.
-        concentration: The concentration of the species.
         thermo_reactants: The thermodynamic properties of the reactants.
         thermo_products: The thermodynamic properties of the products.
 
@@ -289,7 +289,6 @@ def decomposition_reaction(
         products: The products of the reaction.
         temperature: The temperature of the species.
         pressure: The pressure of the species.
-        concentration: The concentration of the species.
         thermo_reactants: The thermodynamic properties of the reactants.
         thermo_products: The thermodynamic properties of the products.
 
@@ -482,7 +481,6 @@ def k0_reaction(
         products: The products of the reaction.
         temperature: The temperature of the species.
         pressure: The pressure of the species.
-        concentration: The concentration of the species.
         thermo_reactants: The thermodynamic properties of the reactants.
         thermo_products: The thermodynamic properties of the products.
 
@@ -547,7 +545,6 @@ def decomposition_k0_reaction(
         products: The products of the reaction.
         temperature: The temperature of the species.
         pressure: The pressure of the species.
-        concentration: The concentration of the species.
         thermo_reactants: The thermodynamic properties of the reactants.
         thermo_products: The thermodynamic properties of the products.
 
@@ -605,17 +602,12 @@ def manybody_plog_reaction(
     """Many body reaction rate constant.
 
     Args:
-        k0_coeffs: The low-pressure rate constant coefficients.
-        kinf_coeffs: The high-pressure rate constant coefficients.
-        falloff_coeffs: The falloff coefficients.
-        efficiency: The efficiency of the reaction.
+        plog_coeffs: The PLOG rate constant coefficients.
         invert: Whether to invert the reaction.
-        falloff_function: The falloff function to use.
         reactants: The reactants of the reaction.
         products: The products of the reaction.
         temperature: The temperature of the species.
         pressure: The pressure of the species.
-        concentration: The concentration of the species.
         thermo_reactants: The thermodynamic properties of the reactants.
         thermo_products: The thermodynamic properties of the products.
 
@@ -684,11 +676,9 @@ def decomposition_plog(
     Args:
         plog_coeffs: The PLOG rate constant coefficients.
         invert: Whether to invert the reaction.
-        reactants: The reactants of the reaction.
         products: The products of the reaction.
         temperature: The temperature of the species.
         pressure: The pressure of the species.
-        concentration: The concentration of the species.
         thermo_reactants: The thermodynamic properties of the reactants.
         thermo_products: The thermodynamic properties of the products.
 
