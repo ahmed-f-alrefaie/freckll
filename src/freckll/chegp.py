@@ -1,3 +1,4 @@
+"""Ported from pychegp."""
 import warnings
 
 import numpy as np
@@ -62,12 +63,15 @@ def compute_coeffs(fm, altitude, Ro, go, density, masses, mu, T, diffusion, Kzz,
         ha = k_b * T / (g_alt * 100.0 * (Ro**2 / (Ro + altitude) ** 2) * mu * 1.0e-3)
         hi = k_b * T / (g_alt * 100.0 * (Ro**2 / (Ro + altitude) ** 2) * masses[:, None] * 1.0e-3)
 
+
         hap = np.zeros_like(ha)
         hip = np.zeros_like(hi)
         dip = np.zeros_like(hi)
         dp = np.zeros_like(hi)
         dyp = np.zeros_like(hi)
         kp = np.zeros_like(ha)
+
+
 
         hip[:, :-1] = (
             k_b
@@ -78,7 +82,7 @@ def compute_coeffs(fm, altitude, Ro, go, density, masses, mu, T, diffusion, Kzz,
             k_b * T[1:] / (g_alt * 100.0 * (Ro**2 / (Ro + (altitude[:-1] + delta_z_p[:-1])) ** 2) * mu[1:] * 1.0e-3)
         )
 
-        dip[:, :-1] = (2.0 / (hip[:, :-1] + hi[:, :-1]) - 2.0 / (hap[:-1] + ha[:-1])) + 2.0 * alpha * inv_dz_p[:-1] * (
+        dip[:, :-1] = (2.0 / (hip[:, :-1] + hi[:, :-1]) - 2.0 / (hap[:-1] + ha[:-1])) + 2.0 * alpha[...,:-1] * inv_dz_p[:-1] * (
             T[1:] - T[:-1]
         ) / (T[1:] + T[:-1])
 
@@ -98,6 +102,7 @@ def compute_coeffs(fm, altitude, Ro, go, density, masses, mu, T, diffusion, Kzz,
             k_b * T[:-1] / (g_alt * 100.0 * (Ro**2 / (Ro + (altitude[1:] - delta_z_m[1:])) ** 2) * mu[:-1] * 1.0e-3)
         )
 
+
         him[:, -1] = (
             k_b
             * T[-2]
@@ -105,17 +110,38 @@ def compute_coeffs(fm, altitude, Ro, go, density, masses, mu, T, diffusion, Kzz,
         ).ravel()
         ham[-1] = k_b * T[-2] / (g_alt * 100.0 * (Ro**2 / (Ro + (altitude[-1] - delta_z[-1])) ** 2) * mu[-2] * 1.0e-3)
 
-        dim[:, 1:] = (2.0 / (hi[:, 1:] + him[:, 1:]) - 2.0 / (ha[1:] + ham[1:])) + 2.0 * alpha * inv_dz_m[1:] * (
+        
+
+
+    #   him  = k_b*t_irr(level-1)/(go*100.0d0*(Ro**2/(Ro+(j-delta_z))**2)*masse(i)*1.0d-3)
+    #   ham  = k_b*t_irr(level-1)/(go*100.0d0*(Ro**2/(Ro+(j-delta_z))**2)*mu(level-1)*1.0d-3)
+    #   d_im(i,level) = (2.0d0/(hi+him)-2.0d0/(ha+ham))+2.0d0*alpha*inv_dz(level)*(t_irr(level)-t_irr(level-1))/(t_irr(level)+t_irr(level-1)) 
+
+
+        dim[:, 1:] = (2.0 / (hi[:, 1:] + him[:, 1:]) - 2.0 / (ha[1:] + ham[1:])) + 2.0 * alpha[...,1:] * inv_dz_m[1:] * (
             T[1:] - T[:-1]
         ) / (T[1:] + T[:-1])
 
+        dim[:, -1] = (
+            2/(hi[:, -1] + him[:, -1]) - 2/(ha[-1] + ham[-1])
+            + 2 * alpha[..., -1] * inv_dz[-1] * (T[-1] - T[-2]) / (T[-1] + T[-2])
+        )
+
         dim[:, 0] = 1 / hi[:, 0] - 1 / ha[0]
 
+
+
         dm[:, 1:] = (diffusion[:, :-1] + diffusion[:, 1:]) * 0.5
+        dm[:, -1] = (diffusion[:, -1] + diffusion[:, -2]) * 0.5
         dp[:, :-1] = (diffusion[:, :-1] + diffusion[:, 1:]) * 0.5
+
+
 
         dym[:, 1:] = (fm[:, 1:] - fm[:, :-1]) * inv_dz_m[1:]
         dyp[:, :-1] = (fm[:, 1:] - fm[:, :-1]) * inv_dz_p[:-1]
+
+        dym[:, -1] = (fm[:, -1] - fm[:, -2]) * inv_dz[-1]
+        dyp[:, 0] = (fm[:, 1] - fm[:, 0]) * inv_dz[0]
         km[1:] = (Kzz[:-1] + Kzz[1:]) * 0.5
         kp[:-1] = (Kzz[:-1] + Kzz[1:]) * 0.5
         # print('HIM', him)
@@ -260,15 +286,16 @@ def dndt(
     T,
     diffusion,
     Kzz,
+    alpha=0.0
 ):
     mu = np.sum(fm * masses[:, None], axis=0)
-    coeffs = compute_coeffs(fm, altitude, Ro, go, density, masses, mu, T, diffusion, Kzz)
+    coeffs = compute_coeffs(fm, altitude, Ro, go, density, masses, mu, T, diffusion, Kzz, alpha=alpha)
 
-    cp, cm, c_plus, c_moins, dip, dim, dm, dp, dyp, dym, km, kp = coeffs[3:]
+    inv_dz,_,_,cp, cm, c_plus, c_moins, dip, dim, dm, dp, dyp, dym, km, kp = coeffs
 
-    func = np.zeros_like(fm)
+    func = np.empty_like(fm)
 
-    func[:, 1:-1] += (
+    func[:, 1:-1] = (
         cp[1:-1]
         * (dp[:, 1:-1] * ((fm[:, 2:] + fm[:, 1:-1]) * 0.5 * dip[:, 1:-1] + dyp[:, 1:-1]) + kp[1:-1] * dyp[:, 1:-1])
         * c_plus[1:-1]
@@ -276,14 +303,25 @@ def dndt(
         * (dm[:, 1:-1] * ((fm[:, 1:-1] + fm[:, :-2]) * 0.5 * dim[:, 1:-1] + dym[:, 1:-1]) + km[1:-1] * dym[:, 1:-1])
         * c_moins[1:-1]
     )
-    func[:, 0] += (
+    func[:, 0] = (
         cp[0] * (dp[:, 0] * ((fm[:, 1] + fm[:, 0]) * 0.5 * dip[:, 0] + dyp[:, 0]) + kp[0] * dyp[:, 0]) * c_plus[0]
     )
-    func[:, -1] += (
+    # func[:, -1] += (
+    #     c_moins[-1]
+    #     * cm[-1]
+    #     * (dm[:, -1] * ((fm[:, -1] + fm[:, -2]) * 0.5 * dim[:, -1] + dym[:, -1]) + km[-1] * dym[:, -1])
+    # ) 
+
+    func[:, -1] = (
         c_moins[-1]
         * cm[-1]
         * (dm[:, -1] * ((fm[:, -1] + fm[:, -2]) * 0.5 * dim[:, -1] + dym[:, -1]) + km[-1] * dym[:, -1])
-    )
+    ) 
+
+
+
+
+
     # Handle layer
     final = func / density
     return final
@@ -318,6 +356,7 @@ def compute_jacobian_sparse(
     T: u.Quantity,
     diffusion: u.Quantity,
     Kzz: u.Quantity,
+    alpha: float = 0.0,
 ):
     from .kinetics import gravity_at_height
 
@@ -333,7 +372,7 @@ def compute_jacobian_sparse(
     Kzz = Kzz.to(u.cm**2 / u.s).value
 
     # Compute the coefficients
-    coeffs = compute_coeffs(vmr, altitude, Ro, go, density, masses, mu, T, diffusion, Kzz)
+    coeffs = compute_coeffs(vmr, altitude, Ro, go, density, masses, mu, T, diffusion, Kzz,alpha=alpha)
 
     # Compute the Jacobian
     pd_same, pd_p, pd_m = build_jacobian_levels(coeffs, density)
@@ -354,6 +393,7 @@ def compute_dndt_vertical(
     T: u.Quantity,
     diffusion: u.Quantity,
     Kzz: u.Quantity,
+    alpha: float = 0.0,
 ):
     from .kinetics import gravity_at_height
 
@@ -378,4 +418,5 @@ def compute_dndt_vertical(
         T,
         diffusion,
         Kzz,
+        alpha=alpha,
     )
