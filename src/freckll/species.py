@@ -109,7 +109,7 @@ class SpeciesFormula(Formula):
         return str_val
 
     def __repr__(self) -> str:
-        return f"SpeciesFormula({self.__str__()})"
+        return f"{self.formula} ({self.__str__()})"
 
 
 def species_check(a: list[SpeciesFormula], b: list[SpeciesFormula]) -> bool:
