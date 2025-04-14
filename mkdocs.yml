@@ -10,6 +10,15 @@ copyright: Maintained by <a href="https://ahmed-f-alrefaie.com">ahmed-f-alrefaie
 nav:
   - Home: index.md
   - Installation: installation.md
+  - Introduction: introduction.md
+  - Getting Started: gettingstarted.md
+  - FRECKLL CLI:
+    - CLI program: cli/cli.md
+    - Input file: cli/inputfile.md
+  - Development: 
+    - Contributing: development/CONTRIBUTING.md
+    - Porting Networks: development/portingnetworks.md
+    - Code of Conduct: development/codeofconduct.md
   - Modules:
       - IO: 
           - Loader: modules/io/loader.md
@@ -64,3 +73,10 @@ markdown_extensions:
   - pymdownx.arithmatex:
       generic: true
   - attr_list
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
