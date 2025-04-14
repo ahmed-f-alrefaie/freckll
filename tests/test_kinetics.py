@@ -240,7 +240,7 @@ def test_diffusive_terms(coeff_inputs):
         inv_dz_m,
     )
 
-    np.testing.assert_allclose(diffusion_plus.to(1 / u.m).value[...,:-1], dip[...,:-1], rtol=1e-5)
+    np.testing.assert_allclose(diffusion_plus.to(1 / u.m).value[..., :-1], dip[..., :-1], rtol=1e-5)
     np.testing.assert_allclose(diffusion_minus.to(1 / u.m).value, dim, rtol=1e-5)
 
 

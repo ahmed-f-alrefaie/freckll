@@ -173,7 +173,7 @@ def decomposition_k0kinf_reaction(
     thermo_products: FreckllArray,
 ) -> ReactionFunction:
     r"""Decomposition reaction rate constant.
-    
+
 
     This the Arrheniues rate with the low-pressure and high pressure
     limits
@@ -206,7 +206,7 @@ def decomposition_k0kinf_reaction(
 
     Returns:
         A function that takes the concentration of the species and returns the rate
-    
+
     """
     # k0 terms
     a0, n0, er0, _, _ = k0_coeffs

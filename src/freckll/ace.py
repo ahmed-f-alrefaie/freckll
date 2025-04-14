@@ -13,6 +13,7 @@ from .types import FreckllArrayInt
 def default_therm_file() -> pathlib.Path:
     """Returns the default thermodynamic file for ACE."""
     import importlib.resources
+
     return importlib.resources.files("freckll.data") / "NASA.therm"
 
 
@@ -84,7 +85,7 @@ def equil_chemistry_ace(
         specfile,
         indices,
     ):
-        _, mix_profile, _= run_ace(
+        _, mix_profile, _ = run_ace(
             temperature,
             pressure,
             elements=elements,

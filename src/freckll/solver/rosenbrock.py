@@ -1,38 +1,42 @@
-from .solver import Solver, DyCallable, JacCallable, SolverOutput, convergence_test, output_step
-import numpy as np
-from ..types import FreckllArray
-from typing import Optional
-from astropy import units as u
 import time
 from collections import deque
+from typing import Optional
+
+import numpy as np
+from astropy import units as u
+
 from ..kinetics import AltitudeSolveError
-from ..ode import convert_y_to_fm, convert_fm_to_y
-from ..distill import ksum
+from ..types import FreckllArray
+from .solver import DyCallable, JacCallable, Solver, SolverOutput, convergence_test, output_step
+
+
 def update_timestep(timestep: float, rtol: float, error: float):
     """Updates the timestep based on the error and the desired tolerance.
-    
+
     Args:
         timestep (float): The current timestep.
         rtol (float): The relative tolerance.
         error (float): The estimated error.
-    
-    
-    """
-    return 0.9*timestep*(rtol/error)**0.5
 
-def step_second_order_rosenbrock(f: DyCallable, jac: JacCallable, y: FreckllArray, t:float, h: float) -> FreckllArray:
+
+    """
+    return 0.9 * timestep * (rtol / error) ** 0.5
+
+
+def step_second_order_rosenbrock(f: DyCallable, jac: JacCallable, y: FreckllArray, t: float, h: float) -> FreckllArray:
     """Single step of the second-order Rosenbrock method.
-    
+
     Implementation based on VULCAN paper Tsai et al 2017 ApJS 228 Eq. A9
-    
+
     """
     import math
-    import warnings
+
     from scipy import sparse
     from scipy.sparse import linalg as spla
+
     I = sparse.eye(len(y), format="csc")
-    gamma = 1 + 1/math.sqrt(2)
-    lhs = (I - gamma*h*jac(0, y))
+    gamma = 1 + 1 / math.sqrt(2)
+    lhs = I - gamma * h * jac(0, y)
     # Supress RuntimeWarning
     with np.errstate(all="ignore"):
         rhs = f(t, y)
@@ -40,33 +44,29 @@ def step_second_order_rosenbrock(f: DyCallable, jac: JacCallable, y: FreckllArra
         k1 = spla.spsolve(lhs, rhs, use_umfpack=True)
         # k1 = spla.lgmres(lhs, rhs, M=M, atol=1e-25)[0]
 
-        new_f = f(t, y + h*k1) - 2*k1
+        new_f = f(t, y + h * k1) - 2 * k1
 
         if np.any(np.isnan(new_f)):
             return None
-        
+
         k2 = spla.spsolve(lhs, new_f, use_umfpack=True)
         # k2 = spla.lgmres(
-        #    lhs, 
+        #    lhs,
         #    new_f,
-        #    M=M, atol=1e-25, 
+        #    M=M, atol=1e-25,
         # )[0]
 
+        y_new = y + (1.5 * k1 + 0.5 * k2) * h
 
-
-        y_new = y + (1.5*k1 + 0.5*k2) * h
-        
         y1 = y + k1 * h
         error = np.abs(y_new - y1)
 
     return y_new, error
 
 
-
-
 class Rosenbrock(Solver):
     r"""Second-order Rosenbrock solver for stiff ODEs.
-    
+
     Implementation based on VULCAN paper Tsai et al 2017 ApJS 228 (Appendix A)
 
     We solve first for $k_1$ and then for $k_2$ using the implicit method.
@@ -84,37 +84,45 @@ class Rosenbrock(Solver):
     The new value of y is then given by:
 
     $$y_{new} = y + (1.5 k_1 + 0.5 k_2) h$$
-    
+
     The error is estimated as:
-    
+
     $$error = |y_{new} - y + k_1 h|$$
-    
+
     The timestep is updated using the formula:
-    
+
     $$h_{new} = 0.9 h \left( \frac{rtol}{error} \right)^{0.5}$$
 
 
 
 
-    
+
     """
-    def _run_solver(self, f: DyCallable, jac: JacCallable, y0: FreckllArray, t0: float, t1: float, 
-                    num_species: int,
-                    atol: float = 1e-25,
-                    rtol: float = 1e-3,
-                    df_criteria: float = 1e-3,
-                    dfdt_criteria: float = 1e-8,
-                    initial_step: float = 1e-13,
-                    timestep_reject_factor: float = 0.1,
-                    minimum_step: float = 1e-16,
-                    tiny: float = 1e-50,
-                    nevals: int = 200,
-                    strict: bool = False,
-                    maxiter: Optional[int] = 100,
-                    max_solve_time: Optional[u.Quantity] = None,
-                    **kwargs)-> SolverOutput:
+
+    def _run_solver(
+        self,
+        f: DyCallable,
+        jac: JacCallable,
+        y0: FreckllArray,
+        t0: float,
+        t1: float,
+        num_species: int,
+        atol: float = 1e-25,
+        rtol: float = 1e-3,
+        df_criteria: float = 1e-3,
+        dfdt_criteria: float = 1e-8,
+        initial_step: float = 1e-13,
+        timestep_reject_factor: float = 0.1,
+        minimum_step: float = 1e-16,
+        tiny: float = 1e-50,
+        nevals: int = 200,
+        strict: bool = False,
+        maxiter: Optional[int] = 100,
+        max_solve_time: Optional[u.Quantity] = None,
+        **kwargs,
+    ) -> SolverOutput:
         """Solve the ODE using the Rosenbrock method.
-        
+
         Args:
             f: The function to integrate.
             jac: The Jacobian of the function.
@@ -143,8 +151,6 @@ class Rosenbrock(Solver):
         f_eval = 0
         jac_eval = 0
 
-
-
         ys = [y]
         ts = [t0]
 
@@ -152,7 +158,6 @@ class Rosenbrock(Solver):
         track_t = deque(maxlen=3)
         track_y.append(y)
         track_t.append(t0)
-    
 
         t = t0
         iterations = 0
@@ -160,7 +165,7 @@ class Rosenbrock(Solver):
 
         if max_solve_time is not None:
             max_solve_time = max_solve_time.to(u.s).value
-        
+
         start_time = time.time()
 
         start_t = math.log10(max(t0, 1e-6))
@@ -168,8 +173,6 @@ class Rosenbrock(Solver):
         t_evals = np.logspace(start_t, end_t, nevals)
         t_eval_index = 0
         while t < t1:
-
-
             # Step the solver
             f_eval += 2
             jac_eval += 1
@@ -188,19 +191,15 @@ class Rosenbrock(Solver):
                 break
 
             try:
-                result = step_second_order_rosenbrock(f, jac, y,t, h)
+                result = step_second_order_rosenbrock(f, jac, y, t, h)
             except AltitudeSolveError:
                 # If we get an altitude solve error, we need to reject the step
                 self.info("Altitude solve error")
                 self.info("Y values: %s %s", y.min(), y.max())
                 h = h * timestep_reject_factor
                 continue
-            
+
             # Reject
- 
-
-
-
 
             # Reject the step if the result is None (due to NaN or Inf)
             if result is None:
@@ -209,8 +208,6 @@ class Rosenbrock(Solver):
 
             # Check if the step is valid
             y_new, error = result
-
-    
 
             if not strict:
                 y_new = np.maximum(y_new, tiny)
@@ -223,34 +220,30 @@ class Rosenbrock(Solver):
             # If we are under strict conditions then reject the step if valeus are negative.
             test_f = f(t, y_new)
 
-    
             # Check for NaN or Inf in the new values
             if np.any(np.isnan(y_new) | np.isinf(y_new) | np.isnan(test_f) | (y_new < 0)):
                 self.info("Reducing step size")
                 # Reject the step and reduce the timestep
                 h = h * timestep_reject_factor
-                # If the new step is too small, 
+                # If the new step is too small,
                 if h < minimum_step:
                     self.info("Minimum step size reached")
                     break
 
                 h = max(h, minimum_step)
                 continue
-            
+
             if h == 0:
                 self.info("Zero step size")
                 ys.append(y)
                 break
-            
+
             # Accept the step
             track_y.append(y_new)
             y = np.copy(y_new)
 
-            
             t += h
             track_t.append(t)
-                
-
 
             # Determine the new timestep
             error[y_new < atol] = 0
@@ -280,8 +273,6 @@ class Rosenbrock(Solver):
                 success = True
                 break
 
-            
-
             if convergence_test(track_y, track_t, y0, self, atol, df_criteria, dfdt_criteria):
                 self.info("Converged to the solution")
                 success = True
@@ -290,14 +281,11 @@ class Rosenbrock(Solver):
             ys.append(y)
             ts.append(t)
 
-        extra = {
-
-        }
+        extra = {}
 
         if not success:
             extra["dndt"] = f(t, y)
             extra["jac"] = jac(t, y)
-
 
         return {
             "num_dndt_evals": f_eval,
@@ -307,12 +295,3 @@ class Rosenbrock(Solver):
             "y": ys,
             **extra,
         }
-
-
-
-
-
-            
-
-
-

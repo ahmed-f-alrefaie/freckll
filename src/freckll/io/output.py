@@ -1,16 +1,18 @@
 """Output functions for freckll."""
-from astropy.io.typing import PathLike
-from ..solver import Solution
+
+import pathlib
+
 import h5py
 from astropy import units as u
-import pathlib
+from astropy.io.typing import PathLike
+
 from freckll import __version__
+
+from ..solver import Solution
 from ..solver.solver import PlanetOutputData, StellarFluxData
 
-def write_quantity(
-        name: str,
-        array: u.Quantity,
-                   group: h5py.Group) -> h5py.Dataset:
+
+def write_quantity(name: str, array: u.Quantity, group: h5py.Group) -> h5py.Dataset:
     """Write a quantity to a h5py dataset.
 
     Args:
@@ -20,11 +22,12 @@ def write_quantity(
     """
     dataset = group.create_dataset(
         name,
-        shape = array.shape,
-        dtype = array.dtype,
-        data= array.value,
+        shape=array.shape,
+        dtype=array.dtype,
+        data=array.value,
     )
     dataset.attrs["unit"] = array.unit.to_string()
+
 
 def write_planet(planet: PlanetOutputData, group: h5py.Group):
     """Write the planet data to a h5py group.
@@ -53,8 +56,9 @@ def write_planet(planet: PlanetOutputData, group: h5py.Group):
     if "albedo" in planet:
         group.create_dataset(
             "albedo",
-            data=planet.get("albedo",0),
+            data=planet.get("albedo", 0),
         )
+
 
 def write_stellar_flux(star: StellarFluxData, group: h5py.Group):
     """Write the stellar flux data to a h5py group.
@@ -81,6 +85,7 @@ def write_stellar_flux(star: StellarFluxData, group: h5py.Group):
         group,
     )
 
+
 def write_solution_h5py(
     solution: Solution,
     filename: PathLike,
@@ -93,8 +98,9 @@ def write_solution_h5py(
         filename: The name of the file to output to.
 
     """
-    import h5py
     import datetime
+
+    import h5py
 
     file_path = pathlib.Path(filename)
     if file_path.exists() and not overwrite:
@@ -102,9 +108,7 @@ def write_solution_h5py(
 
     # Add freckll version to the file
 
-
     with h5py.File(filename, "w") as f:
-
         f.attrs["freckll_version"] = __version__
         f.attrs["created"] = datetime.datetime.now().isoformat()
 
@@ -143,11 +147,9 @@ def write_solution_h5py(
             shape=solution["initial_vmr"].shape,
             dtype=solution["initial_vmr"].dtype,
             data=solution["initial_vmr"],
-            
         )
 
         g = f.create_group("solution")
-
 
         g.create_dataset(
             "vmrs",
@@ -162,8 +164,6 @@ def write_solution_h5py(
             dtype=solution["times"].dtype,
             data=solution["times"],
         )
-        
-
 
         write_planet(
             solution["planet"],
@@ -177,23 +177,16 @@ def write_solution_h5py(
 
         species_group = f.create_group("species")
 
-        species_input = [
-            s.input_formula
-            for s in solution["species"]]
-        
-        species_formula = [
-            s.formula
-            for s in solution["species"]]
-        
-        species_state = [
-            s.state.value
-            for s in solution["species"]]
-        
+        species_input = [s.input_formula for s in solution["species"]]
 
+        species_formula = [s.formula for s in solution["species"]]
 
-        species_group['species_input'] = species_input
-        species_group['species_formula'] = species_formula
-        species_group['species_state'] = species_state
+        species_state = [s.state.value for s in solution["species"]]
+
+        species_group["species_input"] = species_input
+        species_group["species_formula"] = species_formula
+        species_group["species_state"] = species_state
+
 
 def read_h5py_quantity(
     group: h5py.Group,
@@ -208,9 +201,8 @@ def read_h5py_quantity(
     Returns:
         The quantity read from the dataset.
     """
-    return u.Quantity(
-        group[name][()],
-        unit=group[name].attrs["unit"])
+    return u.Quantity(group[name][()], unit=group[name].attrs["unit"])
+
 
 def read_h5py_planet(
     group: h5py.Group,
@@ -226,7 +218,6 @@ def read_h5py_planet(
     data = {
         "radius": read_h5py_quantity(group, "radius"),
         "mass": read_h5py_quantity(group, "mass"),
-
     }
 
     if "distance" in group:
@@ -234,6 +225,7 @@ def read_h5py_planet(
     if "albedo" in group:
         data["albedo"] = group["albedo"][()]
     return data
+
 
 def read_h5py_stellar_flux(
     group: h5py.Group,
@@ -253,14 +245,16 @@ def read_h5py_stellar_flux(
     }
     return data
 
+
 def read_h5py_solution(
     filename: PathLike,
 ) -> Solution:
     from ..species import SpeciesFormula
+
     file_path = pathlib.Path(filename)
     if not file_path.exists():
         raise FileNotFoundError(f"File {file_path} does not exist.")
-    
+
     with h5py.File(filename, "r") as f:
         solution = {
             "pressure": read_h5py_quantity(f, "pressure"),
@@ -277,7 +271,7 @@ def read_h5py_solution(
         species_input = species_group["species_input"].asstr()
         species_formula = species_group["species_formula"].asstr()
         species_state = species_group["species_state"].asstr()
-    
+
         species = [
             SpeciesFormula(
                 formula=form_in,
@@ -291,5 +285,5 @@ def read_h5py_solution(
         solution["planet"] = read_h5py_planet(f["planet"])
         if "stellar_flux" in f:
             solution["stellar_flux"] = read_h5py_stellar_flux(f["stellar_flux"])
-    
+
     return solution

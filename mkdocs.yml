@@ -13,14 +13,14 @@ nav:
   - Introduction: introduction.md
   - Getting Started: gettingstarted.md
   - FRECKLL CLI:
-    - CLI program: cli/cli.md
-    - Input file: cli/inputfile.md
-  - Development: 
-    - Contributing: development/CONTRIBUTING.md
-    - Porting Networks: development/portingnetworks.md
-    - Code of Conduct: development/codeofconduct.md
+      - CLI program: cli/cli.md
+      - Input file: cli/inputfile.md
+  - Development:
+      - Contributing: development/CONTRIBUTING.md
+      - Porting Networks: development/portingnetworks.md
+      - Code of Conduct: development/codeofconduct.md
   - Modules:
-      - IO: 
+      - IO:
           - Loader: modules/io/loader.md
       - Reactions:
           - Common: modules/reactions/common.md

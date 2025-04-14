@@ -1,10 +1,9 @@
 # Porting networks
 
-
 ## Introduction
 
 FRECKLL has been designed to be extensible and also to allow for the addition of new networks. The philosphy of the code is that
-the library contains all of the building blocks to solve the kinetic network and all the user must do is translate it into the 
+the library contains all of the building blocks to solve the kinetic network and all the user must do is translate it into the
 form of FRECKLL.
 
 For example, the inbuilt `VenotChemicalNetwork` is simply a convienient wrapper of the `Network` class that parses the correct reactions into the correct FRECKLL functions
@@ -49,7 +48,6 @@ The key three things a network requires are:
 - The thermochemical data of each species
 - The reactions
 
-
 ## Decoding Species
 
 FRECKLL makes use of a `SpeciesFormula` class (a subclass of `Formula` from [molmass](https://github.com/cgohlke/molmass)) that automatically decomposes, and computes the mass and diffusion volume of the species.
@@ -65,6 +63,7 @@ print(f"Mono mass: {h2o.monoisotopic_mass} g/mol")
 print(f"Diffusion volume: {h2o.diffusion_volume}")
 print(h2o.composition_dict)
 ```
+
 ```
 Formula: H2O
 Mass: 18.015287 g/mol
@@ -74,6 +73,7 @@ Diffusion volume: 13.1
 ```
 
 The `formula` argument can be any valid hill-notation chemical formula. For example one of the [most important molecules in the universe](https://en.wikipedia.org/wiki/Caffeine) can be written as:
+
 ```python
 from freckll.species import SpeciesFormula
 mol = SpeciesFormula("C8H10N4O2")
@@ -83,6 +83,7 @@ print(f"Mono mass: {mol.monoisotopic_mass} g/mol")
 print(f"Diffusion volume: {mol.diffusion_volume}")
 print(mol.composition_dict)
 ```
+
 ```
 Formula: C8H10N4O2
 Mass: 194.19095199999998 g/mol
@@ -92,6 +93,7 @@ Diffusion volume: 180.68
 ```
 
 The class has some special properties. For example we can use a string version to compare.
+
 ```python
 from freckll.species import SpeciesFormula
 
@@ -100,26 +102,28 @@ h2o = SpeciesFormula("H2O")
 print(h2o == "H2O") # True
 ```
 
-
 For 99% of the time, the default argument is enough. However there will be cases where different isotopologues or electronic state must be represented. For example in
 the Venot network we have species:
 
 - $O(^3P)$
 - $O(^1D)$
 
-Which are presented as `O3P` and `O1D` in the network. The `SpeciesFormula` class by default may interpret this as `O3` and `P` or `O1` and `D`. 
+Which are presented as `O3P` and `O1D` in the network. The `SpeciesFormula` class by default may interpret this as `O3` and `P` or `O1` and `D`.
 For exmaple:
+
 ```python
 from freckll.species import SpeciesFormula
 o3p = SpeciesFormula("O3P")
 
 print(o3p.composition_dict)
 ```
+
 ```
 {'O': (3, 47.998215, 0.6077879372478617), 'P': (1, 30.973761998, 0.3922120627521383)}
 ```
 
 To avoid this, the user can specify the `true_formula` argument. This is a string that will be used to decode the species. For example:
+
 ```python
 from freckll.species import SpeciesFormula
 o3p = SpeciesFormula("O3P", true_formula="O")
@@ -127,6 +131,7 @@ o1d = SpeciesFormula("O1D", true_formula="O")
 print(o3p.composition_dict)
 print (o1d.composition_dict)
 ```
+
 ```
 {'O': (1, 15.999405, 1.0)}
 {'O': (1, 15.999405, 1.0)}
@@ -140,6 +145,7 @@ When loading in a species, we recommend the following pattern:
 - A `_decode_species` function that takes a string and returns a `SpeciesFormula` object.
 
 For example, with the previous example, we have this pattern:
+
 ```python
 from freckll.species import SpeciesFormula
 
@@ -161,14 +167,14 @@ def _decode_species(species: str) -> SpeciesFormula:
     if species in _species_exceptions:
         return _species_exceptions[species]
     else:
-        return SpeciesFormula(species)  
+        return SpeciesFormula(species)
 ```
-
 
 ## Thermochemical data
 
 FRECKLL uses the 7-coeff [NASA polynomial](http://combustion.berkeley.edu/gri_mech/data/nasa_plnm.html) to represent the thermochemical data of a particular species.
 The `freckll.NasaCoeff` class is a simple dataclass that allows you to directly assign data to the class. For example:
+
 ```python
 from freckll.nasa import NasaCoeff
 
@@ -181,13 +187,16 @@ nasa = NasaCoeff(
     b_coeff=np.array([1,2,3,4,5,6,7])
 )
 ```
+
 You can then call the `nasa` object to get the thermochemical data $\frac{H}{RT}$ and $\frac{S}{R}$. For example:
+
 ```python
 temperature = np.array([1000, 2000, 3000]) * u.K
 h, s = nasa(temperature)
 ```
 
 A FRECKLL `Network` requires the user to supply a list of `NasaCoeff` objects corresponding to the species in the network.
+
 ```python
 
 species_nasa = [
@@ -214,6 +223,7 @@ species_nasa = [
 ### Recommended pattern
 
 When loading in NASA coefficients, we recommend the following pattern:
+
 - Make use of the `decode_species` function to decode the species
 
 For example if we have nasa coeffs of this format:
@@ -224,6 +234,7 @@ H2O 1000.0 2000.0 3000.0 1.0 2.0 3.0 4.0 5.0 6.0 7.0
 CO 1000.0 2000.0 3000.0 1.0 2.0 3.0 4.0 5.0 6.0 7.0
 ...
 ```
+
 We could load them in like this:
 
 ```python
@@ -231,7 +242,7 @@ from freckll.nasa import NasaCoeff
 from typing import Callable
 from freckll.species import SpeciesFormula
 
-def load_nasa(nasa_file: str, 
+def load_nasa(nasa_file: str,
     decode_species: Callable[[str], SpeciesFormula]) -> list[NasaCoeff]:
     """Load the NASA coefficients from a file.
 
@@ -266,6 +277,7 @@ def load_nasa(nasa_file: str,
 
 Reactions are represented by two objects. A `ReactionCall` which executes the reaction and a `Reaction` which contains the computed reaction data.
 All reactions under `freckll.reaction` do not produce a result but instead return a function of the form:
+
 ```python
 
 def reaction(concentration) -> list[Reaction]:
@@ -273,6 +285,7 @@ def reaction(concentration) -> list[Reaction]:
 ```
 
 The usage pattern is therefore:
+
 ```python
 
 react_func = k0kinf(<argshere>)
@@ -283,7 +296,7 @@ print(reaction_rate[1]) # If reversible
 
 ```
 
-This is what is actually happening when reactions are *compiled*. The appropriate function is created and then is reused. Every reaction has these parameters at the end:
+This is what is actually happening when reactions are _compiled_. The appropriate function is created and then is reused. Every reaction has these parameters at the end:
 
 - `temperature`
 - `pressure`
@@ -332,7 +345,7 @@ k_coeffs = [
     10.0, # A
     3.0, # n
     100.0, # Er
-]   
+]
 
 reactants = [
     SpeciesFormula("H2"),
@@ -373,19 +386,19 @@ Additionally reactions with $k_0$ and $k_\infty$ can use one of two falloff func
 - `troe_falloff_term`: Troe falloff term
 - `sri_falloff_term`: Stanford Research Institute falloff function
 
-
-
 ### Recommended pattern
 
 When loading in reactions, we recommend the following pattern:
+
 - Using the `decode_species` function to decode the species
 - A `map_reaction` that maps a reaction to the correct reaction function
 - Use partial to fix the reaction parameters
 
 For example, if we have a reaction file of the form:
+
 ```
 
-# k_0 k_inf 
+# k_0 k_inf
 H20 + O2 <=> H2O2,  8.306E-12,  0.000E+00,  0.000E+00,  2.000E+00,  1.000E+02, 8.306E-12,  0.000E+00,  0.000E+00,  2.000E+00,  1.000E+02,
 ...
 
@@ -397,6 +410,7 @@ CO2 => CO + O2,    1.000E+13,  0.000E+00,  2.363E+04,  1.260E+00,  0.000E+00
 ```
 
 We could load them in like this:
+
 ```python
 
 from freckll.reaction import ReactionCall
@@ -454,6 +468,7 @@ def load_reactions(
 ## Creating the network
 
 Creating a network is simply putting all of these together and passing them into the `Network` class. For example:
+
 ```python
 from freckll.network import Network
 
@@ -467,7 +482,9 @@ network = Network(
     loaded_reactions,
 )
 ```
+
 This will create a network that can be used to solve the kinetic equations. You can simply pass this into a solver
+
 ```python
 from freckll.solver import RosenbrockSolver
 
@@ -479,14 +496,13 @@ solver.solve(
 )
 ```
 
-
 ## Photochemistry
 
 Photochemistry is a bit different. Photochemistry only requires two data sources: The actinic flux and the cross sections.
 
 ### Actinic flux
 
-This is handled by the ``StarSpectra`` class, it only requires three arguments. The spectral grid and the actinic flux and the reference distance.
+This is handled by the `StarSpectra` class, it only requires three arguments. The spectral grid and the actinic flux and the reference distance.
 
 ```python
 
@@ -499,30 +515,12 @@ ss = StarSpectra(
     reference_distance=1.0 * u.AU,
 )
 ```
+
 The spectral grid is the wavelength grid of the actinic flux and the reference distance is the distance of the measured flux. The actinic flux must be in units that
 are analagous/convertable to $\frac{photons}{cm^2 s nm}$. FRECKLL will handle the conversion for you so you can use any units you like. The `StarSpectra` class will also handle the conversion of the spectral grid to the correct units.
 
 ### PhotoMolecule
 
-`PhotoMolecule` is a class that represents a molecule with cross-section and quantum yields. 
+`PhotoMolecule` is a class that represents a molecule with cross-section and quantum yields.
 
 [To be continued]
-
-
-
-
-
-
-
-
-
-        
-
-
-
-
-
-
-
-
-

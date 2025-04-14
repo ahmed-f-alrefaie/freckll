@@ -66,7 +66,7 @@ def molecular_diffusion(
     temperature: u.Quantity,
     pressure: u.Quantity,
 ) -> u.Quantity:
-    """Compute the molecular diffusion term for a species using the 
+    """Compute the molecular diffusion term for a species using the
     Fuller diffusion model.
 
 
@@ -122,27 +122,26 @@ def molecular_diffusion_II(
     pressure: u.Quantity,
 ) -> u.Quantity:
     """Compute the molecular diffusion term for a species."""
-    from .utils import n_largest_index
 
     y = (number_density / np.sum(number_density, axis=0)).decompose().value
     sigma = np.array([diffusion_volume(s) for s in species])  # Use your diffusion_volume function
     mole_masses = np.array([s.monoisotopic_mass for s in species])
-    
+
     pressure_bar = pressure.to(u.bar).value
     temperature_K = temperature.to(u.K).value
-    
+
     # Pre-calculate binary diffusion coefficients for all pairs
     n_species = len(species)
     n_layers = number_density.shape[1]
     D = np.zeros((n_species, n_species, n_layers))
-    
+
     for i in range(n_species):
         for j in range(n_species):
             if i != j:
-                mass_ij = 2.0 / (1/mole_masses[i] + 1/mole_masses[j])
-                sigma_ij = (sigma[i]**(1/3) + sigma[j]**(1/3))**2
-                D[i,j,:] = (0.00143 * temperature_K**1.75) / (pressure_bar * np.sqrt(mass_ij) * sigma_ij)
-    
+                mass_ij = 2.0 / (1 / mole_masses[i] + 1 / mole_masses[j])
+                sigma_ij = (sigma[i] ** (1 / 3) + sigma[j] ** (1 / 3)) ** 2
+                D[i, j, :] = (0.00143 * temperature_K**1.75) / (pressure_bar * np.sqrt(mass_ij) * sigma_ij)
+
     # Apply Blanc's law for mixture diffusion coefficients
     D_mix = np.zeros((n_species, n_layers))
     for i in range(n_species):
@@ -150,11 +149,11 @@ def molecular_diffusion_II(
         sum_term = 0.0
         for j in range(n_species):
             if j != i:
-                sum_term += y[j,:] / D[i,j,:]
-        
+                sum_term += y[j, :] / D[i, j, :]
+
         if np.any(sum_term == 0):
             # Handle case where species i is the only one present
-            D_mix[i,sum_term == 0] = 0.0
-        D_mix[i,:] = (1 - y[i,:]) / np.where(sum_term != 0, sum_term, np.inf)
-    
+            D_mix[i, sum_term == 0] = 0.0
+        D_mix[i, :] = (1 - y[i, :]) / np.where(sum_term != 0, sum_term, np.inf)
+
     return D_mix << (u.cm**2 / u.s)

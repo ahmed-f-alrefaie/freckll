@@ -15,7 +15,6 @@ class SpeciesState(str, enum.Enum):
     GAS = "gas"
     LIQUID = "liquid"
     SOLID = "solid"
-    
 
 
 class SpeciesFormula(Formula):
@@ -88,7 +87,7 @@ class SpeciesFormula(Formula):
             and self.formula == other.formula
             and self.input_formula == other.input_formula
         )
-    
+
     def same_composition(self, other: "SpeciesFormula") -> bool:
         """Check if two species have the same composition."""
         if not isinstance(other, SpeciesFormula):
@@ -96,11 +95,7 @@ class SpeciesFormula(Formula):
         comp_self = self.composition_values
         comp_other = other.composition_values
 
-        return (
-            frozenset(comp_self) == frozenset(comp_other)
-        )
-
-
+        return frozenset(comp_self) == frozenset(comp_other)
 
     def __str__(self) -> str:
         str_val = f"{self.input_formula}"

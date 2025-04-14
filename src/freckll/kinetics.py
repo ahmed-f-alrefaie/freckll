@@ -3,12 +3,13 @@
 import numpy as np
 from astropy import constants as const
 from astropy import units as u
+
 from .species import SpeciesFormula
 from .types import FreckllArray
 
+
 class AltitudeSolveError(Exception):
     pass
-
 
 
 def gravity_at_height(mass: u.Quantity, radius: u.Quantity, altitude: u.Quantity) -> u.Quantity:
@@ -122,7 +123,7 @@ def solve_altitude_profile(
     P_min = pressures_sorted.min()
     P_span = (P_surface, P_min)
     initial_z = [0.0]  # Starting altitude at surface
-    
+
     # Solve the ODE
     sol = solve_ivp(dzdP, P_span, initial_z, dense_output=True)
     if sol.success is False:
@@ -165,7 +166,7 @@ def deltaz_terms(
 
 
     Args:
-        altitude: The altitude 
+        altitude: The altitude
 
     Returns:
         delta_z_plus: The delta z plus term.
@@ -176,7 +177,6 @@ def deltaz_terms(
 
 
     """
-
 
     delta_z = np.zeros_like(altitude)
     delta_z_p = np.zeros_like(altitude)
@@ -189,13 +189,12 @@ def deltaz_terms(
     delta_z[-1] = altitude[-1] - altitude[-2]
     delta_z[0] = altitude[1] - altitude[0]
 
-    inv_dz = 1.0 / ((0.5 * delta_z_p + 0.5 * delta_z_m))
+    inv_dz = 1.0 / (0.5 * delta_z_p + 0.5 * delta_z_m)
     inv_dz[0] = 1.0 / (delta_z[0])
     inv_dz[-1] = 1.0 / (delta_z[-1])
 
     inv_dz_m = 1.0 / (delta_z_m)
     inv_dz_p = 1.0 / (delta_z_p)
-
 
     return delta_z, delta_z_p, delta_z_m, inv_dz, inv_dz_p, inv_dz_m
 
@@ -398,7 +397,7 @@ def vmr_terms(
     vmr_diff = np.diff(vmr, axis=-1)
     dy_plus = np.zeros(vmr.shape) << inv_dz_plus.unit
     dy_minus = np.zeros(vmr.shape) << inv_dz_minus.unit
-    dy_plus[:,:-1] = (vmr_diff) * inv_dz_plus[:-1]
+    dy_plus[:, :-1] = (vmr_diff) * inv_dz_plus[:-1]
     dy_minus[:, 1:] = (vmr_diff) * inv_dz_minus[1:]
 
     return dy_plus, dy_minus
@@ -488,20 +487,18 @@ def diffusion_flux(
     mdiff_plus, mdiff_minus = general_plus_minus(molecular_diffusion)
     kzz_plus, kzz_minus = general_plus_minus(kzz)
 
-    diff_flux = np.zeros(vmr.shape) << (1/(u.cm**3 * u.s))
+    diff_flux = np.zeros(vmr.shape) << (1 / (u.cm**3 * u.s))
 
     diff_flux[:, 1:-1] += (
         dens_plus[1:-1]
         * (
-            mdiff_plus[:, 1:-1]
-            * ((vmr[:, 2:] + vmr[:, 1:-1]) * 0.5 * diffusion_plus[:, 1:-1] + dy_plus[:, 1:-1])
+            mdiff_plus[:, 1:-1] * ((vmr[:, 2:] + vmr[:, 1:-1]) * 0.5 * diffusion_plus[:, 1:-1] + dy_plus[:, 1:-1])
             + kzz_plus[1:-1] * dy_plus[:, 1:-1]
         )
         * fd_plus[1:-1]
         + dens_minus[1:-1]
         * (
-            mdiff_minus[:, 1:-1]
-            * ((vmr[:, 1:-1] + vmr[:, :-2]) * 0.5 * diffusion_minus[:, 1:-1] + dy_minus[:, 1:-1])
+            mdiff_minus[:, 1:-1] * ((vmr[:, 1:-1] + vmr[:, :-2]) * 0.5 * diffusion_minus[:, 1:-1] + dy_minus[:, 1:-1])
             + kzz_minus[1:-1] * dy_minus[:, 1:-1]
         )
         * fd_minus[1:-1]
@@ -548,20 +545,14 @@ def alpha_term(species: list[SpeciesFormula], vmr: FreckllArray) -> FreckllArray
 
     if "H" in species:
         index = species.index("H")
-        alpha[index] = -0.1*(1-vmr[index])
+        alpha[index] = -0.1 * (1 - vmr[index])
 
     if "He" in species:
         index = species.index("He")
-        alpha[index] = 0.145*(1-vmr[index])
+        alpha[index] = 0.145 * (1 - vmr[index])
 
     if "H2" in species:
         index = species.index("H2")
         alpha[index] = -0.38
 
-
     return alpha
-    
-
-
-
-

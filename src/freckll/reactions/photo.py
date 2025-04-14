@@ -296,10 +296,12 @@ class PhotoReactionCall:
         self.branch_id = branch_id
         self.tags = list(set(self.tags))
 
-    def interpolate_to(self, wavelength: u.Quantity,
-                       temperature: u.Quantity | None = None,
-                       pressure: u.Quantity | None = None,
-                       ) -> "PhotoReactionCall":
+    def interpolate_to(
+        self,
+        wavelength: u.Quantity,
+        temperature: u.Quantity | None = None,
+        pressure: u.Quantity | None = None,
+    ) -> "PhotoReactionCall":
         """Interpolate the reaction call to the given wavelength.
 
         Args:

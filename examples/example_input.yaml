@@ -1,4 +1,3 @@
-
 planet:
   mass: 1.023 Mjup
   radius: 1.023 Rjup
@@ -8,10 +7,10 @@ planet:
 star:
   incident_angle: 45 deg
   spectrum: sun # Loaded from the built-in library
-  
+
 # Built in format
 network: venot-methanol-2023
-photochemistry: venot-methanol-2023-photo  # Optional
+photochemistry: venot-methanol-2023-photo # Optional
 
 # Custom format
 # network:
@@ -23,22 +22,20 @@ photochemistry: venot-methanol-2023-photo  # Optional
 #  photodissociation_file: /path/to/photodissociation.dat
 #  cross_section_path: /path/to/Sections/
 
-
 initial_chemistry:
   type: ace
-  abundances: [ 12.0, 10.925, 9.168, 7.86, 8.633]
+  abundances: [12.0, 10.925, 9.168, 7.86, 8.633]
   elements: [H, He, C, N, O]
-  
 
 atmosphere:
-  tp_profile: 
+  tp_profile:
     type: from-file
     filename: test.dat
     temperature_column: 1
     pressure_column: 0
     temperature_unit: K
     pressure_unit: mbar
-  
+
   kzz:
     type: from-file
     filename: Kzz_test.dat
@@ -46,7 +43,6 @@ atmosphere:
     pressure_column: 0
     kzz_unit: cm2/s
     pressure_unit: mbar
-
 
 solver:
   method: rosenbrock
@@ -59,4 +55,3 @@ solver:
   atol: 1e-25
   maxiter: 200
   strict: false
-

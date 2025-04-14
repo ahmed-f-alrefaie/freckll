@@ -168,12 +168,12 @@ class PhotoChemistry:
         for c in self.available_rayleigh:
             self.species_index[c] = species_list.index(c)
 
-
-    def interpolate_cross_sections(self, 
-                                   wavelengths: u.Quantity,
-                                   temperature: u.Quantity,
-                                   pressure: u.Quantity,                                   
-                                   ) -> None:
+    def interpolate_cross_sections(
+        self,
+        wavelengths: u.Quantity,
+        temperature: u.Quantity,
+        pressure: u.Quantity,
+    ) -> None:
         """Interpolate the cross sections to the given wavelengths, temperature and pressure.
 
         Args:
@@ -183,6 +183,7 @@ class PhotoChemistry:
 
         """
         from ..reactions.photo import CrossSection, rayleigh_species
+
         self.cross_sections = SpeciesDict[CrossSection]()
         self.working_reaction_calls = [c.interpolate_to(self.spectra.wavelength) for c in self.photo_reaction_calls]
 
@@ -197,7 +198,6 @@ class PhotoChemistry:
                 self.cross_sections[r] = cross_section + rayleigh
             else:
                 self.cross_sections[r] = rayleigh
-        
 
         self.cross_section_array = (
             np.array([c.cross_section.to(u.cm**2).value for c in self.cross_sections.values()]) << u.cm**2
@@ -205,9 +205,9 @@ class PhotoChemistry:
 
         self.cross_section_indices = np.array([self.species_index[c] for c in self.cross_sections], dtype=np.int64)
 
-
-
-    def set_spectra(self, spectra: StarSpectra, distance: u.Quantity, incident_angle: u.Quantity = 45 * u.deg, albedo: float = 0.0) -> None:
+    def set_spectra(
+        self, spectra: StarSpectra, distance: u.Quantity, incident_angle: u.Quantity = 45 * u.deg, albedo: float = 0.0
+    ) -> None:
         """Set the stellar spectra.
 
         Args:
@@ -220,13 +220,10 @@ class PhotoChemistry:
         self.incident_flux = self.spectra.incident_flux(distance)
         self.albedo = albedo
 
-        
-
-
     def compile_chemistry(
-        self, 
-        temperature: u.Quantity, pressure: u.Quantity,
-        
+        self,
+        temperature: u.Quantity,
+        pressure: u.Quantity,
     ) -> None:
         """Compile the photochemistry.
 
@@ -243,8 +240,6 @@ class PhotoChemistry:
         """
 
         self.interpolate_cross_sections(self.spectra.wavelength, temperature, pressure)
-        
-
 
     def compute_reactions(self, number_density: u.Quantity, altitude: u.Quantity) -> list[Reaction]:
         """Compute the reactions.

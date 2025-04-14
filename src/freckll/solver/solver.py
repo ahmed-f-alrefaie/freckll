@@ -1,26 +1,27 @@
 """Handles solving of ODE."""
-from astropy import units as u
 
+from functools import partial
+from typing import Callable, Optional, TypedDict
+
+import numpy as np
+from astropy import units as u
+from scipy.sparse import spmatrix
+
+from ..log import Loggable
+from ..network import ChemicalNetwork, PhotoChemistry
+from ..species import SpeciesFormula
 from ..types import FreckllArray
 
-from typing import TypedDict, Optional, Callable
-from ..network import ChemicalNetwork, PhotoChemistry
-from scipy.sparse import spmatrix
-from ..log import Loggable
-from ..reactions.photo import StarSpectra
-from ..species import SpeciesFormula
-import numpy as np
-from functools import partial
-from collections import deque
 
 class StellarFluxData(TypedDict):
     wavelength: u.Quantity
     incident_flux: u.Quantity
     incident_angle: u.Quantity
 
+
 class PlanetOutputData(TypedDict):
     """TypedDict for planet output data."""
-    
+
     radius: u.Quantity
     mass: u.Quantity
     distance: Optional[u.Quantity] = None
@@ -29,7 +30,7 @@ class PlanetOutputData(TypedDict):
 
 class Solution(TypedDict):
     """TypedDict for solver output."""
-    
+
     success: bool
     initial_vmr: FreckllArray
     num_jacobian_evals: int
@@ -49,15 +50,16 @@ class Solution(TypedDict):
 
 class SolverOutput(TypedDict):
     """TypedDict for solver output."""
-    
+
     num_jac_evals: int
     num_dndt_evals: int
     success: bool
     times: FreckllArray
     y: FreckllArray
 
-DyCallable=Callable[[float, FreckllArray], FreckllArray]
-JacCallable=Callable[[float, FreckllArray], spmatrix]
+
+DyCallable = Callable[[float, FreckllArray], FreckllArray]
+JacCallable = Callable[[float, FreckllArray], spmatrix]
 
 
 def convergence_test(
@@ -86,26 +88,24 @@ def convergence_test(
     """
     if len(ys) < 2:
         return False
-    
+
     current_y = np.copy(ys[-1])
     previous_y = np.copy(ys[-2])
 
-    #dy = np.abs(current_y - previous_y)/ys[-1]
-    dy = np.abs(current_y - previous_y)/current_y
+    # dy = np.abs(current_y - previous_y)/ys[-1]
+    dy = np.abs(current_y - previous_y) / current_y
 
     dy[current_y < atol] = 0
 
     dy = np.amax(np.abs(dy))
-    dydt = dy/(t[-1] - t[-2])
+    dydt = dy / (t[-1] - t[-2])
 
     logger.info("Convergence test: dy: %4.2E, dydt: %4.2E", dy, dydt)
 
     return dy < df_criteria and dydt < dfdt_criteria
-    
 
 
-
-def output_step(t,y, logger:Loggable=None) -> bool:
+def output_step(t, y, logger: Loggable = None) -> bool:
     """Output the current step of the solver.
 
     Args:
@@ -114,58 +114,65 @@ def output_step(t,y, logger:Loggable=None) -> bool:
         logger: The logger.
     """
     import math
+
     final = y
-    logger.info("ydot sum/min/max: %4.2E / %4.2E / %4.2E Time/log(Time): %4.2E / %4.2E",
-                final.sum(), final.min(), final.max(), t,math.log10(t))
-    
+    logger.info(
+        "ydot sum/min/max: %4.2E / %4.2E / %4.2E Time/log(Time): %4.2E / %4.2E",
+        final.sum(),
+        final.min(),
+        final.max(),
+        t,
+        math.log10(t),
+    )
 
 
-
-def dndt(t: float, y: FreckllArray,
-            density: Optional[u.Quantity] = None,
-            temperature: Optional[u.Quantity] = None,
-            pressure: Optional[u.Quantity] = None,
-            kzz: Optional[u.Quantity] = None,
-            planet_radius: Optional[u.Quantity] = None,
-            planet_mass: Optional[u.Quantity] = None,
-            masses: Optional[u.Quantity] = None,
-            network: Optional[ChemicalNetwork] = None,
-            photochemistry: Optional[Optional[PhotoChemistry]] = None,
-            vmr_shape: Optional[tuple[int, ...]] = None,
-            enable_diffusion: bool = True,
-            ) -> FreckllArray:
+def dndt(
+    t: float,
+    y: FreckllArray,
+    density: Optional[u.Quantity] = None,
+    temperature: Optional[u.Quantity] = None,
+    pressure: Optional[u.Quantity] = None,
+    kzz: Optional[u.Quantity] = None,
+    planet_radius: Optional[u.Quantity] = None,
+    planet_mass: Optional[u.Quantity] = None,
+    masses: Optional[u.Quantity] = None,
+    network: Optional[ChemicalNetwork] = None,
+    photochemistry: Optional[Optional[PhotoChemistry]] = None,
+    vmr_shape: Optional[tuple[int, ...]] = None,
+    enable_diffusion: bool = True,
+) -> FreckllArray:
     """Calculate the rate of change of the VMR."""
-    from ..diffusion import molecular_diffusion
-    from ..kinetics import solve_altitude_profile, alpha_term
-
-    from ..ode import convert_y_to_fm, convert_fm_to_y, construct_reaction_terms
     from ..chegp import compute_dndt_vertical
-    from ..network import map_production_loss
-    from ..constants import AMU
+    from ..diffusion import molecular_diffusion
     from ..distill import ksum
+    from ..kinetics import alpha_term, solve_altitude_profile
+    from ..network import map_production_loss
+    from ..ode import construct_reaction_terms, convert_fm_to_y, convert_y_to_fm
 
     vmr = convert_y_to_fm(y, *vmr_shape)
 
     density = density.to(u.cm**-3)
     masses = masses
-#   
-    
+    #
+
     nlayers = density.size
     mu = ksum(masses[:, None].value * vmr, k=4) << masses.unit
 
     altitude = solve_altitude_profile(
-        temperature, mu, pressure, planet_mass, planet_radius,
+        temperature,
+        mu,
+        pressure,
+        planet_mass,
+        planet_radius,
     ).to(u.km)
 
+    number_density = density * vmr
 
-    number_density = density*vmr
+    mole_diffusion = molecular_diffusion(network.species, number_density, temperature, pressure) * float(
+        enable_diffusion
+    )
 
-    mole_diffusion = molecular_diffusion(
-        network.species, number_density, temperature, pressure
-    )*float(enable_diffusion)
-
-    alpha=alpha_term(network.species, vmr)
-
+    alpha = alpha_term(network.species, vmr)
 
     vert_term = compute_dndt_vertical(
         vmr,
@@ -181,21 +188,21 @@ def dndt(t: float, y: FreckllArray,
         alpha=alpha,
     )
 
-    
     reactions = network.compute_reactions(vmr, with_production_loss=False)
     if photochemistry is not None:
-        reactions = reactions + photochemistry.compute_reactions(
-            number_density, altitude
-        )
+        reactions = reactions + photochemistry.compute_reactions(number_density, altitude)
     products, loss = map_production_loss(reactions)
-    reaction_term =construct_reaction_terms(products, loss, network.species , density.size, k=4)
+    reaction_term = construct_reaction_terms(products, loss, network.species, density.size, k=4)
     final = (reaction_term) / density.value + vert_term
 
-    #final[vmr < 0] = 0
+    # final[vmr < 0] = 0
 
     return convert_fm_to_y(final)
 
-def jac(t: float, y: FreckllArray,
+
+def jac(
+    t: float,
+    y: FreckllArray,
     density: Optional[u.Quantity] = None,
     temperature: Optional[u.Quantity] = None,
     pressure: Optional[u.Quantity] = None,
@@ -207,14 +214,14 @@ def jac(t: float, y: FreckllArray,
     photochemistry: Optional[Optional[PhotoChemistry]] = None,
     vmr_shape: Optional[tuple[int, ...]] = None,
     enable_diffusion: bool = True,
-    ) -> FreckllArray:
-    from freckll.ode import construct_jacobian_reaction_terms_sparse, convert_y_to_fm
-    from freckll.constants import AMU
-    from ..network import map_production_loss
-    from freckll.kinetics import solve_altitude_profile, alpha_term
+) -> FreckllArray:
     from freckll.chegp import compute_jacobian_sparse
-    from freckll.distill import ksum
     from freckll.diffusion import molecular_diffusion
+    from freckll.distill import ksum
+    from freckll.kinetics import alpha_term, solve_altitude_profile
+    from freckll.ode import construct_jacobian_reaction_terms_sparse, convert_y_to_fm
+
+    from ..network import map_production_loss
 
     density = density.to(u.cm**-3)
     masses = masses
@@ -223,27 +230,27 @@ def jac(t: float, y: FreckllArray,
     kzz = kzz.to(u.cm**2 / u.s)
     vmr = convert_y_to_fm(y, *vmr_shape)
     mu = ksum(masses[:, None].value * vmr, k=4) << masses.unit
-    number_density = density*vmr
+    number_density = density * vmr
     altitude = solve_altitude_profile(
-        temperature, mu, pressure, planet_mass, planet_radius,
+        temperature,
+        mu,
+        pressure,
+        planet_mass,
+        planet_radius,
     ).to(u.km)
 
-    mole_diffusion = molecular_diffusion(
-        network.species, number_density, temperature, pressure
-    )*float(enable_diffusion)
-
+    mole_diffusion = molecular_diffusion(network.species, number_density, temperature, pressure) * float(
+        enable_diffusion
+    )
 
     reactions = network.compute_reactions(vmr, with_production_loss=False)
     if photochemistry is not None:
-        reactions = reactions + photochemistry.compute_reactions(
-            number_density, altitude
-        )
+        reactions = reactions + photochemistry.compute_reactions(number_density, altitude)
 
     _, loss = map_production_loss(reactions)
     react_mat = construct_jacobian_reaction_terms_sparse(loss, network.species, number_density.value)
 
-    alpha=alpha_term(network.species, vmr)
-
+    alpha = alpha_term(network.species, vmr)
 
     vert_mat = compute_jacobian_sparse(
         vmr,
@@ -256,22 +263,14 @@ def jac(t: float, y: FreckllArray,
         temperature,
         mole_diffusion,
         kzz,
-        alpha=alpha,)
-
-
+        alpha=alpha,
+    )
 
     return vert_mat + react_mat
 
 
-
-
-
 class Solver(Loggable):
-
-    def __init__(self,
-                 network: ChemicalNetwork,
-                 photochemistry: Optional[PhotoChemistry] = None):
-        
+    def __init__(self, network: ChemicalNetwork, photochemistry: Optional[PhotoChemistry] = None):
         """Initialize the solver."""
         super().__init__()
         self.set_network(network, photochemistry)
@@ -283,12 +282,13 @@ class Solver(Loggable):
         self.planet_mass: Optional[u.Quantity] = None
         self.alpha: float | FreckllArray = 0.0
 
-    def set_network(self,
-                    network: ChemicalNetwork,
-                    photochemistry: Optional[PhotoChemistry] = None,
-                    ) -> None:
+    def set_network(
+        self,
+        network: ChemicalNetwork,
+        photochemistry: Optional[PhotoChemistry] = None,
+    ) -> None:
         """Set the chemical network and photochemistry.
-    
+
         Args:
             network: The chemical network.
             photochemistry: The photochemistry, if present.
@@ -297,28 +297,24 @@ class Solver(Loggable):
         self.network = network
         self.photochemistry = photochemistry
 
-
-    def _run_solver(self, 
-                    f: DyCallable,
-                    jac: JacCallable,
-                    y0: FreckllArray,
-                    t0: float,
-                    t1: float,
-                    num_species: int,
-                    **kwargs: dict) -> SolverOutput:
+    def _run_solver(
+        self, f: DyCallable, jac: JacCallable, y0: FreckllArray, t0: float, t1: float, num_species: int, **kwargs: dict
+    ) -> SolverOutput:
         """Run the solver."""
         raise NotImplementedError("Solver not implemented.")
 
-    def set_system_parameters(self,
+    def set_system_parameters(
+        self,
         *,
-        temperature: Optional[u.Quantity] = None, 
-        pressure: Optional[u.Quantity] = None, 
-        kzz: Optional[u.Quantity] = None,   
+        temperature: Optional[u.Quantity] = None,
+        pressure: Optional[u.Quantity] = None,
+        kzz: Optional[u.Quantity] = None,
         planet_radius: Optional[u.Quantity] = None,
         planet_mass: Optional[u.Quantity] = None,
-        alpha: Optional[float | FreckllArray]= None) -> None:
+        alpha: Optional[float | FreckllArray] = None,
+    ) -> None:
         """Set the system parameters.
-        
+
         Args:
             temperature: The temperature.
             pressure: The pressure.
@@ -343,20 +339,20 @@ class Solver(Loggable):
                 self.pressure,
             )
 
-
-    def solve(self,
-              vmr: FreckllArray,
-              t_span: tuple[float, float],
-              enable_diffusion: bool = False,
-              atol: float = 1e-25,
-              rtol: float = 1e-2,
-              df_criteria: float = 1e-3,
-              dfdt_criteria: float = 1e-8,
-              **solver_kwargs,
-              ) -> Solution:
+    def solve(
+        self,
+        vmr: FreckllArray,
+        t_span: tuple[float, float],
+        enable_diffusion: bool = False,
+        atol: float = 1e-25,
+        rtol: float = 1e-2,
+        df_criteria: float = 1e-3,
+        dfdt_criteria: float = 1e-8,
+        **solver_kwargs,
+    ) -> Solution:
         """Solve the ODE.
-    
-    
+
+
         Args:
             vmr: The initial VMR.
             t_span: The time span.
@@ -366,13 +362,13 @@ class Solver(Loggable):
             df_criteria: The criteria for convergence.
             dfdt_criteria: The criteria for convergence.
             **solver_kwargs: Additional arguments for the solver.
-        
+
         Returns:
             SolverOutput: The solver output.
 
         """
-        from ..ode import convert_fm_to_y, convert_y_to_fm
         from ..kinetics import air_density
+        from ..ode import convert_fm_to_y, convert_y_to_fm
 
         density = air_density(self.temperature, self.pressure)
 
@@ -389,8 +385,6 @@ class Solver(Loggable):
             photochemistry=self.photochemistry,
             vmr_shape=vmr.shape,
             enable_diffusion=enable_diffusion,
-            
-
         )
 
         jacobian = partial(
@@ -423,7 +417,7 @@ class Solver(Loggable):
             rtol=rtol,
             df_criteria=df_criteria,
             dfdt_criteria=dfdt_criteria,
-            **solver_kwargs
+            **solver_kwargs,
         )
 
         self.info("Number of Jacobian evaluations: %d", solver_output["num_jac_evals"])
@@ -433,11 +427,7 @@ class Solver(Loggable):
         if solver_output["success"]:
             self.info("Solver completed successfully.")
 
-        vmrs = np.array([
-            convert_y_to_fm(ys, *vmr.shape)
-            for ys in solver_output["y"] ]
-        )
-
+        vmrs = np.array([convert_y_to_fm(ys, *vmr.shape) for ys in solver_output["y"]])
 
         planet_data = {
             "radius": self.planet_radius,
@@ -447,15 +437,13 @@ class Solver(Loggable):
         if self.photochemistry is not None and self.photochemistry.spectra is not None:
             stellar_data = {
                 "stellar_flux": {
-                "wavelength": self.photochemistry.spectra.wavelength,
-                "incident_flux": self.photochemistry.incident_flux,
-                "incident_angle": self.photochemistry.incident_angle,
+                    "wavelength": self.photochemistry.spectra.wavelength,
+                    "incident_flux": self.photochemistry.incident_flux,
+                    "incident_angle": self.photochemistry.incident_angle,
                 }
             }
             planet_data["distance"] = self.photochemistry.planet_distance
             planet_data["albedo"] = self.photochemistry.albedo
-
-
 
         result = {
             "initial_vmr": vmr,
@@ -474,11 +462,4 @@ class Solver(Loggable):
             **stellar_data,
         }
 
-        return result 
-        
-
-
-
-
-
-
+        return result

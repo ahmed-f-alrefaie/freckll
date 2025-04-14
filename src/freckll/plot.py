@@ -1,9 +1,13 @@
 """Some useful plotting functions."""
+
 import matplotlib.pyplot as plt
-from matplotlib.figure import Figure
 from astropy import units as u
+from matplotlib.figure import Figure
+
 from .solver import Solution
 from .types import FreckllArray
+
+
 def plot_tp_and_kzz(
     pressure: u.Quantity,
     temperature: u.Quantity,
@@ -30,7 +34,7 @@ def plot_tp_and_kzz(
 
     pressure = pressure.to(u.bar)
     # Plot temperature
-    tplot =ax.plot(temperature.value, pressure.value, label="Temperature", color="red")
+    tplot = ax.plot(temperature.value, pressure.value, label="Temperature", color="red")
     ax.set_xlabel("Temperature (K)")
     ax.set_ylabel("Pressure (bar)")
     ax.set_yscale("log")
@@ -79,11 +83,11 @@ def plot_vmr(
     mol_index = [species.index(x) for x in species if x in species_to_plot]
     for x in mol_index:
         if initial_vmr is not None:
-            ax.plot(initial_vmr[x], pressure.value,'--',  alpha=0.5)
-            ax.plot(vmr[x], pressure.value,  label=species[x], color=ax.lines[-1].get_color())
+            ax.plot(initial_vmr[x], pressure.value, "--", alpha=0.5)
+            ax.plot(vmr[x], pressure.value, label=species[x], color=ax.lines[-1].get_color())
         else:
             ax.plot(vmr[x], pressure.value, label=species[x])
-        
+
     ax.set_xlabel("Volume Mixing Ratio")
     ax.set_ylabel("Pressure (bar)")
     ax.set_xscale("log")
@@ -139,13 +143,14 @@ def animate_vmr(
     for x in mol_index:
         if initial_vmr is not None:
             ax.plot(initial_vmr[x], pressure.value, alpha=0.5)
-            line, = ax.plot([], [], label=species[x], color=ax.lines[-1].get_color())
+            (line,) = ax.plot([], [], label=species[x], color=ax.lines[-1].get_color())
         else:
-            line = ax.plot(initial_vmr[x], pressure.value,'--', alpha=0.5)
-        
+            line = ax.plot(initial_vmr[x], pressure.value, "--", alpha=0.5)
+
         lines.append(line)
     ax.legend()
     ax.set_title(f"Time: {times[0]:.2E} s")
+
     def init():
         for line in lines:
             line.set_data([], [])
@@ -153,44 +158,48 @@ def animate_vmr(
 
     def update(frame):
         new_fm = vmrs[frame]
-        for idx,x in enumerate(mol_index):
+        for idx, x in enumerate(mol_index):
             lines[idx].set_data(new_fm[x].T, pressure.value)
-        ax.set_title(f"Time: {times[frame-1]:.2E} s")
+        ax.set_title(f"Time: {times[frame - 1]:.2E} s")
         return lines
+
     ani = FuncAnimation(fig, update, frames=len(vmrs), init_func=init, **kwargs)
 
     return ani
 
 
-def plot_mu(final_vmr: FreckllArray,
-            masses: u.Quantity,
-            pressure: u.Quantity,
-            initial_vmr: FreckllArray | None = None, 
-            ax: plt.Axes | None = None,) -> plt.Axes:
+def plot_mu(
+    final_vmr: FreckllArray,
+    masses: u.Quantity,
+    pressure: u.Quantity,
+    initial_vmr: FreckllArray | None = None,
+    ax: plt.Axes | None = None,
+) -> plt.Axes:
     """Plot the mean molecular weight.
-    
+
     Args:
         final_vmr: Final volume mixing ratio.
         masses: Molecular masses of the species.
         pressure: Pressure profile.
         initial_vmr: Initial volume mixing ratio. If None, do not plot.
         ax: Matplotlib Axes object to plot on. If None, create a new one.
-    
+
     Returns:
         Matplotlib Axes object with the plot.
-    
+
     """
     import numpy as np
+
     if ax is None:
         fig, ax = plt.subplots()
 
     pressure = pressure.to(u.bar)
-    mu_final = np.sum(final_vmr * masses[:,None], axis=0)
+    mu_final = np.sum(final_vmr * masses[:, None], axis=0)
 
     if initial_vmr is not None:
-        mu_initial = np.sum(initial_vmr * masses[:,None], axis=0)
-        ax.plot(mu_initial, pressure.value, '--', label="Initial", alpha=0.5)
-    
+        mu_initial = np.sum(initial_vmr * masses[:, None], axis=0)
+        ax.plot(mu_initial, pressure.value, "--", label="Initial", alpha=0.5)
+
     ax.plot(mu_final, pressure.value, label="Final")
 
     ax.set_yscale("log")
@@ -203,6 +212,7 @@ def plot_mu(final_vmr: FreckllArray,
     ax.set_title("Mean Molecular Weight")
 
     return ax
+
 
 def plot_stellar_flux(
     stellar_flux: u.Quantity,
@@ -229,11 +239,14 @@ def plot_solution_combined(
 ) -> Figure:
     """Plot the solution."""
 
-
-    fig, ax = plt.subplots(nrows=2, ncols=2, **kwargs,)
+    fig, ax = plt.subplots(
+        nrows=2,
+        ncols=2,
+        **kwargs,
+    )
 
     axs = ax.flatten()
-    
+
     # else:
     #     fig, ax = plt.subplots(nrows=1, ncols=3, **figure_args)
     #     axs = ax.flatten()
@@ -265,7 +278,7 @@ def plot_solution_combined(
 
     if "stellar_flux" in solution:
         plot_stellar_flux(
-            solution["stellar_flux"]['incident_flux'],
+            solution["stellar_flux"]["incident_flux"],
             solution["stellar_flux"]["wavelength"],
             ax=axs[3],
         )

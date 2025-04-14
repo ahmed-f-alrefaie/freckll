@@ -1,25 +1,35 @@
-from .solver import Solver, DyCallable, JacCallable, SolverOutput, output_step, convergence_test
-import numpy as np
-from ..types import FreckllArray
-from collections import deque
-from typing import Optional
-from astropy import units as u
 import time
+from typing import Optional
+
+import numpy as np
+from astropy import units as u
+
+from ..types import FreckllArray
+from .solver import DyCallable, JacCallable, Solver, SolverOutput, convergence_test, output_step
+
+
 class Vode(Solver):
     """VODE solver for Freckll."""
-    def _run_solver(self, f: DyCallable, jac: JacCallable, y0: FreckllArray, t0: float, t1: float, 
-                    num_species: int,
-                    atol: float = 1e-25,
-                    rtol: float = 1e-3,
-                    df_criteria: float = 1e-3,
-                    dfdt_criteria: float = 1e-8,
-                    nevals:int=200,
-                    max_solve_time: Optional[u.Quantity] = None,
-                    max_retries:int=10,
-                    
-                    **kwargs)-> SolverOutput:
+
+    def _run_solver(
+        self,
+        f: DyCallable,
+        jac: JacCallable,
+        y0: FreckllArray,
+        t0: float,
+        t1: float,
+        num_species: int,
+        atol: float = 1e-25,
+        rtol: float = 1e-3,
+        df_criteria: float = 1e-3,
+        dfdt_criteria: float = 1e-8,
+        nevals: int = 200,
+        max_solve_time: Optional[u.Quantity] = None,
+        max_retries: int = 10,
+        **kwargs,
+    ) -> SolverOutput:
         """Run the VODE solver.
-        
+
         Args:
             f: The function to solve.
             jac: The Jacobian function.
@@ -33,17 +43,19 @@ class Vode(Solver):
             dfdt_criteria: Criteria for convergence.
             nevals: Number of evaluations to perform.
             max_retries: Maximum number of retries for the solver.
-        
+
         Returns:
             SolverOutput: The output of the solver.
-        
+
         """
         import math
+
         from scipy.integrate import ode
+
         from ..utils import convert_to_banded
 
         band = num_species + 2
-        banded_jac = lambda t,x : convert_to_banded(jac(t,x), band)
+        banded_jac = lambda t, x: convert_to_banded(jac(t, x), band)
         # Set the solver options
 
         options = {
@@ -59,7 +71,7 @@ class Vode(Solver):
         t_eval = np.logspace(start_t, end_t, nevals)
 
         # Run the solver
-        soln = ode(f,banded_jac).set_integrator("vode", **options)
+        soln = ode(f, banded_jac).set_integrator("vode", **options)
         soln.set_initial_value(y0, t0)
         time_idx = 1
 
@@ -89,7 +101,7 @@ class Vode(Solver):
             else:
                 current_t = soln.t
                 current_y = soln.y
-                soln = ode(f,banded_jac).set_integrator("vode", **options)
+                soln = ode(f, banded_jac).set_integrator("vode", **options)
                 soln.set_initial_value(current_y, current_t)
                 max_retries += 1
                 if retries >= max_retries:
@@ -101,7 +113,6 @@ class Vode(Solver):
             if max_solve_time is not None and current_time > max_solve_time:
                 self.info("Maximum solve time reached")
                 break
-
 
         return {
             "num_dndt_evals": 0,

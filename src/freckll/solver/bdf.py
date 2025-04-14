@@ -1,18 +1,27 @@
-from .solver import Solver, DyCallable, JacCallable, SolverOutput
 import numpy as np
+
 from ..types import FreckllArray
+from .solver import DyCallable, JacCallable, Solver, SolverOutput
+
 
 class BDF(Solver):
-
-    def _run_solver(self, f: DyCallable, jac: JacCallable, y0: FreckllArray, t0: float, t1: float, 
-                    num_species: int,
-              atol: float = 1e-25,
-                rtol: float = 1e-3,
-              df_criteria: float = 1e-3,
-                dfdt_criteria: float = 1e-8,
-                    nsteps:int=50,
-                    **kwargs)-> SolverOutput:
+    def _run_solver(
+        self,
+        f: DyCallable,
+        jac: JacCallable,
+        y0: FreckllArray,
+        t0: float,
+        t1: float,
+        num_species: int,
+        atol: float = 1e-25,
+        rtol: float = 1e-3,
+        df_criteria: float = 1e-3,
+        dfdt_criteria: float = 1e-8,
+        nsteps: int = 50,
+        **kwargs,
+    ) -> SolverOutput:
         import math
+
         from scipy.integrate import solve_ivp
 
         # Set the solver options
@@ -35,9 +44,8 @@ class BDF(Solver):
             y0=y0,
             t_eval=t_eval,
             **options,
-         
         )
-        
+
         return {
             "num_dndt_evals": sol.nfev,
             "num_jac_evals": sol.njev,

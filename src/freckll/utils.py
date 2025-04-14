@@ -2,9 +2,12 @@
 
 import numpy as np
 import numpy.typing as npt
-from scipy import sparse
-from .reactions.photo import StarSpectra
 from astropy import units as u
+from scipy import sparse
+
+from .reactions.photo import StarSpectra
+
+
 def n_largest_index(array: npt.NDArray, n: int, axis: int = 0) -> npt.NDArray[np.integer]:
     """Return the indices of the n largest elements along the given axis."""
     return np.argsort(array, axis=axis)[-1 : -n - 1 : -1]
@@ -44,27 +47,24 @@ def convert_to_banded_lsoda(mat: sparse.sparray, band: int):
 
     return ab
 
+
 def blackbody(spectral: u.Quantity, temperature: u.Quantity) -> u.Quantity:
     """Compute the blackbody spectrum.
-    
+
     Args:
         spectral: The spectral range.
         temperature: The temperature of the blackbody.
     Returns:
         The blackbody spectrum.
-    
-    
+
+
     """
-    from astropy.constants import h, k_B, c
+    from astropy.constants import c, h, k_B
+
     spectral = spectral.to(u.nm, equivalencies=u.spectral())
     temperature = temperature.to(u.K)
 
-
-
-    return (
-        (2 * h * c**2) / (spectral**5) * (1 / (np.exp((h * c) / (spectral * k_B * temperature)) - 1))
-    )
-
+    return (2 * h * c**2) / (spectral**5) * (1 / (np.exp((h * c) / (spectral * k_B * temperature)) - 1))
 
 
 def rescale_star_spectrum(
@@ -94,7 +94,7 @@ def rescale_star_spectrum(
     current_bb = np.maximum(current_bb, 1e-50)
     new_bb = np.maximum(new_bb, 1e-50)
 
-    ratio = (new_bb/current_bb) *( new_radius / current_radius)**2
+    ratio = (new_bb / current_bb) * (new_radius / current_radius) ** 2
 
     return StarSpectra(
         wavelength=star_spectrum.wavelength,
@@ -103,10 +103,10 @@ def rescale_star_spectrum(
     )
 
 
-
 def interpolate_pressure(
-        pressure: u.Quantity, data: u.Quantity,
-        new_pressure: u.Quantity, 
+    pressure: u.Quantity,
+    data: u.Quantity,
+    new_pressure: u.Quantity,
 ) -> u.Quantity:
     from scipy.interpolate import interp1d
 

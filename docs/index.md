@@ -5,11 +5,10 @@
 [![Commit activity](https://img.shields.io/github/commit-activity/m/ahmed-f-alrefaie/FRECKLL)](https://img.shields.io/github/commit-activity/m/ahmed-f-alrefaie/FRECKLL)
 [![License](https://img.shields.io/github/license/ahmed-f-alrefaie/FRECKLL)](https://img.shields.io/github/license/ahmed-f-alrefaie/FRECKLL)
 
-**F**ast and **R**educed **E**xoplanet **C**hemical **K**inetics disti**LL**ed (**FRECKLL**) is a chemical kinetic solver in Python that 
+**F**ast and **R**educed **E**xoplanet **C**hemical **K**inetics disti**LL**ed (**FRECKLL**) is a chemical kinetic solver in Python that
 employes numerical distillation and the [K-fold summation technique](https://epubs.siam.org/doi/10.1137/030601818) to solve chemical networks
 rapidly and accurately. The full [Venot Methanol network](https://ui.adsabs.harvard.edu/abs/2020A%26A...634A..78V/abstract)
 with photochemistry can be solved to steady state in as little as 42 seconds and the reduced network in only 7 seconds!
-
 
 ![HD 209458 b](assets/full_hd209_light.gif#only-light)
 ![HD 209458 b](assets/full_hd209_dark.gif#only-dark)

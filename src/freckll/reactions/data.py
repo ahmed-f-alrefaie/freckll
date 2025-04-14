@@ -29,6 +29,8 @@ class Reaction:
         reactants = " + ".join([str(x) for x in self.reactants])
         products = " + ".join([str(x) for x in self.products])
         return f"{reactants} -> {products} ({self.reaction_rate.mean():.2e}) ({self.tags})"
+
+
 class ReactionCall:
     """A function that builds a standardized reaction computation."""
 

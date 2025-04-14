@@ -1,13 +1,13 @@
 """Test for io related functions"""
-from astropy import units as u
+
 import numpy as np
 import pytest
+from astropy import units as u
+
 
 def test_generic_csv_loader(tmpdir):
     """Test the generic csv loader."""
     from freckll.io.loader import generic_csv_loader
-
-    import numpy as np
 
     filename = tmpdir / "test.csv"
 
@@ -17,9 +17,11 @@ def test_generic_csv_loader(tmpdir):
         0.0, 1.0, 2.0, 3.0
         4.0, 5.0, 6.0, 7.0
         8.0, 9.0, 10.0, 11.0
-        12.0, 13.0, 14.0, 15.0""", encoding="utf-8")
-    
-    res_1, res_2,res_3 = generic_csv_loader(
+        12.0, 13.0, 14.0, 15.0""",
+        encoding="utf-8",
+    )
+
+    res_1, res_2, res_3 = generic_csv_loader(
         filename,
         [0, 1, 2],
         [u.m, u.s, None],
@@ -42,11 +44,10 @@ def test_generic_csv_loader(tmpdir):
     np.testing.assert_array_equal(res_2.value, np.array([1.0, 5.0, 9.0, 13.0]))
     np.testing.assert_array_equal(res_3, np.array([2.0, 6.0, 10.0, 14.0]))
 
+
 def test_generic_csv_loader_swap_order(tmpdir):
     """Test the generic csv loader."""
     from freckll.io.loader import generic_csv_loader
-
-    import numpy as np
 
     filename = tmpdir / "test.csv"
 
@@ -56,9 +57,11 @@ def test_generic_csv_loader_swap_order(tmpdir):
         0.0, 1.0, 2.0, 3.0
         4.0, 5.0, 6.0, 7.0
         8.0, 9.0, 10.0, 11.0
-        12.0, 13.0, 14.0, 15.0""", encoding="utf-8")
-    
-    res_2, res_1,res_3 = generic_csv_loader(
+        12.0, 13.0, 14.0, 15.0""",
+        encoding="utf-8",
+    )
+
+    res_2, res_1, res_3 = generic_csv_loader(
         filename,
         [1, 0, 2],
         [u.s, u.m, None],
@@ -107,8 +110,3 @@ def test_load_default_stellar_spectra(star):
     assert spectra.wavelength.unit == u.nm
     assert spectra.flux.unit == u.photon / (u.cm**2 * u.s * u.nm)
     assert isinstance(spectra, StarSpectra)
-
-
-
-
-

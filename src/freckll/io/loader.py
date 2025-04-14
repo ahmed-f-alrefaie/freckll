@@ -1,20 +1,24 @@
 """Parse FRECKLL input file."""
-import typing as t
+
 import pathlib
-from astropy.io.typing import PathLike
-from astropy import units as u
-import numpy.typing as npt
+import typing as t
+
 import numpy as np
+import numpy.typing as npt
 from astropy import units as u
-from ..network import ChemicalNetwork, PhotoChemistry
-from ..venot import VenotChemicalNetwork, VenotPhotoChemistry
+from astropy.io.typing import PathLike
+
+from ..log import setup_log
 from ..reactions.photo import StarSpectra
 from ..species import SpeciesFormula
-from ..log import setup_log
+from ..venot import VenotChemicalNetwork, VenotPhotoChemistry
+
 Networks = t.Literal["venot-methanol-2023", "venot-methanol-2023-reduced"]
 Photonetworks = t.Literal["venot-methanol-2023-photo"]
 
-Stars = t.Literal["55cnc", "adleo", "gj436", "gj3470", "hd128167", "hd189733", "hd209458", "sun", "wasp12", "wasp39", "wasp43"]
+Stars = t.Literal[
+    "55cnc", "adleo", "gj436", "gj3470", "hd128167", "hd189733", "hd209458", "sun", "wasp12", "wasp39", "wasp43"
+]
 
 NetworkFormats = t.Literal["venot"]
 PhotchemFormats = t.Literal["venot"]
@@ -29,9 +33,9 @@ def generic_csv_loader(
     skiprows: t.Optional[int] = 0,
     delimiter: t.Optional[str] = None,
     comments: t.Optional[str] = None,
-) -> tuple[u.Quantity| npt.NDArray[np.floating],...]:
+) -> tuple[u.Quantity | npt.NDArray[np.floating], ...]:
     """Load a csv file
-    
+
     Args:
         filename: Path to the csv file.
         columns: List of columns to load. 0 being first
@@ -41,18 +45,18 @@ def generic_csv_loader(
         comments: Comment character in the file.
     Returns:
         Tuple of quantities for each column.
-    
+
     """
     filename = pathlib.Path(filename)
     if not filename.exists():
         raise FileNotFoundError(f"File {filename} does not exist.")
-    
+
     if not filename.is_file():
         raise FileNotFoundError(f"File {filename} is not a file.")
-    
+
     columns = [int(c) for c in columns]
 
-    with open(filename, "r") as f:
+    with open(filename) as f:
         res = np.loadtxt(
             f,
             skiprows=int(skiprows),
@@ -85,7 +89,7 @@ def tp_profile_loader(
     start: t.Literal["top", "bottom"] = "bottom",
 ) -> tuple[u.Quantity, u.Quantity]:
     """Load a temperature-pressure profile from a csv file.
-    
+
     Args:
         filename: Path to the csv file.
         temperature_column: Column index for temperature. 0 being first
@@ -114,20 +118,21 @@ def tp_profile_loader(
 
     return pressure, temperature
 
+
 def kzz_profile_loader(
-        *,
-        filename: PathLike,
-        kzz_column: int,
-        pressure_column: int,
-        kzz_unit: u.Unit,
-        pressure_unit: u.Unit,
-        skiprows: t.Optional[int] = 0,
-        delimiter: t.Optional[str] = None,
-        comments: t.Optional[str] = None,
-        start: t.Literal["top", "bottom"] = "bottom",
+    *,
+    filename: PathLike,
+    kzz_column: int,
+    pressure_column: int,
+    kzz_unit: u.Unit,
+    pressure_unit: u.Unit,
+    skiprows: t.Optional[int] = 0,
+    delimiter: t.Optional[str] = None,
+    comments: t.Optional[str] = None,
+    start: t.Literal["top", "bottom"] = "bottom",
 ) -> tuple[u.Quantity, u.Quantity]:
     """Load a kzz profile from a csv file.
-    
+
     Args:
         filename: Path to the csv file.
         kzz_column: Column index for kzz. 0 being first
@@ -138,10 +143,10 @@ def kzz_profile_loader(
         comments: Comment character in the file.
     Returns:
         Tuple of kzz and pressure quantities.
-    
-    
+
+
     """
-    pressure, kzz =  generic_csv_loader(
+    pressure, kzz = generic_csv_loader(
         filename,
         [pressure_column, kzz_column],
         [pressure_unit, kzz_unit],
@@ -158,19 +163,19 @@ def kzz_profile_loader(
 
 
 def star_spectra_loader(
-        *,
-        filename: PathLike,
-        flux_column: int,
-        spectral_column: int,
-        flux_unit: u.Unit,
-        spectral_unit: u.Unit,
-        reference_distance: u.Quantity,
-        skiprows: t.Optional[int] = 0,
-        delimiter: t.Optional[str] = None,
-        comments: t.Optional[str] = None,
+    *,
+    filename: PathLike,
+    flux_column: int,
+    spectral_column: int,
+    flux_unit: u.Unit,
+    spectral_unit: u.Unit,
+    reference_distance: u.Quantity,
+    skiprows: t.Optional[int] = 0,
+    delimiter: t.Optional[str] = None,
+    comments: t.Optional[str] = None,
 ) -> StarSpectra:
     """Load a kzz profile from a csv file.
-    
+
     Args:
         filename: Path to the csv file.
         flux_column: Column index for flux. 0 being first
@@ -183,10 +188,10 @@ def star_spectra_loader(
         comments: Comment character in the file.
     Returns:
         Tuple of kzz and pressure quantities.
-    
-    
+
+
     """
-    wav, flux =  generic_csv_loader(
+    wav, flux = generic_csv_loader(
         filename,
         [spectral_column, flux_column],
         [spectral_unit, flux_unit],
@@ -201,11 +206,12 @@ def star_spectra_loader(
         reference_distance=reference_distance,
     )
 
+
 def default_reduced_network_loader() -> VenotChemicalNetwork:
     """Load the default reduced network."""
     import importlib.resources
     import pathlib
-    
+
     reduced_network_path = importlib.resources.files("freckll.data") / "Venot2020_reduced_TAUREX"
     reduced_network_path = reduced_network_path.resolve()
     reduced_network_path = pathlib.Path(reduced_network_path)
@@ -219,7 +225,7 @@ def default_full_network_loader() -> VenotChemicalNetwork:
     """Load the default full network."""
     import importlib.resources
     import pathlib
-    
+
     full_network_path = importlib.resources.files("freckll.data") / "Venot2020_Taurex"
     full_network_path = full_network_path.resolve()
     full_network_path = pathlib.Path(full_network_path)
@@ -228,11 +234,11 @@ def default_full_network_loader() -> VenotChemicalNetwork:
         full_network_path,
     )
 
+
 def default_photonetwork_loader(species_list: list[SpeciesFormula]) -> VenotPhotoChemistry:
     """Load the default photo network."""
     import importlib.resources
-    import pathlib
-    
+
     photo_file = importlib.resources.files("freckll.data") / "Venot2020_Taurex" / "photodissociations.dat"
     photo_file = photo_file.resolve()
     section_path = importlib.resources.files("freckll.data") / "Sections"
@@ -243,19 +249,18 @@ def default_photonetwork_loader(species_list: list[SpeciesFormula]) -> VenotPhot
         species_list,
         photodissociation_file=photo_file,
         cross_section_path=section_path,
-        
     )
 
 
 def default_network_loader(network: Networks) -> VenotChemicalNetwork:
     """Load the default network.
-    
+
     Args:
         network: The network to load. Can be "venot-methanol-2023" or "venot-methanol-2023-reduced".
-    
+
     Returns:
         The loaded network.
-    
+
     """
     if network == "venot-methanol-2023":
         return default_full_network_loader()
@@ -265,12 +270,11 @@ def default_network_loader(network: Networks) -> VenotChemicalNetwork:
         raise ValueError(f"Unknown network '{network}'")
 
 
-
 def default_stellar_spectra_loader(
     star: Stars,
 ) -> StarSpectra:
     """Load the default stellar spectra.
-    
+
     Args:
         star: The star to load. Can be "55cnc", "adleo", "gj436", "gj3470", "hd128167", "hd189733", "hd209458", "sun", "wasp12", "wasp39", "wasp43".
 
@@ -280,7 +284,7 @@ def default_stellar_spectra_loader(
 
     import importlib.resources
     import pathlib
-    
+
     if star not in t.get_args(Stars):
         raise ValueError(f"Unknown star '{star}'")
 
@@ -288,7 +292,7 @@ def default_stellar_spectra_loader(
     star_path = star_path.resolve()
     star_path = pathlib.Path(star_path)
 
-    with open(star_path, "r") as f:
+    with open(star_path) as f:
         wav, flux = np.loadtxt(
             f,
             unpack=True,
@@ -296,16 +300,12 @@ def default_stellar_spectra_loader(
 
     return StarSpectra(
         wav << u.nm,
-        flux << u.photon/u.cm**2/u.s/u.nm,
+        flux << u.photon / u.cm**2 / u.s / u.nm,
         reference_distance=1.0 * u.AU,
     )
 
-def rescale_stellar_spectra(
-        *,
-        from_star: Stars,
-        temperature: u.Quantity,
-        radius: u.Quantity
-) -> StarSpectra:
+
+def rescale_stellar_spectra(*, from_star: Stars, temperature: u.Quantity, radius: u.Quantity) -> StarSpectra:
     from ..utils import rescale_star_spectrum
 
     _star_temperature_map = {
@@ -336,21 +336,17 @@ def rescale_stellar_spectra(
         "wasp43": 0.6 << u.R_sun,
     }
 
-
     star = default_stellar_spectra_loader(from_star)
 
-    star = rescale_star_spectrum(star, 
-                                 _star_radius_map[from_star],
-                                    radius,
-                                 _star_temperature_map[from_star],
-                                 temperature)
+    star = rescale_star_spectrum(
+        star, _star_radius_map[from_star], radius, _star_temperature_map[from_star], temperature
+    )
 
     return star
 
 
 def ace_equil_chemistry_loader(
-        *,
-    
+    *,
     species: list[SpeciesFormula],
     temperature: u.Quantity,
     pressure: u.Quantity,
@@ -363,7 +359,6 @@ def ace_equil_chemistry_loader(
         7.86,
         8.73,
     ),
-
     **kwargs: t.Any,
 ) -> npt.NDArray[np.floating]:
     """Loads and runs the ACE chemistry model."""

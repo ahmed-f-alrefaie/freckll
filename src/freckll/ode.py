@@ -5,7 +5,6 @@ from astropy import units as u
 from scipy import sparse
 
 from .distill import ksum
-from .network import ChemicalNetwork
 from .reactions.data import Reaction
 from .species import SpeciesDict, SpeciesFormula
 from .types import FreckllArray, FreckllArrayInt
@@ -79,13 +78,13 @@ def construct_jacobian_reaction_terms(
     k: int = 4,
 ) -> tuple[list[FreckllArrayInt], list[FreckllArrayInt], FreckllArray]:
     """Construct the Jacobian for the reaction terms.
-    
+
     Args:
         loss_reactions: The loss reactions for the species.
         species: The list of species.
         number_density: The number density of the species.
         k: K-sum number (higher is more accurate)
-    
+
     """
     from collections import defaultdict
 
@@ -148,7 +147,6 @@ def construct_jacobian_vertical_terms(
     with np.errstate(all="ignore"):
         delta_z, delta_z_plus, delta_z_minus, inv_dz, inv_dz_plus, inv_dz_minus = kinetics.deltaz_terms(altitude)
 
-
         fd_plus, fd_minus = kinetics.finite_difference_terms(
             altitude,
             planet_radius,
@@ -175,26 +173,43 @@ def construct_jacobian_vertical_terms(
         mdiff_plus, mdiff_minus = kinetics.general_plus_minus(molecular_diffusion)
         kzz_plus, kzz_minus = kinetics.general_plus_minus(kzz)
 
-
         pd_same_p = dens_plus * (mdiff_plus * (0.5 * diffusion_plus - inv_dz_plus) - inv_dz_plus * kzz_plus) * fd_plus
 
-        pd_same_m = dens_minus * (mdiff_minus * (0.5 * diffusion_minus + inv_dz_minus) + inv_dz_minus * kzz_minus) * fd_minus
+        pd_same_m = (
+            dens_minus * (mdiff_minus * (0.5 * diffusion_minus + inv_dz_minus) + inv_dz_minus * kzz_minus) * fd_minus
+        )
 
         pd_same = pd_same_p + pd_same_m
         pd_p = dens_minus * (mdiff_minus * (0.5 * diffusion_minus - inv_dz_minus) - inv_dz_minus * kzz_minus) * fd_minus
         pd_m = dens_plus * (mdiff_plus * (0.5 * diffusion_plus + inv_dz_plus) + inv_dz_plus * kzz_plus) * fd_plus
 
-        pd_same[:, 0] = dens_plus[0] * (mdiff_plus[:, 0] * (0.5 * diffusion_plus[:, 0] - inv_dz[0]) - inv_dz[0] * kzz_plus[0]) * fd_plus[0]
+        pd_same[:, 0] = (
+            dens_plus[0]
+            * (mdiff_plus[:, 0] * (0.5 * diffusion_plus[:, 0] - inv_dz[0]) - inv_dz[0] * kzz_plus[0])
+            * fd_plus[0]
+        )
 
-        pd_m[:, 0] = dens_plus[0] * (mdiff_plus[:, 0] * (0.5 * diffusion_plus[:, 0] + inv_dz[0]) + inv_dz[0] * kzz_plus[0]) * fd_plus[0]
+        pd_m[:, 0] = (
+            dens_plus[0]
+            * (mdiff_plus[:, 0] * (0.5 * diffusion_plus[:, 0] + inv_dz[0]) + inv_dz[0] * kzz_plus[0])
+            * fd_plus[0]
+        )
 
-        pd_same[:, -1] = dens_minus[-1] * (mdiff_minus[:, -1] * (0.5 * diffusion_minus[:, -1] + inv_dz[-1]) + inv_dz[-1] * kzz_minus[-1]) * fd_minus[-1]
+        pd_same[:, -1] = (
+            dens_minus[-1]
+            * (mdiff_minus[:, -1] * (0.5 * diffusion_minus[:, -1] + inv_dz[-1]) + inv_dz[-1] * kzz_minus[-1])
+            * fd_minus[-1]
+        )
 
-        pd_p[:, -1] = dens_minus[-1] * (mdiff_minus[:, -1] * (0.5 * diffusion_minus[:, -1] - inv_dz[-1]) - inv_dz[-1] * kzz_minus[-1]) * fd_minus[-1]
+        pd_p[:, -1] = (
+            dens_minus[-1]
+            * (mdiff_minus[:, -1] * (0.5 * diffusion_minus[:, -1] - inv_dz[-1]) - inv_dz[-1] * kzz_minus[-1])
+            * fd_minus[-1]
+        )
         # pd_p[:,-1] =  pd_same[:, -1]
-        #pd_p[:, 0] = 0.0
+        # pd_p[:, 0] = 0.0
         # pd_m[:, 0] = pd_same[:, 0]
-        #pd_m[:, -1] = 0.0
+        # pd_m[:, -1] = 0.0
 
         # Now its time to construct the Jacobian
         pd_same /= density
@@ -227,11 +242,11 @@ def construct_jacobian_vertical_terms(
 
         rows.append(spec_index[1:])
         columns.append(minus_index)
-        data.append(pd_m[x,:-1])
+        data.append(pd_m[x, :-1])
 
         rows.append(spec_index[:-1])
         columns.append(plus_index)
-        data.append(pd_p[x,1:])
+        data.append(pd_p[x, 1:])
 
     return np.concatenate(rows), np.concatenate(columns), np.concatenate(data)
 
@@ -275,7 +290,8 @@ def construct_jacobian_reaction_terms_sparse(
     return sparse.csc_matrix((data, (columns, rows)), shape=(neq, neq))
 
 
-def construct_vertical_jacobian(vmr: FreckllArray,
+def construct_vertical_jacobian(
+    vmr: FreckllArray,
     density: u.Quantity,
     planet_radius: u.Quantity,
     planet_mass: u.Quantity,
@@ -294,9 +310,10 @@ def construct_vertical_jacobian(vmr: FreckllArray,
     \frac{d \pi}{dz}
     $$
     """
-    from freckll.kinetics import deltaz_terms, diffusive_terms, finite_difference_terms, general_plus_minus
-    from freckll.distill import ksum
     from scipy.sparse import csc_matrix
+
+    from freckll.kinetics import deltaz_terms, diffusive_terms, finite_difference_terms, general_plus_minus
+
     # Compute the delta z terms
     delta_z, delta_z_plus, delta_z_minus, inv_dz, inv_dz_plus, inv_dz_minus = deltaz_terms(altitude)
 
@@ -324,36 +341,51 @@ def construct_vertical_jacobian(vmr: FreckllArray,
         inv_dz_minus,
     )
 
-
     # Compute the general plus and minus terms
     dens_plus, dens_minus = general_plus_minus(density)
     mdiff_plus, mdiff_minus = general_plus_minus(molecular_diffusion)
     kzz_plus, kzz_minus = general_plus_minus(kzz)
     pd_same_p = dens_plus * (mdiff_plus * (0.5 * diffusion_plus - inv_dz_plus) - inv_dz_plus * kzz_plus) * fd_plus
 
-    pd_same_m = dens_minus * (mdiff_minus * (0.5 * diffusion_minus + inv_dz_minus) + inv_dz_minus * kzz_minus) * fd_minus
+    pd_same_m = (
+        dens_minus * (mdiff_minus * (0.5 * diffusion_minus + inv_dz_minus) + inv_dz_minus * kzz_minus) * fd_minus
+    )
 
     pd_same = pd_same_p + pd_same_m
     pd_p = dens_minus * (mdiff_minus * (0.5 * diffusion_minus - inv_dz_minus) - inv_dz_minus * kzz_minus) * fd_minus
     pd_m = dens_plus * (mdiff_plus * (0.5 * diffusion_plus + inv_dz_plus) + inv_dz_plus * kzz_plus) * fd_plus
 
-    pd_same[:, 0] = dens_plus[0] * (mdiff_plus[:, 0] * (0.5 * diffusion_plus[:, 0] - inv_dz[0]) - inv_dz[0] * kzz_plus[0]) * fd_plus[0]
+    pd_same[:, 0] = (
+        dens_plus[0]
+        * (mdiff_plus[:, 0] * (0.5 * diffusion_plus[:, 0] - inv_dz[0]) - inv_dz[0] * kzz_plus[0])
+        * fd_plus[0]
+    )
 
-    pd_m[:, 0] = dens_plus[0] * (mdiff_plus[:, 0] * (0.5 * diffusion_plus[:, 0] + inv_dz[0]) + inv_dz[0] * kzz_plus[0]) * fd_plus[0]
+    pd_m[:, 0] = (
+        dens_plus[0]
+        * (mdiff_plus[:, 0] * (0.5 * diffusion_plus[:, 0] + inv_dz[0]) + inv_dz[0] * kzz_plus[0])
+        * fd_plus[0]
+    )
 
-    pd_same[:, -1] = dens_minus[-1] * (mdiff_minus[:, -1] * (0.5 * diffusion_minus[:, -1] + inv_dz[-1]) + inv_dz[-1] * kzz_minus[-1]) * fd_minus[-1]
+    pd_same[:, -1] = (
+        dens_minus[-1]
+        * (mdiff_minus[:, -1] * (0.5 * diffusion_minus[:, -1] + inv_dz[-1]) + inv_dz[-1] * kzz_minus[-1])
+        * fd_minus[-1]
+    )
 
-    pd_p[:, -1] = dens_minus[-1] * (mdiff_minus[:, -1] * (0.5 * diffusion_minus[:, -1] - inv_dz[-1]) - inv_dz[-1] * kzz_minus[-1]) * fd_minus[-1]
+    pd_p[:, -1] = (
+        dens_minus[-1]
+        * (mdiff_minus[:, -1] * (0.5 * diffusion_minus[:, -1] - inv_dz[-1]) - inv_dz[-1] * kzz_minus[-1])
+        * fd_minus[-1]
+    )
     # pd_p[:,-1] =  pd_same[:, -1]
 
-        # pd_m[:,:-1]/=density[1:]
-    pd_same = (pd_same / density).to(1/u.s).value
-    
-    pd_p = (pd_p / density).to(1/u.s).value 
-    
-    pd_m = (pd_m / density).to(1/u.s).value
+    # pd_m[:,:-1]/=density[1:]
+    pd_same = (pd_same / density).to(1 / u.s).value
 
-    
+    pd_p = (pd_p / density).to(1 / u.s).value
+
+    pd_m = (pd_m / density).to(1 / u.s).value
 
     num_species, num_layers = pd_same.shape
     same_layer = np.arange(0, num_layers)
@@ -384,5 +416,3 @@ def construct_vertical_jacobian(vmr: FreckllArray,
     cols = np.concatenate(cols)
     data = np.concatenate(data)
     return csc_matrix((data, (cols, rows)), shape=(neq, neq))
-
-

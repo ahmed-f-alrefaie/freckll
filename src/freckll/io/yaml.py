@@ -1,17 +1,18 @@
 """Yaml parsing"""
 
 import pathlib
+import typing as t
 
 import astropy.units as u
-from astropy.io.typing import PathLike
 import yaml
-
-import typing as t
+from astropy.io.typing import PathLike
 
 T = t.TypeVar("T")
 
+
 def recursively_process_dictionary(
-    dictionary: dict[str, t.Any | str], callable: t.Callable[[str], T],
+    dictionary: dict[str, t.Any | str],
+    callable: t.Callable[[str], T],
     ignore_keys: t.Optional[t.Sequence[str]] = (),
 ) -> dict[str, t.Any | T]:
     """Recursively process a dictionary, parsing strings into quantities.
@@ -55,7 +56,7 @@ def process_quantity(value: str) -> u.Quantity | str | u.Unit:
 
     Args:
         value: The value to process.
-    
+
     Returns:
         The processed value.
     """
@@ -78,23 +79,23 @@ def process_quantity(value: str) -> u.Quantity | str | u.Unit:
 
 def load_yaml(yaml_data: str) -> dict:
     """Load yaml string.
-    
+
     Args:
         yaml_data: The Yaml data to load.
-    
+
     Returns:
         The loaded Yaml data as a dictionary.
-    
-    
+
+
     """
     loader = yaml.SafeLoader
-    yaml_dict =  yaml.load(yaml_data, Loader=loader)
-    return recursively_process_dictionary(yaml_dict,process_quantity, ignore_keys=["elements"])
+    yaml_dict = yaml.load(yaml_data, Loader=loader)
+    return recursively_process_dictionary(yaml_dict, process_quantity, ignore_keys=["elements"])
 
 
 def load_yaml_from_file(file_path: PathLike) -> dict:
     """Load yaml file.
-    
+
     Args:
         file_path: The path to the Yaml file.
 
@@ -103,5 +104,5 @@ def load_yaml_from_file(file_path: PathLike) -> dict:
 
     """
     file_path = pathlib.Path(file_path)
-    with open(file_path, "r") as f:
+    with open(file_path) as f:
         return load_yaml(f.read())
