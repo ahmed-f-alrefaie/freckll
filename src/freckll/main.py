@@ -9,12 +9,9 @@ _log = logging.getLogger("freckll")
 
 
 @click.command()
-@click.option(
-    "--input",
-    "-i",
+@click.argument(
+    "input",
     type=click.Path(exists=True),
-    required=True,
-    help="Input file to run.",
 )
 @click.option(
     "--output",
