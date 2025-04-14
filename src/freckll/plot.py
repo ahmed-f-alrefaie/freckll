@@ -105,13 +105,18 @@ def animate_vmr(
     xlims: tuple[float, float] = (1e-16, 1),
     initial_vmr: u.Quantity | None = None,
     ax: plt.Axes | None = None,
+    **kwargs,
 ) -> plt.Axes:
     """Animate volume mixing ratio (VMR) profiles.
 
     Args:
-        vmr: Volume mixing ratio profile.
+        vmrs: Volume mixing ratio over `times`.
+        times: Evaluated time points.
         pressure: Pressure profile.
         species: List of species names.
+        species_to_plot: List of species to plot.
+        xlims: X-axis limits.
+        initial_vmr: Initial volume mixing ratio. If None, do not plot.
         ax: Matplotlib Axes object to plot on. If None, create a new one.
 
     Returns:
@@ -121,7 +126,6 @@ def animate_vmr(
         fig, ax = plt.subplots()
     from matplotlib.animation import FuncAnimation
 
-    fig, ax = plt.subplots()
     ax.set_xlim(xlims)
     ax.set_ylim(pressure.value.max(), pressure.value.min())
     ax.set_xscale("log")
@@ -153,7 +157,7 @@ def animate_vmr(
             lines[idx].set_data(new_fm[x].T, pressure.value)
         ax.set_title(f"Time: {times[frame-1]:.2E} s")
         return lines
-    ani = FuncAnimation(fig, update, frames=len(vmrs), init_func=init, blit=True, repeat=False)
+    ani = FuncAnimation(fig, update, frames=len(vmrs), init_func=init, **kwargs)
 
     return ani
 
