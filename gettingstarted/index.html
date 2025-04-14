@@ -1,0 +1,1705 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Fast Disequilibrium chemistry">
+      
+      
+        <meta name="author" content="Ahmed F. Al-Refaie">
+      
+      
+        <link rel="canonical" href="https://ahmed-f-alrefaie.github.io/FRECKLL/gettingstarted/">
+      
+      
+        <link rel="prev" href="../introduction/">
+      
+      
+        <link rel="next" href="../cli/cli/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.2">
+    
+    
+      
+        <title>Getting Started - FRECKLL</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.d7758b05.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="deep-orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#getting-started-with-freckll" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="FRECKLL" class="md-header__button md-logo" aria-label="FRECKLL" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            FRECKLL
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Getting Started
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="deep-orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="deep-orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ahmed-f-alrefaie/FRECKLL" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ahmed-f-alrefaie/FRECKLL
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="FRECKLL" class="md-nav__button md-logo" aria-label="FRECKLL" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    FRECKLL
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ahmed-f-alrefaie/FRECKLL" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ahmed-f-alrefaie/FRECKLL
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../introduction/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#loading-in-atmospheric-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Loading in Atmospheric Data
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loading-in-the-network" class="md-nav__link">
+    <span class="md-ellipsis">
+      Loading in the Network
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-reactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running reactions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#solving-the-atmosphere" class="md-nav__link">
+    <span class="md-ellipsis">
+      Solving the atmosphere
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-from-equilibrium" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running from Equilibrium
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#storing-and-reading-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      Storing and Reading Results
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-with-photochemistry" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running with Photochemistry
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    FRECKLL CLI
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            FRECKLL CLI
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/cli/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CLI program
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/inputfile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Input file
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Development
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Development
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../development/CONTRIBUTING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../development/portingnetworks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Porting Networks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../development/codeofconduct/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Modules
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Modules
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_1" id="__nav_7_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    IO
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_1">
+            <span class="md-nav__icon md-icon"></span>
+            IO
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/io/loader/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Loader
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_2" id="__nav_7_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Reactions
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_2">
+            <span class="md-nav__icon md-icon"></span>
+            Reactions
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/reactions/common/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Common
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/reactions/reactions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Reactions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/reactions/falloff/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Falloff
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/reactions/data/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Data
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/reactions/photolysis/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Photochemistry
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/kinetics/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Kinetics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/ode/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ODE
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#loading-in-atmospheric-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Loading in Atmospheric Data
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loading-in-the-network" class="md-nav__link">
+    <span class="md-ellipsis">
+      Loading in the Network
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-reactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running reactions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#solving-the-atmosphere" class="md-nav__link">
+    <span class="md-ellipsis">
+      Solving the atmosphere
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-from-equilibrium" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running from Equilibrium
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#storing-and-reading-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      Storing and Reading Results
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-with-photochemistry" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running with Photochemistry
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="getting-started-with-freckll">Getting Started with FRECKLL<a class="headerlink" href="#getting-started-with-freckll" title="Permanent link">&para;</a></h1>
+<p>The Google Colab version can be found <a href="https://colab.research.google.com/drive/17qMpl1Zw8jWqb_L8s_2v7lMT9H9JT_jY?usp=sharing">here</a></p>
+<p>This guide is there to quickly get started on the using the <code>freckll</code> library. Here you will learn the basics:</p>
+<ul>
+<li>Loading in atmospheric data</li>
+<li>Loading in our network.</li>
+<li>Solving the atmosphere</li>
+<li>Plotting results</li>
+<li>Animating results</li>
+<li>Running from equilibrium</li>
+<li>Storing results</li>
+<li>Running with photochemistry.</li>
+</ul>
+<h2 id="loading-in-atmospheric-data">Loading in Atmospheric Data<a class="headerlink" href="#loading-in-atmospheric-data" title="Permanent link">&para;</a></h2>
+<p>First thing we need is profiles to solve. FRECKLL makes use of <a href="https://docs.astropy.org/en/stable/">astropy</a> to <code>units</code> to represent data. This makes the library agnostic to units. Creating a custom profile is as simple as:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">temperature</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">u</span><span class="o">.</span><span class="n">K</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">pressure</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="o">-</span><span class="mi">5</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">u</span><span class="o">.</span><span class="n">bar</span>
+</span></code></pre></div>
+<p>You can use your own methods to load in the data as long as it is in the form of a <code>Quantity</code> with correct units. FRECKLL includes some helpful methods to load in data under the <code>freckll.io.loader</code> module. For example, we will load in the TP profile using the <code>tp_profile_loader</code> function.</p>
+<p>Our csv file looks like this:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a># Pressure(mbar), Temperature (K)
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>0.10002E+06    1846.3
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>86374.        1841.7
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>74509.        1837.4
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>63753.        1836.2
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>54482.        1834.9
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>46559.        1833.4
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>39787.        1831.9
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>34001.        1830.4
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>29020.        1828.9
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>24720.        1828.1
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>21047.        1827.5
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>17919.        1826.9
+</span></code></pre></div>
+<ul>
+<li>Column 0 is Pressure in mbar</li>
+<li>Column 1 is temperature in K</li>
+</ul>
+<p>We can load it in using the following <code>tp_profile_loader</code> function:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">freckll.io.loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">tp_profile_loader</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">pressure</span><span class="p">,</span> <span class="n">temperature</span> <span class="o">=</span> <span class="n">tp_profile_loader</span><span class="p">(</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>  <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;tpprofile.csv&quot;</span><span class="p">,</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>  <span class="n">temperature_column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">temperature_unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">K</span><span class="p">,</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>  <span class="n">pressure_column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pressure_unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">mbar</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="s2">&quot;#&quot;</span><span class="p">)</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="nb">print</span><span class="p">(</span><span class="n">pressure</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>(130,)
+</code></pre></div>
+<p>Additionally it would be nice to load in a <span class="arithmatex">\(K_{zz}\)</span> profile as well. We can use a loader to do this as well.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">freckll.io.loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">kzz_profile_loader</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">_pressure</span><span class="p">,</span> <span class="n">kzz</span> <span class="o">=</span> <span class="n">kzz_profile_loader</span><span class="p">(</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;kzz.csv&quot;</span><span class="p">,</span> <span class="n">kzz_column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">pressure_column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">kzz_unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">cm</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    <span class="n">pressure_unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">mbar</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="s2">&quot;#&quot;</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="p">)</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="nb">print</span><span class="p">(</span><span class="n">kzz</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>(28369,)
+</code></pre></div>
+<p>Sometimes different profiles lie on different pressure grids, in this case <span class="arithmatex">\(K_{zz}\)</span> is in a much finer grid. We can get around this by interpolating the points to the TP profile grid. (Or vice-versa if you desire):</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">freckll.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">interpolate_pressure</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">kzz</span> <span class="o">=</span> <span class="n">interpolate_pressure</span><span class="p">(</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    <span class="n">_pressure</span><span class="p">,</span> <span class="n">kzz</span><span class="p">,</span> <span class="n">pressure</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="p">)</span>
+</span></code></pre></div>
+<p>We can plot both profiles using the <code>freckll.plot</code> module.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">freckll.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_tp_and_kzz</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="n">fig</span><span class="p">,</span><span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="n">plot_tp_and_kzz</span><span class="p">(</span><span class="n">pressure</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">kzz</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></code></pre></div>
+<p><img alt="png" src="../gettingstarted_files/gettingstarted_10_0.png" /></p>
+<h2 id="loading-in-the-network">Loading in the Network<a class="headerlink" href="#loading-in-the-network" title="Permanent link">&para;</a></h2>
+<p>The next step is to load in the network. FRECKLL includes two <a href="">Venot 2020</a> networks built in. The first is a full chemical network that includes photolysis and the second is a reduced network that does not include photolysis.</p>
+<p>You can also load in your own network but this will be covered in a different tutorial.</p>
+<p>The <code>default_network_loader</code> allows for two arguments:</p>
+<ul>
+<li><code>venot-methanol-2023-reduced</code> - This is the reduced network that does not include photolysis.</li>
+<li><code>venot-methanol-2023</code> - This is the full network that includes photolysis.</li>
+</ul>
+<p>We can use the loader to load in the reduced network:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">freckll.io.loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_network_loader</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">network</span> <span class="o">=</span> <span class="n">default_network_loader</span><span class="p">(</span><span class="s2">&quot;venot-methanol-2023-reduced&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<p>We can inspect the species in the network:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">network</span><span class="o">.</span><span class="n">species</span>
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>[C2H3O2 (CH3OCO),
+ HO2 (OOH),
+ C2H3O (CH2CHO),
+ C2H3O (CH3CO),
+ CNO (NCO),
+ CH3O (CH3O),
+ O2 (O2),
+ CHO2 (CO2H),
+ CHNO (HOCN),
+ C2H5 (C2H5),
+ CH3O (CH2OH),
+ C2H6 (C2H6),
+ C2H3 (C2H3),
+ C2H2O (CH2CO),
+ HN2 (NNH),
+ CH2N (H2CN),
+ CH4O (CH3OH),
+ CN (CN),
+ CH2 (1CH2),
+ CHNO (HNCO),
+ O (O3P),
+ C2H4 (C2H4),
+ CH2 (3CH2),
+ CHO (HCO),
+ C2H2 (C2H2),
+ CH2O (H2CO),
+ H2N (NH2),
+ CO2 (CO2),
+ HO (OH),
+ CH3 (CH3),
+ CHN (HCN),
+ H3N (NH3),
+ CH4 (CH4),
+ N2 (N2),
+ CO (CO),
+ H2O (H2O),
+ H (H),
+ He (He),
+ H2 (H2),
+ H2N2 (N2H2),
+ H3N2 (N2H3),
+ CH2N (HCNH),
+ CH2O2 (HOCHO),
+ CH3O2 (HOCH2O),
+ H2O (H2Oc[SpeciesState.LIQUID]),
+ CH4 (CH4c[SpeciesState.LIQUID]),
+ H3N (NH3c[SpeciesState.LIQUID])]
+</code></pre></div>
+<p>The <code>SpeciesFormula</code> is a class that contains a lot of information about a particular . It includes the following attributes:</p>
+<ul>
+<li><code>composition</code> - Number of atoms</li>
+<li><code>mass</code> - Mass of the species in amu</li>
+<li><code>state</code> - State of the species (gas, solid, liquid)</li>
+</ul>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">species</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">species</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Species name: </span><span class="si">{</span><span class="n">species</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="nb">print</span><span class="p">(</span><span class="n">species</span><span class="o">.</span><span class="n">composition</span><span class="p">())</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mass </span><span class="si">{</span><span class="n">species</span><span class="o">.</span><span class="n">mass</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Charge </span><span class="si">{</span><span class="n">species</span><span class="o">.</span><span class="n">charge</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;State: </span><span class="si">{</span><span class="n">species</span><span class="o">.</span><span class="n">state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Diffusion Volume: </span><span class="si">{</span><span class="n">species</span><span class="o">.</span><span class="n">diffusion_volume</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>Species name: CH3OCO
+Element  Count  Relative mass  Fraction %
+C            2      24.021480     40.6840
+H            3       3.023823      5.1213
+O            2      31.998810     54.1948
+Mass 59.044113
+Charge 0
+State: SpeciesState.GAS
+Diffusion Volume: 50.95
+</code></pre></div>
+<h2 id="running-reactions">Running reactions<a class="headerlink" href="#running-reactions" title="Permanent link">&para;</a></h2>
+<p>We can solve for reactions given a set of conditions, we will use our tp-profile and a random mixing ratio to do this:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">vmr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">species</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">pressure</span><span class="p">))</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="n">vmr</span> <span class="o">=</span> <span class="n">vmr</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">vmr</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="n">reactions</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">compute_reactions</span><span class="p">(</span><span class="n">vmr</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">pressure</span><span class="p">)</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="n">reactions</span>
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>[CH2CHO -&gt; CH3CO (1.36e+08) ([&#39;decomposition&#39;]),
+ CH3CO -&gt; CH2CHO (4.84e+07) ([&#39;decomposition&#39;, &#39;inverted&#39;]),
+ CH2CHO -&gt; H + CH2CO (2.68e+09) ([&#39;decomposition&#39;]),
+ H + CH2CO -&gt; CH2CHO (1.84e-11) ([&#39;decomposition&#39;, &#39;inverted&#39;]),
+ NNH -&gt; N2 + H (3.00e+08) ([&#39;decomposition&#39;]),
+ ...]
+</code></pre></div>
+<p>Here each reaction is described by its <code>reactants</code>, <code>products</code>, <code>reaction_rate</code> and <code>dens_krate</code>. Where dens_krate is the reaction rate multiplied by the number density of the reactant species.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nb">print</span><span class="p">(</span><span class="n">reactions</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Reaction rate:&quot;</span><span class="p">,</span><span class="n">reactions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reaction_rate</span><span class="p">[:</span><span class="mi">10</span><span class="p">],</span> <span class="s2">&quot;1/s&quot;</span><span class="p">)</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Reaction rate:&quot;</span><span class="p">,</span> <span class="n">reactions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dens_krate</span><span class="p">[:</span><span class="mi">10</span><span class="p">],</span> <span class="s2">&quot;1/cm3/s&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>CH2CHO -&gt; CH3CO (1.36e+08) ([&#39;decomposition&#39;])
+Reaction rate: [27647229.87948201 26777410.68236617 25985321.23606332 25767838.0996988
+ 25533968.19290701 25266348.68916494 25001102.69660493 24738213.35402364
+ 24477663.88574786 24339655.15159737] 1/s
+Reaction rate: [3.81634324e+26 2.86330634e+26 2.73774059e+25 3.37740125e+25
+ 7.01415174e+25 8.90572305e+25 1.81022065e+25 2.07255692e+25
+ 5.89947951e+24 9.60588730e+25] 1/cm3/s
+</code></pre></div>
+<p>If we want to look for specific production/loss reactions for a specific species, we can add the <code>with_production_loss</code> argument.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">reactions</span><span class="p">,</span> <span class="p">(</span><span class="n">production</span><span class="p">,</span> <span class="n">loss</span><span class="p">)</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">compute_reactions</span><span class="p">(</span><span class="n">vmr</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">pressure</span><span class="p">,</span> <span class="n">with_production_loss</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="nb">print</span><span class="p">(</span><span class="n">production</span><span class="p">[</span><span class="s2">&quot;CH4&quot;</span><span class="p">])</span>
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>[CH3 + H -&gt; CH4 (2.63e-13) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;reaction&#39;, &#39;inverted&#39;]), H + CH3 -&gt; CH4 (1.38e-11) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;reaction&#39;]), HOCHO + CH3 -&gt; CH4 + CO + OH (4.91e-12) ([&#39;corps&#39;, &#39;reaction&#39;, &#39;many body&#39;]), CH3 + H2 -&gt; CH4 + H (7.77e-13) ([&#39;corps&#39;, &#39;reaction&#39;, &#39;many body&#39;, &#39;inverted&#39;]), CH3 + CH3 -&gt; CH4 + 1CH2 (1.51e-13) ([&#39;corps&#39;, &#39;reaction&#39;, &#39;many body&#39;, &#39;inverted&#39;]), C2H3 + CH3 -&gt; CH4 + C2H2 (6.48e-13) ([&#39;corps&#39;, &#39;reaction&#39;, &#39;many body&#39;]), C2H4 + CH3 -&gt; CH4 + C2H3 (1.40e-14) ([&#39;corps&#39;, &#39;reaction&#39;, &#39;many body&#39;]), C2H5 + CH3 -&gt; C2H4 + CH4 (1.83e-12) ([&#39;corps&#39;, &#39;reaction&#39;, &#39;many body&#39;]), C2H6 + CH3 -&gt; C2H5 + CH4 (3.96e-12) ([&#39;corps&#39;, &#39;reaction&#39;, &#39;many body&#39;]), CH3 + OH -&gt; O3P + CH4 (4.62e-13) ([&#39;corps&#39;, &#39;reaction&#39;, &#39;many body&#39;, &#39;inverted&#39;]), CH3 + H2O -&gt; OH + CH4 (5.34e-14) ([&#39;corps&#39;, &#39;reaction&#39;, &#39;many body&#39;, &#39;inverted&#39;]), HCO + CH3 -&gt; CH4 + CO (1.99e-10) ([&#39;corps&#39;, &#39;reaction&#39;, &#39;many body&#39;]), CH3 + H2CO -&gt; HCO + CH4 (1.04e-11) ([&#39;corps&#39;, &#39;reaction&#39;, &#39;many body&#39;]), CH3 + OOH -&gt; O2 + CH4 (5.29e-13) ([&#39;corps&#39;, &#39;reaction&#39;, &#39;many body&#39;, &#39;inverted&#39;]), N2H2 + CH3 -&gt; NNH + CH4 (1.48e-12) ([&#39;corps&#39;, &#39;reaction&#39;, &#39;many body&#39;]), N2H3 + CH3 -&gt; N2H2 + CH4 (1.03e-12) ([&#39;corps&#39;, &#39;reaction&#39;, &#39;many body&#39;]), CH3 + NH3 -&gt; CH4 + NH2 (3.93e-14) ([&#39;corps&#39;, &#39;reaction&#39;, &#39;many body&#39;, &#39;inverted&#39;]), HOCN + CH3 -&gt; NCO + CH4 (2.96e-13) ([&#39;corps&#39;, &#39;reaction&#39;, &#39;many body&#39;]), H2CN + CH3 -&gt; HCN + CH4 (2.26e-12) ([&#39;corps&#39;, &#39;reaction&#39;, &#39;many body&#39;]), HCNH + CH3 -&gt; HCN + CH4 (2.29e-12) ([&#39;corps&#39;, &#39;reaction&#39;, &#39;many body&#39;]), HCN + CH3 -&gt; CN + CH4 (1.02e-13) ([&#39;corps&#39;, &#39;reaction&#39;, &#39;many body&#39;, &#39;inverted&#39;]), HNCO + CH3 -&gt; NCO + CH4 (1.20e-14) ([&#39;corps&#39;, &#39;reaction&#39;, &#39;many body&#39;, &#39;inverted&#39;]), CH3OH + CH3 -&gt; CH2OH + CH4 (5.79e-13) ([&#39;corps&#39;, &#39;reaction&#39;, &#39;many body&#39;]), CH3OH + CH3 -&gt; CH3O + CH4 (4.93e-14) ([&#39;corps&#39;, &#39;reaction&#39;, &#39;many body&#39;]), CH3O + CH3 -&gt; H2CO + CH4 (1.99e-11) ([&#39;corps&#39;, &#39;reaction&#39;, &#39;many body&#39;])]
+</code></pre></div>
+<p>Additionally each reaction includes a <code>tag</code> that describes some thing about the reaction. For example, we can find only reactions that use the <code>Troe</code> falloff using the <code>find_tagged_reactions</code> function.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">freckll.network</span><span class="w"> </span><span class="kn">import</span> <span class="n">find_tagged_reactions</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="n">find_tagged_reactions</span><span class="p">(</span><span class="n">reactions</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;Troe&quot;</span><span class="p">])</span>
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>[C2H3 -&gt; C2H2 + H (2.44e+07) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;decomposition&#39;]),
+ C2H2 + H -&gt; C2H3 (7.59e-13) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;decomposition&#39;, &#39;inverted&#39;]),
+ C2H5 -&gt; C2H4 + H (5.36e+07) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;decomposition&#39;]),
+ C2H4 + H -&gt; C2H5 (3.68e-12) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;decomposition&#39;, &#39;inverted&#39;]),
+ CO2H -&gt; CO + OH (4.34e+08) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;decomposition&#39;]),
+ CO + OH -&gt; CO2H (3.81e-14) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;decomposition&#39;, &#39;inverted&#39;]),
+ CO2H -&gt; CO2 + H (6.56e+07) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;decomposition&#39;]),
+ CO2 + H -&gt; CO2H (1.62e-15) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;decomposition&#39;, &#39;inverted&#39;]),
+ CH3OH -&gt; CH3 + OH (1.06e+04) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;decomposition&#39;]),
+ CH3 + OH -&gt; CH3OH (4.54e-12) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;decomposition&#39;, &#39;inverted&#39;]),
+ CH3OH -&gt; 1CH2 + H2O (2.58e+03) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;decomposition&#39;]),
+ 1CH2 + H2O -&gt; CH3OH (1.72e-12) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;decomposition&#39;, &#39;inverted&#39;]),
+ CH3OH -&gt; CH2OH + H (6.40e+01) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;decomposition&#39;]),
+ CH2OH + H -&gt; CH3OH (6.83e-13) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;decomposition&#39;, &#39;inverted&#39;]),
+ CH3O -&gt; H2CO + H (7.83e+07) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;decomposition&#39;]),
+ H2CO + H -&gt; CH3O (3.55e-15) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;decomposition&#39;, &#39;inverted&#39;]),
+ CH4 -&gt; CH3 + H (5.36e+00) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;reaction&#39;]),
+ CH3 + H -&gt; CH4 (2.63e-13) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;reaction&#39;, &#39;inverted&#39;]),
+ O2 + H -&gt; OOH (1.19e-14) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;reaction&#39;]),
+ OOH -&gt; O2 + H (1.16e+04) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;reaction&#39;, &#39;inverted&#39;]),
+ CH3 + CH3 -&gt; C2H6 (3.47e-12) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;reaction&#39;]),
+ C2H6 -&gt; CH3 + CH3 (1.12e+05) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;reaction&#39;, &#39;inverted&#39;]),
+ H + CH3 -&gt; CH4 (1.38e-11) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;reaction&#39;]),
+ CH4 -&gt; H + CH3 (2.39e+02) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;reaction&#39;, &#39;inverted&#39;]),
+ CO + CH3 -&gt; CH3CO (1.27e-15) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;reaction&#39;]),
+ CH3CO -&gt; CO + CH3 (1.37e+09) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;reaction&#39;, &#39;inverted&#39;]),
+ O2 + H -&gt; OOH (1.95e-13) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;reaction&#39;]),
+ OOH -&gt; O2 + H (1.88e+05) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;reaction&#39;, &#39;inverted&#39;]),
+ H2CO + H -&gt; CH2OH (8.17e-14) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;reaction&#39;]),
+ CH2OH -&gt; H2CO + H (1.96e+07) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;reaction&#39;, &#39;inverted&#39;])]
+</code></pre></div>
+<p>Or "Troe" and "decomposition":</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="n">find_tagged_reactions</span><span class="p">(</span><span class="n">reactions</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;Troe&quot;</span><span class="p">,</span> <span class="s2">&quot;decomposition&quot;</span><span class="p">])</span>
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>[CH2CHO -&gt; CH3CO (1.36e+08) ([&#39;decomposition&#39;]),
+ CH3CO -&gt; CH2CHO (4.84e+07) ([&#39;decomposition&#39;, &#39;inverted&#39;]),
+ CH2CHO -&gt; H + CH2CO (2.68e+09) ([&#39;decomposition&#39;]),
+ H + CH2CO -&gt; CH2CHO (1.84e-11) ([&#39;decomposition&#39;, &#39;inverted&#39;]),
+ NNH -&gt; N2 + H (3.00e+08) ([&#39;decomposition&#39;]),
+ N2 + H -&gt; NNH (2.06e-16) ([&#39;decomposition&#39;, &#39;inverted&#39;]),
+ HCNH -&gt; HCN + H (1.82e+07) ([&#39;decomposition&#39;]),
+ HCN + H -&gt; HCNH (1.40e-14) ([&#39;decomposition&#39;, &#39;inverted&#39;]),
+ H2CN -&gt; HCN + H (2.45e+05) ([&#39;decomposition&#39;]),
+ ...
+ C2H3 -&gt; C2H2 + H (2.44e+07) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;decomposition&#39;]),
+ C2H2 + H -&gt; C2H3 (7.59e-13) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;decomposition&#39;, &#39;inverted&#39;]),
+ C2H5 -&gt; C2H4 + H (5.36e+07) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;decomposition&#39;]),
+ C2H4 + H -&gt; C2H5 (3.68e-12) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;decomposition&#39;, &#39;inverted&#39;]),
+ CO2H -&gt; CO + OH (4.34e+08) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;decomposition&#39;]),
+ CO + OH -&gt; CO2H (3.81e-14) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;decomposition&#39;, &#39;inverted&#39;]),
+ CO2H -&gt; CO2 + H (6.56e+07) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;decomposition&#39;]),
+ CO2 + H -&gt; CO2H (1.62e-15) ([&#39;k0&#39;, &#39;kinf&#39;, &#39;falloff&#39;, &#39;Troe&#39;, &#39;decomposition&#39;, &#39;inverted&#39;]),
+ ...]
+</code></pre></div>
+<p>For performance reactions can also be precompiled to a specific temperature/pressure profile. Compare this:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="o">%</span><span class="n">timeit</span> <span class="n">network</span><span class="o">.</span><span class="n">compute_reactions</span><span class="p">(</span><span class="n">vmr</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">pressure</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>18.9 ms ± 415 μs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+</code></pre></div>
+<p>With this:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="n">network</span><span class="o">.</span><span class="n">compile_reactions</span><span class="p">(</span><span class="n">temperature</span><span class="p">,</span> <span class="n">pressure</span><span class="p">)</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="o">%</span><span class="n">timeit</span> <span class="n">network</span><span class="o">.</span><span class="n">compute_reactions</span><span class="p">(</span><span class="n">vmr</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>8.97 ms ± 238 μs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+</code></pre></div>
+<p>A 50% decrease in runtime!</p>
+<h2 id="solving-the-atmosphere">Solving the atmosphere<a class="headerlink" href="#solving-the-atmosphere" title="Permanent link">&para;</a></h2>
+<p>We now want to solve the atmosphere. We require a solver to accomplish this. FRECKLL supports two solvers:</p>
+<ul>
+<li>VODE</li>
+<li>Rosenbrock</li>
+</ul>
+<p>For the purpose of this tutorial we will use the Rosenbrock solver. We can import our solver from <code>freckll.solver</code> and create a solver object. The solver object requires the following arguments:</p>
+<ul>
+<li><code>network</code> - The network object</li>
+<li><code>photochemistry</code> - A photochemistry object. This is not required if you are not using photochemistry. (We will cover this later).</li>
+</ul>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">freckll.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rosenbrock</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="n">rosen</span> <span class="o">=</span> <span class="n">Rosenbrock</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">)</span>
+</span></code></pre></div>
+<p>Before we can solve the atmosphere we need to setup the conditions of the atmosphere. This includes the temperature, vmr, planetary parameters and so on. This can be done using the <code>set_system_parameters</code> method</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="n">rosen</span><span class="o">.</span><span class="n">set_system_parameters</span><span class="p">(</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>    <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>    <span class="n">pressure</span><span class="o">=</span><span class="n">pressure</span><span class="p">,</span>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>    <span class="n">kzz</span><span class="o">=</span><span class="n">kzz</span><span class="p">,</span>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>    <span class="n">planet_radius</span><span class="o">=</span><span class="mf">1.37</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Rjup</span><span class="p">,</span>
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>    <span class="n">planet_mass</span><span class="o">=</span><span class="mf">0.87</span> <span class="o">&lt;&lt;</span> <span class="n">u</span><span class="o">.</span><span class="n">Mjup</span><span class="p">,</span>
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="p">)</span>
+</span></code></pre></div>
+<p>The solver will automatically compile the networks for us so there is no need to <code>precompile</code> them beforehand.
+Finally we now solve our atmosphere. We will use a randomized initial mixing ratio.</p>
+<p>This should take no more than 20-30 seconds to run. The solver will return a <code>SolverResult</code> dictionary that contains the results of the simulation.
+This includes the following attributes:</p>
+<ul>
+<li><code>success</code> - A boolean that indicates if the simulation was successful</li>
+<li><code>times</code> - The time points of the simulation</li>
+<li><code>vmr</code> - The volume mixing ratio of the species at each time point</li>
+<li><code>initial_vmr</code> - The initial volume mixing ratio of the species</li>
+<li><code>temperature</code> - The temperature of the atmosphere</li>
+<li><code>pressure</code> - The pressure of the atmosphere</li>
+<li><code>density</code> - The density of the atmosphere</li>
+<li><code>kzz</code> - The eddy diffusion coefficient</li>
+<li><code>planet</code> - Planet parameters</li>
+<li><code>species</code> - The species in the network</li>
+</ul>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="n">vmr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">species</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">pressure</span><span class="p">))</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="n">vmr</span> <span class="o">=</span> <span class="n">vmr</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">vmr</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="n">result</span> <span class="o">=</span> <span class="n">rosen</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span>
+</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>    <span class="n">vmr</span><span class="o">=</span><span class="n">vmr</span><span class="p">,</span>
+</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a>    <span class="n">t_span</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1e16</span><span class="p">],</span>
+</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>    <span class="n">enable_diffusion</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-18-9"><a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a>    <span class="n">maxiter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+</span><span id="__span-18-10"><a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a><span class="p">)</span>
+</span><span id="__span-18-11"><a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a>
+</span><span id="__span-18-12"><a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Success:&#39;</span><span class="p">,</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;success&quot;</span><span class="p">])</span>
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>Success: True
+</code></pre></div>
+<p>We have lots of plotting options available for us. Plotting the initial and steady state:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">freckll.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_vmr</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="n">plot_vmr</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;vmr&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;pressure&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;species&quot;</span><span class="p">],</span> <span class="n">initial_vmr</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;initial_vmr&quot;</span><span class="p">],</span>
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>         <span class="n">xlims</span><span class="o">=</span><span class="p">(</span><span class="mf">1e-7</span><span class="p">,</span> <span class="mf">1e0</span><span class="p">),</span>
+</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>         <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></code></pre></div>
+<p><img alt="png" src="../gettingstarted_files/gettingstarted_39_0.png" /></p>
+<p>The dashed lines are our initial conditions and the solid are the final solved state.
+We can also animate the results as well:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTML</span><span class="p">,</span> <span class="n">Video</span>
+</span></code></pre></div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="o">%%</span><span class="n">capture</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">freckll.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">animate_vmr</span>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a><span class="n">anim</span> <span class="o">=</span> <span class="n">animate_vmr</span><span class="p">(</span>
+</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>    <span class="n">vmrs</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;vmr&quot;</span><span class="p">],</span>
+</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a>    <span class="n">times</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;times&quot;</span><span class="p">],</span>
+</span><span id="__span-21-9"><a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a>    <span class="n">species</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;species&quot;</span><span class="p">],</span>
+</span><span id="__span-21-10"><a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a>    <span class="n">pressure</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;pressure&quot;</span><span class="p">],</span>
+</span><span id="__span-21-11"><a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a>    <span class="n">initial_vmr</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;initial_vmr&quot;</span><span class="p">],</span>
+</span><span id="__span-21-12"><a id="__codelineno-21-12" name="__codelineno-21-12" href="#__codelineno-21-12"></a>    <span class="n">xlims</span><span class="o">=</span><span class="p">(</span><span class="mf">1e-7</span><span class="p">,</span> <span class="mf">1e0</span><span class="p">),</span>
+</span><span id="__span-21-13"><a id="__codelineno-21-13" name="__codelineno-21-13" href="#__codelineno-21-13"></a>    <span class="n">blit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-21-14"><a id="__codelineno-21-14" name="__codelineno-21-14" href="#__codelineno-21-14"></a>    <span class="n">interval</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+</span><span id="__span-21-15"><a id="__codelineno-21-15" name="__codelineno-21-15" href="#__codelineno-21-15"></a><span class="p">)</span>
+</span><span id="__span-21-16"><a id="__codelineno-21-16" name="__codelineno-21-16" href="#__codelineno-21-16"></a>
+</span><span id="__span-21-17"><a id="__codelineno-21-17" name="__codelineno-21-17" href="#__codelineno-21-17"></a><span class="n">anim</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;randomvmr.mp4&quot;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">writer</span><span class="o">=</span><span class="s2">&quot;ffmpeg&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="n">Video</span><span class="p">(</span><span class="s2">&quot;randomvmr.mp4&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<figure class="video_container">
+  <video controls="true" allowfullscreen="true">
+    <source src="randomvmr.mp4" type="video/mp4">
+  </video>
+</figure>
+
+<h2 id="running-from-equilibrium">Running from Equilibrium<a class="headerlink" href="#running-from-equilibrium" title="Permanent link">&para;</a></h2>
+<p>Of course we may want to start from an atmosphere of given metallicity and molecular ratios. You can supply your own initial VMR as along as the first dimension maps
+to each species in <code>network.species</code>. The solver will then run from this initial VMR to the final state.</p>
+<p><code>FRECKLL</code> includes the equilibrium code <code>ACE</code> which is installed either from:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>pip<span class="w"> </span>install<span class="w"> </span>freckll<span class="o">[</span>ace<span class="o">]</span>
+</span></code></pre></div>
+<p>or</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>pip<span class="w"> </span>install<span class="w"> </span>freckll<span class="o">[</span>recommended<span class="o">]</span>
+</span></code></pre></div>
+<p>or you can install it manually using:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>pip<span class="w"> </span>install<span class="w"> </span>acepython
+</span></code></pre></div>
+<p>Under <code>freckll.ace</code> you can use <code>equil_chemistry_ace</code> and abundance ratios to solve for the equilibrium state of the atmosphere.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">freckll.ace</span><span class="w"> </span><span class="kn">import</span> <span class="n">equil_chemistry_ace</span>
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a><span class="n">equil_vmr</span> <span class="o">=</span> <span class="n">equil_chemistry_ace</span><span class="p">(</span>
+</span><span id="__span-26-4"><a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a>    <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+</span><span id="__span-26-5"><a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a>    <span class="n">pressure</span><span class="o">=</span><span class="n">pressure</span><span class="p">,</span>
+</span><span id="__span-26-6"><a id="__codelineno-26-6" name="__codelineno-26-6" href="#__codelineno-26-6"></a>    <span class="n">composition</span><span class="o">=</span><span class="n">network</span><span class="o">.</span><span class="n">species</span><span class="p">,</span>
+</span><span id="__span-26-7"><a id="__codelineno-26-7" name="__codelineno-26-7" href="#__codelineno-26-7"></a>    <span class="n">elements</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;He&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">,</span><span class="s2">&quot;O&quot;</span><span class="p">],</span>
+</span><span id="__span-26-8"><a id="__codelineno-26-8" name="__codelineno-26-8" href="#__codelineno-26-8"></a>    <span class="n">abundances</span><span class="o">=</span><span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mf">10.93</span><span class="p">,</span> <span class="mf">8.39</span><span class="p">,</span> <span class="mf">7.86</span><span class="p">,</span> <span class="mf">8.73</span><span class="p">],</span>
+</span><span id="__span-26-9"><a id="__codelineno-26-9" name="__codelineno-26-9" href="#__codelineno-26-9"></a>
+</span><span id="__span-26-10"><a id="__codelineno-26-10" name="__codelineno-26-10" href="#__codelineno-26-10"></a><span class="p">)</span>
+</span><span id="__span-26-11"><a id="__codelineno-26-11" name="__codelineno-26-11" href="#__codelineno-26-11"></a>
+</span><span id="__span-26-12"><a id="__codelineno-26-12" name="__codelineno-26-12" href="#__codelineno-26-12"></a><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+</span><span id="__span-26-13"><a id="__codelineno-26-13" name="__codelineno-26-13" href="#__codelineno-26-13"></a><span class="n">plot_vmr</span><span class="p">(</span>
+</span><span id="__span-26-14"><a id="__codelineno-26-14" name="__codelineno-26-14" href="#__codelineno-26-14"></a>    <span class="n">equil_vmr</span><span class="p">,</span>
+</span><span id="__span-26-15"><a id="__codelineno-26-15" name="__codelineno-26-15" href="#__codelineno-26-15"></a>    <span class="n">pressure</span><span class="p">,</span>
+</span><span id="__span-26-16"><a id="__codelineno-26-16" name="__codelineno-26-16" href="#__codelineno-26-16"></a>    <span class="n">network</span><span class="o">.</span><span class="n">species</span><span class="p">,</span>
+</span><span id="__span-26-17"><a id="__codelineno-26-17" name="__codelineno-26-17" href="#__codelineno-26-17"></a>    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+</span><span id="__span-26-18"><a id="__codelineno-26-18" name="__codelineno-26-18" href="#__codelineno-26-18"></a><span class="p">)</span>
+</span><span id="__span-26-19"><a id="__codelineno-26-19" name="__codelineno-26-19" href="#__codelineno-26-19"></a><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></code></pre></div>
+<p><img alt="png" src="../gettingstarted_files/gettingstarted_45_0.png" /></p>
+<p>Lets solve using this mixing ratio instead!</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="n">result_equil</span> <span class="o">=</span> <span class="n">rosen</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span>
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>    <span class="n">vmr</span><span class="o">=</span><span class="n">equil_vmr</span><span class="p">,</span>
+</span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a>    <span class="n">t_span</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1e16</span><span class="p">],</span>
+</span><span id="__span-27-4"><a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a>    <span class="n">enable_diffusion</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-27-5"><a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a>    <span class="n">maxiter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+</span><span id="__span-27-6"><a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a><span class="p">)</span>
+</span><span id="__span-27-7"><a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Success:&#39;</span><span class="p">,</span><span class="n">result_equil</span><span class="p">[</span><span class="s2">&quot;success&quot;</span><span class="p">])</span>
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>Success: True
+</code></pre></div>
+<p>Now lets plot the initial and final mixing ratios:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+</span><span id="__span-28-2"><a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a><span class="n">plot_vmr</span><span class="p">(</span><span class="n">result_equil</span><span class="p">[</span><span class="s2">&quot;vmr&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">result_equil</span><span class="p">[</span><span class="s2">&quot;pressure&quot;</span><span class="p">],</span> <span class="n">result_equil</span><span class="p">[</span><span class="s2">&quot;species&quot;</span><span class="p">],</span> <span class="n">initial_vmr</span><span class="o">=</span><span class="n">result_equil</span><span class="p">[</span><span class="s2">&quot;initial_vmr&quot;</span><span class="p">],</span>
+</span><span id="__span-28-3"><a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a>         <span class="n">xlims</span><span class="o">=</span><span class="p">(</span><span class="mf">1e-16</span><span class="p">,</span> <span class="mf">1e0</span><span class="p">),</span>
+</span><span id="__span-28-4"><a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a>         <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+</span><span id="__span-28-5"><a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></code></pre></div>
+<p><img alt="png" src="../gettingstarted_files/gettingstarted_49_0.png" /></p>
+<p>Nice! Lets also animate the result!</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="o">%%</span><span class="n">capture</span>
+</span><span id="__span-29-2"><a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a>
+</span><span id="__span-29-3"><a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a><span class="n">anim_equil</span> <span class="o">=</span> <span class="n">animate_vmr</span><span class="p">(</span>
+</span><span id="__span-29-4"><a id="__codelineno-29-4" name="__codelineno-29-4" href="#__codelineno-29-4"></a>    <span class="n">vmrs</span><span class="o">=</span><span class="n">result_equil</span><span class="p">[</span><span class="s2">&quot;vmr&quot;</span><span class="p">],</span>
+</span><span id="__span-29-5"><a id="__codelineno-29-5" name="__codelineno-29-5" href="#__codelineno-29-5"></a>    <span class="n">times</span><span class="o">=</span><span class="n">result_equil</span><span class="p">[</span><span class="s2">&quot;times&quot;</span><span class="p">],</span>
+</span><span id="__span-29-6"><a id="__codelineno-29-6" name="__codelineno-29-6" href="#__codelineno-29-6"></a>    <span class="n">species</span><span class="o">=</span><span class="n">result_equil</span><span class="p">[</span><span class="s2">&quot;species&quot;</span><span class="p">],</span>
+</span><span id="__span-29-7"><a id="__codelineno-29-7" name="__codelineno-29-7" href="#__codelineno-29-7"></a>    <span class="n">pressure</span><span class="o">=</span><span class="n">result_equil</span><span class="p">[</span><span class="s2">&quot;pressure&quot;</span><span class="p">],</span>
+</span><span id="__span-29-8"><a id="__codelineno-29-8" name="__codelineno-29-8" href="#__codelineno-29-8"></a>    <span class="n">initial_vmr</span><span class="o">=</span><span class="n">result_equil</span><span class="p">[</span><span class="s2">&quot;initial_vmr&quot;</span><span class="p">],</span>
+</span><span id="__span-29-9"><a id="__codelineno-29-9" name="__codelineno-29-9" href="#__codelineno-29-9"></a>    <span class="n">xlims</span><span class="o">=</span><span class="p">(</span><span class="mf">1e-16</span><span class="p">,</span> <span class="mf">1e0</span><span class="p">),</span>
+</span><span id="__span-29-10"><a id="__codelineno-29-10" name="__codelineno-29-10" href="#__codelineno-29-10"></a>    <span class="n">blit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-29-11"><a id="__codelineno-29-11" name="__codelineno-29-11" href="#__codelineno-29-11"></a>    <span class="n">interval</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+</span><span id="__span-29-12"><a id="__codelineno-29-12" name="__codelineno-29-12" href="#__codelineno-29-12"></a><span class="p">)</span>
+</span><span id="__span-29-13"><a id="__codelineno-29-13" name="__codelineno-29-13" href="#__codelineno-29-13"></a>
+</span><span id="__span-29-14"><a id="__codelineno-29-14" name="__codelineno-29-14" href="#__codelineno-29-14"></a><span class="n">anim_equil</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;equil_vmr.mp4&quot;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">writer</span><span class="o">=</span><span class="s2">&quot;ffmpeg&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a><span class="n">Video</span><span class="p">(</span><span class="s2">&quot;equil_vmr.mp4&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<figure class="video_container">
+  <video controls="true" allowfullscreen="true">
+    <source src="equil_vmr.mp4" type="video/mp4">
+  </video>
+</figure>
+
+<h2 id="storing-and-reading-results">Storing and Reading Results<a class="headerlink" href="#storing-and-reading-results" title="Permanent link">&para;</a></h2>
+<p>We can store the output of a solution to HDF5 format using the <code>freckll.io.output</code> modules. We can simply takes the result from the solver and run this function:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">freckll.io.output</span><span class="w"> </span><span class="kn">import</span> <span class="n">write_solution_h5py</span>
+</span><span id="__span-31-2"><a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a>
+</span><span id="__span-31-3"><a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a><span class="n">write_solution_h5py</span><span class="p">(</span>
+</span><span id="__span-31-4"><a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a>    <span class="n">solution</span><span class="o">=</span><span class="n">result_equil</span><span class="p">,</span>
+</span><span id="__span-31-5"><a id="__codelineno-31-5" name="__codelineno-31-5" href="#__codelineno-31-5"></a>    <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;solution_equil.h5&quot;</span><span class="p">,</span>
+</span><span id="__span-31-6"><a id="__codelineno-31-6" name="__codelineno-31-6" href="#__codelineno-31-6"></a>    <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-31-7"><a id="__codelineno-31-7" name="__codelineno-31-7" href="#__codelineno-31-7"></a><span class="p">)</span>
+</span></code></pre></div>
+<p>If we want to restore it, it is as easy as running the read function:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">freckll.io.output</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_h5py_solution</span>
+</span><span id="__span-32-2"><a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a>
+</span><span id="__span-32-3"><a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a><span class="n">solution_h5</span> <span class="o">=</span> <span class="n">read_h5py_solution</span><span class="p">(</span><span class="s2">&quot;solution_equil.h5&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<p>And we can replot it to prove it is the same:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+</span><span id="__span-33-2"><a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a><span class="n">plot_vmr</span><span class="p">(</span><span class="n">solution_h5</span><span class="p">[</span><span class="s2">&quot;vmr&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">solution_h5</span><span class="p">[</span><span class="s2">&quot;pressure&quot;</span><span class="p">],</span> <span class="n">solution_h5</span><span class="p">[</span><span class="s2">&quot;species&quot;</span><span class="p">],</span> <span class="n">initial_vmr</span><span class="o">=</span><span class="n">solution_h5</span><span class="p">[</span><span class="s2">&quot;initial_vmr&quot;</span><span class="p">],</span>
+</span><span id="__span-33-3"><a id="__codelineno-33-3" name="__codelineno-33-3" href="#__codelineno-33-3"></a>         <span class="n">xlims</span><span class="o">=</span><span class="p">(</span><span class="mf">1e-16</span><span class="p">,</span> <span class="mf">1e0</span><span class="p">),</span>
+</span><span id="__span-33-4"><a id="__codelineno-33-4" name="__codelineno-33-4" href="#__codelineno-33-4"></a>         <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+</span><span id="__span-33-5"><a id="__codelineno-33-5" name="__codelineno-33-5" href="#__codelineno-33-5"></a><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></code></pre></div>
+<p><img alt="png" src="../gettingstarted_files/gettingstarted_58_0.png" /></p>
+<h2 id="running-with-photochemistry">Running with Photochemistry<a class="headerlink" href="#running-with-photochemistry" title="Permanent link">&para;</a></h2>
+<p>For the photochemistry case we will need to use the full network instead. We can load it in using the <code>default_network_loader</code> function:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a><span class="n">full_network</span> <span class="o">=</span> <span class="n">default_network_loader</span><span class="p">(</span><span class="s2">&quot;venot-methanol-2023&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<p>We will also need to load in the photochemistry and actinic flux for the star. This is easily accomplished using the loader modules.
+We will load the Venot 2020 photochemistry and the actinic flux for HD 209458 star</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">freckll.io.loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_photonetwork_loader</span><span class="p">,</span> <span class="n">default_stellar_spectra_loader</span>
+</span><span id="__span-35-2"><a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a>
+</span><span id="__span-35-3"><a id="__codelineno-35-3" name="__codelineno-35-3" href="#__codelineno-35-3"></a><span class="n">photo_network</span> <span class="o">=</span> <span class="n">default_photonetwork_loader</span><span class="p">(</span><span class="n">full_network</span><span class="o">.</span><span class="n">species</span><span class="p">)</span>
+</span><span id="__span-35-4"><a id="__codelineno-35-4" name="__codelineno-35-4" href="#__codelineno-35-4"></a><span class="n">stellar_spectra</span> <span class="o">=</span> <span class="n">default_stellar_spectra_loader</span><span class="p">(</span><span class="s2">&quot;hd209458&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<p>Lets plot the stellar flux and see what it looks like!</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">freckll.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_stellar_flux</span>
+</span><span id="__span-36-2"><a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a>
+</span><span id="__span-36-3"><a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+</span><span id="__span-36-4"><a id="__codelineno-36-4" name="__codelineno-36-4" href="#__codelineno-36-4"></a><span class="n">plot_stellar_flux</span><span class="p">(</span><span class="n">stellar_spectra</span><span class="o">.</span><span class="n">flux</span><span class="p">,</span> <span class="n">stellar_spectra</span><span class="o">.</span><span class="n">wavelength</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+</span><span id="__span-36-5"><a id="__codelineno-36-5" name="__codelineno-36-5" href="#__codelineno-36-5"></a><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></code></pre></div>
+<p><img alt="png" src="../gettingstarted_files/gettingstarted_64_0.png" /></p>
+<p>We can now build a new solver with the photochemistry included. The photochemistry object is passed to the solver as an argument.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-37-1"><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a><span class="n">rosenbrock_photo</span> <span class="o">=</span> <span class="n">Rosenbrock</span><span class="p">(</span>
+</span><span id="__span-37-2"><a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a>    <span class="n">network</span><span class="o">=</span><span class="n">full_network</span><span class="p">,</span>
+</span><span id="__span-37-3"><a id="__codelineno-37-3" name="__codelineno-37-3" href="#__codelineno-37-3"></a>    <span class="n">photochemistry</span><span class="o">=</span><span class="n">photo_network</span><span class="p">,</span>
+</span><span id="__span-37-4"><a id="__codelineno-37-4" name="__codelineno-37-4" href="#__codelineno-37-4"></a>    <span class="p">)</span>
+</span></code></pre></div>
+<p>Now we can setup the photoparameters and the system parameters like so:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a><span class="n">photo_network</span><span class="o">.</span><span class="n">set_spectra</span><span class="p">(</span><span class="n">stellar_spectra</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="mf">0.047</span> <span class="o">&lt;&lt;</span> <span class="n">u</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span> <span class="n">albedo</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+</span><span id="__span-38-2"><a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a><span class="n">rosenbrock_photo</span><span class="o">.</span><span class="n">set_system_parameters</span><span class="p">(</span>
+</span><span id="__span-38-3"><a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a>    <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+</span><span id="__span-38-4"><a id="__codelineno-38-4" name="__codelineno-38-4" href="#__codelineno-38-4"></a>    <span class="n">pressure</span><span class="o">=</span><span class="n">pressure</span><span class="p">,</span>
+</span><span id="__span-38-5"><a id="__codelineno-38-5" name="__codelineno-38-5" href="#__codelineno-38-5"></a>    <span class="n">kzz</span><span class="o">=</span><span class="n">kzz</span><span class="p">,</span>
+</span><span id="__span-38-6"><a id="__codelineno-38-6" name="__codelineno-38-6" href="#__codelineno-38-6"></a>    <span class="n">planet_radius</span><span class="o">=</span><span class="mf">1.37</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Rjup</span><span class="p">,</span>
+</span><span id="__span-38-7"><a id="__codelineno-38-7" name="__codelineno-38-7" href="#__codelineno-38-7"></a>    <span class="n">planet_mass</span><span class="o">=</span><span class="mf">0.87</span> <span class="o">&lt;&lt;</span> <span class="n">u</span><span class="o">.</span><span class="n">Mjup</span><span class="p">,</span>
+</span><span id="__span-38-8"><a id="__codelineno-38-8" name="__codelineno-38-8" href="#__codelineno-38-8"></a><span class="p">)</span>
+</span></code></pre></div>
+<p>Lets generate our new equilibrium state:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-39-1"><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a><span class="n">vmr_photo_equil</span> <span class="o">=</span> <span class="n">equil_chemistry_ace</span><span class="p">(</span>
+</span><span id="__span-39-2"><a id="__codelineno-39-2" name="__codelineno-39-2" href="#__codelineno-39-2"></a>    <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+</span><span id="__span-39-3"><a id="__codelineno-39-3" name="__codelineno-39-3" href="#__codelineno-39-3"></a>    <span class="n">pressure</span><span class="o">=</span><span class="n">pressure</span><span class="p">,</span>
+</span><span id="__span-39-4"><a id="__codelineno-39-4" name="__codelineno-39-4" href="#__codelineno-39-4"></a>    <span class="n">composition</span><span class="o">=</span><span class="n">full_network</span><span class="o">.</span><span class="n">species</span><span class="p">,</span>
+</span><span id="__span-39-5"><a id="__codelineno-39-5" name="__codelineno-39-5" href="#__codelineno-39-5"></a>    <span class="n">elements</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;He&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">,</span><span class="s2">&quot;O&quot;</span><span class="p">],</span>
+</span><span id="__span-39-6"><a id="__codelineno-39-6" name="__codelineno-39-6" href="#__codelineno-39-6"></a>    <span class="n">abundances</span><span class="o">=</span><span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mf">10.93</span><span class="p">,</span> <span class="mf">8.39</span><span class="p">,</span> <span class="mf">7.86</span><span class="p">,</span> <span class="mf">8.73</span><span class="p">],</span>
+</span><span id="__span-39-7"><a id="__codelineno-39-7" name="__codelineno-39-7" href="#__codelineno-39-7"></a><span class="p">)</span>
+</span></code></pre></div>
+<p>Now let us solve! This will take a little longer ~ 40 seconds to a minute:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-40-1"><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a><span class="n">result_photo_equil</span> <span class="o">=</span> <span class="n">rosenbrock_photo</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span>
+</span><span id="__span-40-2"><a id="__codelineno-40-2" name="__codelineno-40-2" href="#__codelineno-40-2"></a>    <span class="n">vmr</span><span class="o">=</span><span class="n">vmr_photo_equil</span><span class="p">,</span>
+</span><span id="__span-40-3"><a id="__codelineno-40-3" name="__codelineno-40-3" href="#__codelineno-40-3"></a>    <span class="n">t_span</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1e16</span><span class="p">],</span>
+</span><span id="__span-40-4"><a id="__codelineno-40-4" name="__codelineno-40-4" href="#__codelineno-40-4"></a>    <span class="n">enable_diffusion</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-40-5"><a id="__codelineno-40-5" name="__codelineno-40-5" href="#__codelineno-40-5"></a>    <span class="n">maxiter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+</span><span id="__span-40-6"><a id="__codelineno-40-6" name="__codelineno-40-6" href="#__codelineno-40-6"></a><span class="p">)</span>
+</span><span id="__span-40-7"><a id="__codelineno-40-7" name="__codelineno-40-7" href="#__codelineno-40-7"></a><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Success:&#39;</span><span class="p">,</span><span class="n">result_photo_equil</span><span class="p">[</span><span class="s2">&quot;success&quot;</span><span class="p">])</span>
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>/Users/ahmed/Documents/repos/FRECKLL/.venv/lib/python3.12/site-packages/astropy/units/quantity.py:658: RuntimeWarning: overflow encountered in exp
+  result = super().__array_ufunc__(function, method, *arrays, **kwargs)
+/Users/ahmed/Documents/repos/FRECKLL/.venv/lib/python3.12/site-packages/astropy/units/quantity.py:658: RuntimeWarning: invalid value encountered in multiply
+  result = super().__array_ufunc__(function, method, *arrays, **kwargs)
+/Users/ahmed/Documents/repos/FRECKLL/.venv/lib/python3.12/site-packages/astropy/units/quantity.py:658: RuntimeWarning: overflow encountered in multiply
+  result = super().__array_ufunc__(function, method, *arrays, **kwargs)
+
+
+Success: True
+</code></pre></div>
+<p>Lets plot the results!</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-41-1"><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+</span><span id="__span-41-2"><a id="__codelineno-41-2" name="__codelineno-41-2" href="#__codelineno-41-2"></a><span class="n">plot_vmr</span><span class="p">(</span><span class="n">result_photo_equil</span><span class="p">[</span><span class="s2">&quot;vmr&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">result_photo_equil</span><span class="p">[</span><span class="s2">&quot;pressure&quot;</span><span class="p">],</span> <span class="n">result_photo_equil</span><span class="p">[</span><span class="s2">&quot;species&quot;</span><span class="p">],</span> <span class="n">initial_vmr</span><span class="o">=</span><span class="n">result_photo_equil</span><span class="p">[</span><span class="s2">&quot;initial_vmr&quot;</span><span class="p">],</span>
+</span><span id="__span-41-3"><a id="__codelineno-41-3" name="__codelineno-41-3" href="#__codelineno-41-3"></a>         <span class="n">xlims</span><span class="o">=</span><span class="p">(</span><span class="mf">1e-16</span><span class="p">,</span> <span class="mf">1e0</span><span class="p">),</span>
+</span><span id="__span-41-4"><a id="__codelineno-41-4" name="__codelineno-41-4" href="#__codelineno-41-4"></a>         <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+</span><span id="__span-41-5"><a id="__codelineno-41-5" name="__codelineno-41-5" href="#__codelineno-41-5"></a><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></code></pre></div>
+<p><img alt="png" src="../gettingstarted_files/gettingstarted_75_0.png" /></p>
+<p>And lets animate it!</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-42-1"><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a><span class="o">%%</span><span class="n">capture</span>
+</span><span id="__span-42-2"><a id="__codelineno-42-2" name="__codelineno-42-2" href="#__codelineno-42-2"></a>
+</span><span id="__span-42-3"><a id="__codelineno-42-3" name="__codelineno-42-3" href="#__codelineno-42-3"></a><span class="n">anim_photo_equil</span> <span class="o">=</span> <span class="n">animate_vmr</span><span class="p">(</span>
+</span><span id="__span-42-4"><a id="__codelineno-42-4" name="__codelineno-42-4" href="#__codelineno-42-4"></a>    <span class="n">vmrs</span><span class="o">=</span><span class="n">result_photo_equil</span><span class="p">[</span><span class="s2">&quot;vmr&quot;</span><span class="p">],</span>
+</span><span id="__span-42-5"><a id="__codelineno-42-5" name="__codelineno-42-5" href="#__codelineno-42-5"></a>    <span class="n">times</span><span class="o">=</span><span class="n">result_photo_equil</span><span class="p">[</span><span class="s2">&quot;times&quot;</span><span class="p">],</span>
+</span><span id="__span-42-6"><a id="__codelineno-42-6" name="__codelineno-42-6" href="#__codelineno-42-6"></a>    <span class="n">species</span><span class="o">=</span><span class="n">result_photo_equil</span><span class="p">[</span><span class="s2">&quot;species&quot;</span><span class="p">],</span>
+</span><span id="__span-42-7"><a id="__codelineno-42-7" name="__codelineno-42-7" href="#__codelineno-42-7"></a>    <span class="n">pressure</span><span class="o">=</span><span class="n">result_photo_equil</span><span class="p">[</span><span class="s2">&quot;pressure&quot;</span><span class="p">],</span>
+</span><span id="__span-42-8"><a id="__codelineno-42-8" name="__codelineno-42-8" href="#__codelineno-42-8"></a>    <span class="n">initial_vmr</span><span class="o">=</span><span class="n">result_photo_equil</span><span class="p">[</span><span class="s2">&quot;initial_vmr&quot;</span><span class="p">],</span>
+</span><span id="__span-42-9"><a id="__codelineno-42-9" name="__codelineno-42-9" href="#__codelineno-42-9"></a>    <span class="n">xlims</span><span class="o">=</span><span class="p">(</span><span class="mf">1e-16</span><span class="p">,</span> <span class="mf">1e0</span><span class="p">),</span>
+</span><span id="__span-42-10"><a id="__codelineno-42-10" name="__codelineno-42-10" href="#__codelineno-42-10"></a>    <span class="n">blit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-42-11"><a id="__codelineno-42-11" name="__codelineno-42-11" href="#__codelineno-42-11"></a>    <span class="n">interval</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+</span><span id="__span-42-12"><a id="__codelineno-42-12" name="__codelineno-42-12" href="#__codelineno-42-12"></a><span class="p">)</span>
+</span><span id="__span-42-13"><a id="__codelineno-42-13" name="__codelineno-42-13" href="#__codelineno-42-13"></a>
+</span><span id="__span-42-14"><a id="__codelineno-42-14" name="__codelineno-42-14" href="#__codelineno-42-14"></a><span class="n">anim_photo_equil</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;photo_equil_vmr.mp4&quot;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">writer</span><span class="o">=</span><span class="s2">&quot;ffmpeg&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-43-1"><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a><span class="n">Video</span><span class="p">(</span><span class="s2">&quot;photo_equil_vmr.mp4&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<figure class="video_container">
+  <video controls="true" allowfullscreen="true">
+    <source src="photo_equil_vmr.mp4" type="video/mp4">
+  </video>
+</figure>
+
+<p>Thats all there is to it! Try it and see what you can solve!</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Maintained by <a href="https://ahmed-f-alrefaie.com">ahmed-f-alrefaie</a>.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/ahmed-f-alrefaie/FRECKLL" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://pypi.org/project/FRECKLL" target="_blank" rel="noopener" title="pypi.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6M286.2 404c11.1 0 20.1 9.1 20.1 20.3 0 11.3-9 20.4-20.1 20.4-11 0-20.1-9.2-20.1-20.4.1-11.3 9.1-20.3 20.1-20.3M167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4m-6.7-142.6c-11.1 0-20.1-9.1-20.1-20.3.1-11.3 9-20.4 20.1-20.4 11 0 20.1 9.2 20.1 20.4s-9 20.3-20.1 20.3"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.f13b1293.min.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
