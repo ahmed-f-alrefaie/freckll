@@ -54,5 +54,6 @@ solver:
   rtol: 1e-2
   atol: 1e-25
   maxiter: 1000
+  enable_diffusion: true
   
 

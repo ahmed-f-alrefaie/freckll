@@ -38,10 +38,11 @@ solver:
   nevals: 100
   dn_crit: 1e-3
   dndt_crit: 1e-6
-  max_solve_time: 1 minute
+  max_solve_time: 3 minute
+  enable_diffusion: false
   rtol: 1e-2
   atol: 1e-25
-  maxiter: 300
+  maxiter: 100
   strict: false
   
 

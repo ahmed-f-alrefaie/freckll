@@ -10,7 +10,7 @@ star:
   spectrum: hd209458
   
 # Built in format
-network: venot-methanol-2023
+network: venot-methanol-2023-reduced
 photochemistry: venot-methanol-2023-photo
 
 thermochemistry:
@@ -47,6 +47,7 @@ solver:
   dn_crit: 1e-3
   dndt_crit: 1e-6
   max_solve_time: 1 hour
+  enable_diffusion: true
   rtol: 1e-2
   atol: 1e-25
   maxiter: 1000
