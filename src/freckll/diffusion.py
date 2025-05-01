@@ -115,6 +115,53 @@ def molecular_diffusion(
     return diff_mol << u.cm**2 / u.s
 
 
+def diffusion_matrix(species: list[SpeciesFormula], temperature: u.Quantity, pressure: u.Quantity) -> u.Quantity:
+    r"""Compute the diffusion matrix using the Fuller equation."""
+    sigmas = np.array([s.diffusion_volume for s in species])
+    masses = np.array([s.monoisotopic_mass for s in species])
+
+    mass_matrix = 1 / masses[:, None] + 1 / masses[None, :]
+    cbrt_sigmas = np.cbrt(sigmas)
+    sigma_matrix = (cbrt_sigmas[:, None] + cbrt_sigmas[None, :]) ** 2
+
+    pressure_bar = pressure.to(u.bar).value
+    temperature_K = temperature.to(u.K).value
+    # Fuller equation with correct constant and unit-aware broadcasting
+    diffusion_matrix = (0.00143 * (temperature_K**1.75) * np.sqrt(mass_matrix[..., None])) / (
+        pressure_bar * sigma_matrix[..., None]
+    )
+
+    return diffusion_matrix << u.cm**2 / u.s
+
+
+def molecular_diffusion_fuller(
+    species: list[SpeciesFormula],
+    number_density: u.Quantity,
+    temperature: u.Quantity,
+    pressure: u.Quantity,
+) -> u.Quantity:
+    r"""Compute effective diffusivity using Blanc's law."""
+    diff_matrix = diffusion_matrix(species, temperature, pressure)
+    species_index = np.arange(len(species))
+
+    # Compute mole fractions (ensure unitless)
+    y = number_density / np.sum(number_density, axis=0)  # Unitless
+
+    # Compute y[B]/D_AB for all pairs (A, B)
+    y_over_d = y[:, None, :] / diff_matrix  # Shape: (A, B, ...)
+
+    # Exclude B=A terms
+    y_over_d[species_index, species_index, :] = 0.0
+
+    # Sum over B (axis=1) for each A
+    sum_species = np.sum(y_over_d, axis=0)
+
+    # Blanc's law: D_eff,A = 1 / sum(y[B]/D_AB)
+    effective_diffusion = (1) / sum_species
+
+    return effective_diffusion.to(u.cm**2 / u.s)
+
+
 def molecular_diffusion_II(
     species: list[SpeciesFormula],
     number_density: u.Quantity,
