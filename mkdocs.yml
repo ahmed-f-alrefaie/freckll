@@ -30,6 +30,7 @@ nav:
           - Photochemistry: modules/reactions/photolysis.md
       - Kinetics: modules/kinetics.md
       - ODE: modules/ode.md
+      - Diffusion: modules/diffusion.md
 plugins:
   - search
   - mkdocstrings:
