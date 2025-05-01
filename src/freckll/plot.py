@@ -47,7 +47,7 @@ def plot_tp_and_kzz(
     ax2.set_xscale("log")
 
     lns = tplot + kzzplot
-    labs = [l.get_label() for l in lns]
+    labs = [lab.get_label() for lab in lns]
     ax.legend(lns, labs, loc=0)
     # Set labels and title
 
@@ -131,7 +131,7 @@ def animate_vmr(
     from matplotlib.animation import FuncAnimation
 
     ax.set_xlim(xlims)
-    ax.set_ylim(pressure.value.max(), pressure.value.min())
+    ax.invert_yaxis()
     ax.set_xscale("log")
     ax.set_yscale("log")
     ax.set_xlabel("VMR")
@@ -145,7 +145,7 @@ def animate_vmr(
             ax.plot(initial_vmr[x], pressure.value, alpha=0.5)
             (line,) = ax.plot([], [], label=species[x], color=ax.lines[-1].get_color())
         else:
-            line = ax.plot(initial_vmr[x], pressure.value, "--", alpha=0.5)
+            line = ax.plot([], [], "--", alpha=0.5)
 
         lines.append(line)
     ax.legend()
