@@ -20,7 +20,7 @@ _log = setup_log(__name__)
 def _dispatch(
     data: dict | str,
     format_key: str = "format",
-    dispatcher_map: dict[str, Callable[..., T]] = {},
+    dispatcher_map: t.Optional[dict[str, Callable[..., T]]] = None,
     **kwargs,
 ) -> T:
     """Dispatch a function based on the format key in the data dictionary.
@@ -36,15 +36,16 @@ def _dispatch(
 
     """
 
+    dispatcher_map = dispatcher_map or {}
     if isinstance(data, str):
         data = {"format": data}
 
     data = data.copy()
     if format_key not in data:
-        raise ValueError(f"Missing format key '{format_key}' in data.")
+        raise ValueError(f"Missing format key '{format_key}' in data.")  # noqa: TRY003
     format_value = data.pop(format_key)
     if format_value not in dispatcher_map:
-        raise ValueError(f"Unknown format '{format_value}' in data.")
+        raise ValueError(f"Unknown format '{format_value}' in data.")  # noqa: TRY003
 
     kwargs = {**kwargs, **data}
 
@@ -186,21 +187,36 @@ def dispatch_atmosphere(atmosphere_data: dict | str) -> AtmosphereData:
 
 def dispatch_solver(
     solver_data: dict | str, network: ChemicalNetwork, photochem: t.Optional[PhotoChemistry] = None
-) -> tuple[t.Type[Solver], dict]:
+) -> tuple[type[Solver], dict]:
     """Convert input data to a SolverData object."""
-    from ..solver import Rosenbrock, Vode
+    from ..solver import BDF, LSODA, Rosenbrock, Vode
+    from ..solver.transform import Log10Transform, LogitTransform, LogTransform, UnityTransform
 
     _map = {
         "rosenbrock": Rosenbrock,
         "vode": Vode,
+        "lsoda": LSODA,
+        "bdf": BDF,
     }
 
     choice = solver_data.pop("method", "rosenbrock")
 
     if choice not in _map:
-        raise ValueError(f"Unknown solver '{choice}' in data.")
+        raise ValueError(f"Unknown solver '{choice}' in data.")  # noqa: TRY003
 
-    return _map[choice](network, photochem), solver_data
+    _transform_map = {
+        "log10": Log10Transform(),
+        "logit": LogitTransform(),
+        "log": LogTransform(),
+        "unity": UnityTransform(),
+    }
+
+    transform = solver_data.pop("transform", "unity")
+
+    return _map[choice](network, photochem), {
+        **solver_data,
+        "transform": _transform_map[transform],
+    }
 
 
 def dispatch_input(

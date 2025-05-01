@@ -11,6 +11,7 @@ from ..log import Loggable
 from ..network import ChemicalNetwork, PhotoChemistry
 from ..species import SpeciesFormula
 from ..types import FreckllArray
+from .transform import Transform, UnityTransform
 
 
 class StellarFluxData(TypedDict):
@@ -140,6 +141,8 @@ def dndt(
     photochemistry: Optional[Optional[PhotoChemistry]] = None,
     vmr_shape: Optional[tuple[int, ...]] = None,
     enable_diffusion: bool = True,
+    enable_settling: bool = True,
+    transform: Transform = UnityTransform,
 ) -> FreckllArray:
     """Calculate the rate of change of the VMR."""
     from ..chegp import compute_dndt_vertical
@@ -149,13 +152,15 @@ def dndt(
     from ..network import map_production_loss
     from ..ode import construct_reaction_terms, convert_fm_to_y, convert_y_to_fm
 
+    y = transform.inverse_transform(y)
+    s = transform.derivative(y)
+
     vmr = convert_y_to_fm(y, *vmr_shape)
 
     density = density.to(u.cm**-3)
     masses = masses
     #
 
-    nlayers = density.size
     mu = ksum(masses[:, None].value * vmr, k=4) << masses.unit
 
     altitude = solve_altitude_profile(
@@ -186,6 +191,7 @@ def dndt(
         mole_diffusion,
         kzz,
         alpha=alpha,
+        enable_settling=enable_settling,
     )
 
     reactions = network.compute_reactions(vmr, with_production_loss=False)
@@ -194,10 +200,8 @@ def dndt(
     products, loss = map_production_loss(reactions)
     reaction_term = construct_reaction_terms(products, loss, network.species, density.size, k=4)
     final = (reaction_term) / density.value + vert_term
-
     # final[vmr < 0] = 0
-
-    return convert_fm_to_y(final)
+    return convert_fm_to_y(final) * s
 
 
 def jac(
@@ -214,19 +218,27 @@ def jac(
     photochemistry: Optional[Optional[PhotoChemistry]] = None,
     vmr_shape: Optional[tuple[int, ...]] = None,
     enable_diffusion: bool = True,
+    enable_settling: bool = True,
+    transform: Transform = UnityTransform,
 ) -> FreckllArray:
-    from freckll.chegp import compute_jacobian_sparse
+    from freckll.chegp import compute_dndt_vertical, compute_jacobian_sparse
     from freckll.diffusion import molecular_diffusion
     from freckll.distill import ksum
     from freckll.kinetics import alpha_term, solve_altitude_profile
-    from freckll.ode import construct_jacobian_reaction_terms_sparse, convert_y_to_fm
+    from freckll.ode import (
+        construct_jacobian_reaction_terms_sparse,
+        construct_reaction_terms,
+        convert_fm_to_y,
+        convert_y_to_fm,
+    )
 
     from ..network import map_production_loss
+
+    y = transform.inverse_transform(y)
 
     density = density.to(u.cm**-3)
     masses = masses
     # altitude = altitude << u.km
-    nlayers = density.size
     kzz = kzz.to(u.cm**2 / u.s)
     vmr = convert_y_to_fm(y, *vmr_shape)
     mu = ksum(masses[:, None].value * vmr, k=4) << masses.unit
@@ -237,7 +249,7 @@ def jac(
         pressure,
         planet_mass,
         planet_radius,
-    ).to(u.km)
+    )
 
     mole_diffusion = molecular_diffusion(network.species, number_density, temperature, pressure) * float(
         enable_diffusion
@@ -247,10 +259,28 @@ def jac(
     if photochemistry is not None:
         reactions = reactions + photochemistry.compute_reactions(number_density, altitude)
 
-    _, loss = map_production_loss(reactions)
-    react_mat = construct_jacobian_reaction_terms_sparse(loss, network.species, number_density.value)
-
     alpha = alpha_term(network.species, vmr)
+    products, loss = map_production_loss(reactions)
+
+    reaction_term = construct_reaction_terms(products, loss, network.species, density.size, k=4)
+    vert_term = compute_dndt_vertical(
+        vmr,
+        altitude,
+        planet_radius,
+        planet_mass,
+        density,
+        masses,
+        mu,
+        temperature,
+        mole_diffusion,
+        kzz,
+        alpha=alpha,
+        enable_settling=enable_settling,
+    )
+
+    f = (reaction_term) / density.value + vert_term
+
+    react_mat = construct_jacobian_reaction_terms_sparse(loss, network.species, number_density.value)
 
     vert_mat = compute_jacobian_sparse(
         vmr,
@@ -264,9 +294,12 @@ def jac(
         mole_diffusion,
         kzz,
         alpha=alpha,
+        enable_settling=enable_settling,
     )
 
-    return vert_mat + react_mat
+    total_mat = vert_mat + react_mat
+
+    return transform.transform_jacobian(total_mat, y, convert_fm_to_y(f))
 
 
 class Solver(Loggable):
@@ -298,7 +331,15 @@ class Solver(Loggable):
         self.photochemistry = photochemistry
 
     def _run_solver(
-        self, f: DyCallable, jac: JacCallable, y0: FreckllArray, t0: float, t1: float, num_species: int, **kwargs: dict
+        self,
+        f: DyCallable,
+        jac: JacCallable,
+        y0: FreckllArray,
+        t0: float,
+        t1: float,
+        num_species: int,
+        transform: Transform = UnityTransform,
+        **kwargs: dict,
     ) -> SolverOutput:
         """Run the solver."""
         raise NotImplementedError("Solver not implemented.")
@@ -344,6 +385,8 @@ class Solver(Loggable):
         vmr: FreckllArray,
         t_span: tuple[float, float],
         enable_diffusion: bool = False,
+        enable_settling: bool = False,
+        transform: Transform = UnityTransform,
         atol: float = 1e-25,
         rtol: float = 1e-2,
         df_criteria: float = 1e-3,
@@ -352,11 +395,12 @@ class Solver(Loggable):
     ) -> Solution:
         """Solve the ODE.
 
-
         Args:
             vmr: The initial VMR.
             t_span: The time span.
-            enable_diffusion: Whether to enable diffusion.
+            enable_diffusion: Whether to enable molecular diffusion.
+            enable_settling: Whether to enable settling.
+            transform: The transform to use.
             atol: The absolute tolerance.
             rtol: The relative tolerance.
             df_criteria: The criteria for convergence.
@@ -371,7 +415,7 @@ class Solver(Loggable):
         from ..ode import convert_fm_to_y, convert_y_to_fm
 
         density = air_density(self.temperature, self.pressure)
-
+        self.info("Using Transform: %s", transform.__class__.__name__)
         f = partial(
             dndt,
             density=density,
@@ -385,6 +429,8 @@ class Solver(Loggable):
             photochemistry=self.photochemistry,
             vmr_shape=vmr.shape,
             enable_diffusion=enable_diffusion,
+            enable_settling=enable_settling,
+            transform=transform,
         )
 
         jacobian = partial(
@@ -400,6 +446,8 @@ class Solver(Loggable):
             photochemistry=self.photochemistry,
             vmr_shape=vmr.shape,
             enable_diffusion=enable_diffusion,
+            enable_settling=enable_settling,
+            transform=transform,
         )
 
         self.debug("Solving with %s solver", self.__class__.__name__)
@@ -413,6 +461,7 @@ class Solver(Loggable):
             t_span[0],
             t_span[1],
             num_species,
+            transform=transform,
             atol=atol,
             rtol=rtol,
             df_criteria=df_criteria,
