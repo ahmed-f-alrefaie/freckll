@@ -6,6 +6,7 @@ from astropy import units as u
 
 from ..types import FreckllArray
 from .solver import DyCallable, JacCallable, Solver, SolverOutput, convergence_test, output_step
+from .transform import Transform
 
 
 class Vode(Solver):
@@ -19,6 +20,7 @@ class Vode(Solver):
         t0: float,
         t1: float,
         num_species: int,
+        transform: Transform,
         atol: float = 1e-25,
         rtol: float = 1e-3,
         df_criteria: float = 1e-3,
@@ -72,7 +74,9 @@ class Vode(Solver):
 
         # Run the solver
         soln = ode(f, banded_jac).set_integrator("vode", **options)
-        soln.set_initial_value(y0, t0)
+        y0_transform = transform.transform(y0)
+
+        soln.set_initial_value(y0_transform, t0)
         time_idx = 1
 
         ys = [y0]
@@ -82,15 +86,22 @@ class Vode(Solver):
             max_solve_time = max_solve_time.to(u.s).value
 
         start_time = time.time()
-        retries = 0
         current_t = t_eval[time_idx]
+        success = True
         while soln.t < t1:
-            soln.integrate(current_t)
+            try:
+                soln.integrate(current_t)
+            except Exception as e:
+                self.warning(f"ODE solver failed to integrate: {e!s}")
+                success = False
+                ys.append(transform.inverse_transform(soln.y))
+                ts.append(soln.t)
+                break
             if soln.successful():
-                ys.append(soln.y)
+                ys.append(transform.inverse_transform(soln.y))
                 ts.append(soln.t)
 
-                output_step(soln.t, soln.y, self)
+                output_step(soln.t, ys[-1], self)
                 if convergence_test(ys, ts, y0, self, atol, df_criteria, dfdt_criteria):
                     self.info("ODE solver converged.")
                     break
@@ -99,16 +110,9 @@ class Vode(Solver):
                     break
                 current_t = t_eval[time_idx]
             else:
-                current_t = soln.t
-                current_y = soln.y
-                soln = ode(f, banded_jac).set_integrator("vode", **options)
-                soln.set_initial_value(current_y, current_t)
-                max_retries += 1
-                if retries >= max_retries:
-                    self.warning("ODE solver failed to converge. Exiting.")
-                    break
-                self.info("ODE solver failed to converge. Resuming with last known state.")
-                continue
+                self.warning("ODE solver failed to converge.")
+                success = False
+                break
             current_time = time.time() - start_time
             if max_solve_time is not None and current_time > max_solve_time:
                 self.info("Maximum solve time reached")
@@ -117,7 +121,7 @@ class Vode(Solver):
         return {
             "num_dndt_evals": 0,
             "num_jac_evals": 0,
-            "success": True,
+            "success": success,
             "times": np.array(ts),
             "y": np.array(ys),
         }

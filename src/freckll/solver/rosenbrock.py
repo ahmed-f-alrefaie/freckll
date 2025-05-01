@@ -8,6 +8,7 @@ from astropy import units as u
 from ..kinetics import AltitudeSolveError
 from ..types import FreckllArray
 from .solver import DyCallable, JacCallable, Solver, SolverOutput, convergence_test, output_step
+from .transform import Transform, UnityTransform
 
 
 def update_timestep(timestep: float, rtol: float, error: float):
@@ -34,9 +35,9 @@ def step_second_order_rosenbrock(f: DyCallable, jac: JacCallable, y: FreckllArra
     from scipy import sparse
     from scipy.sparse import linalg as spla
 
-    I = sparse.eye(len(y), format="csc")
+    eye = sparse.eye(len(y), format="csc")
     gamma = 1 + 1 / math.sqrt(2)
-    lhs = I - gamma * h * jac(0, y)
+    lhs = eye - gamma * h * jac(0, y)
     # Supress RuntimeWarning
     with np.errstate(all="ignore"):
         rhs = f(t, y)
@@ -99,7 +100,7 @@ class Rosenbrock(Solver):
 
     """
 
-    def _run_solver(
+    def _run_solver(  # noqa: C901
         self,
         f: DyCallable,
         jac: JacCallable,
@@ -107,6 +108,7 @@ class Rosenbrock(Solver):
         t0: float,
         t1: float,
         num_species: int,
+        transform: Transform,
         atol: float = 1e-25,
         rtol: float = 1e-3,
         df_criteria: float = 1e-3,
@@ -190,8 +192,10 @@ class Rosenbrock(Solver):
                 success = False
                 break
 
+            y_transform = transform.transform(y)
+
             try:
-                result = step_second_order_rosenbrock(f, jac, y, t, h)
+                result = step_second_order_rosenbrock(f, jac, y_transform, t, h)
             except AltitudeSolveError:
                 # If we get an altitude solve error, we need to reject the step
                 self.info("Altitude solve error")
@@ -209,7 +213,10 @@ class Rosenbrock(Solver):
             # Check if the step is valid
             y_new, error = result
 
-            if not strict:
+            y_new = transform.inverse_transform(y_new)
+            error = transform.inverse_transform(error)
+
+            if not strict and isinstance(transform, UnityTransform):
                 y_new = np.maximum(y_new, tiny)
                 # fm = convert_y_to_fm(y_new, num_species, self.kzz.size)
 
