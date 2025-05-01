@@ -137,7 +137,7 @@ def compute_coeffs(fm, altitude, Ro, go, density, masses, mu, T, diffusion, Kzz,
         # print('HIM', him)
         # print('HAM', ham)
         # print('mu', mu)
-    return (
+    return [
         inv_dz,
         inv_dz_m,
         inv_dz_p,
@@ -153,7 +153,7 @@ def compute_coeffs(fm, altitude, Ro, go, density, masses, mu, T, diffusion, Kzz,
         dym,
         km,
         kp,
-    )
+    ]
 
 
 def build_jacobian_levels(coeffs, density):
@@ -266,15 +266,19 @@ def convert_y_to_fm(y, num_species, num_layers):
     return fm
 
 
-def dndt(fm, density, masses, altitude, Ro, go, T, diffusion, Kzz, alpha=0.0):
+def dndt(fm, density, masses, altitude, Ro, go, T, diffusion, Kzz, alpha=0.0, enable_settling=False):
     mu = np.sum(fm * masses[:, None], axis=0)
     coeffs = compute_coeffs(fm, altitude, Ro, go, density, masses, mu, T, diffusion, Kzz, alpha=alpha)
 
+    if not enable_settling:
+        coeffs[7] *= 0.0
+        coeffs[8] *= 0.0
+
     inv_dz, _, _, cp, cm, c_plus, c_moins, dip, dim, dm, dp, dyp, dym, km, kp = coeffs
 
-    func = np.empty_like(fm)
+    func = np.zeros_like(fm)
 
-    func[:, 1:-1] = (
+    func[:, 1:-1] += (
         cp[1:-1]
         * (dp[:, 1:-1] * ((fm[:, 2:] + fm[:, 1:-1]) * 0.5 * dip[:, 1:-1] + dyp[:, 1:-1]) + kp[1:-1] * dyp[:, 1:-1])
         * c_plus[1:-1]
@@ -282,16 +286,10 @@ def dndt(fm, density, masses, altitude, Ro, go, T, diffusion, Kzz, alpha=0.0):
         * (dm[:, 1:-1] * ((fm[:, 1:-1] + fm[:, :-2]) * 0.5 * dim[:, 1:-1] + dym[:, 1:-1]) + km[1:-1] * dym[:, 1:-1])
         * c_moins[1:-1]
     )
-    func[:, 0] = (
+    func[:, 0] += (
         cp[0] * (dp[:, 0] * ((fm[:, 1] + fm[:, 0]) * 0.5 * dip[:, 0] + dyp[:, 0]) + kp[0] * dyp[:, 0]) * c_plus[0]
     )
-    # func[:, -1] += (
-    #     c_moins[-1]
-    #     * cm[-1]
-    #     * (dm[:, -1] * ((fm[:, -1] + fm[:, -2]) * 0.5 * dim[:, -1] + dym[:, -1]) + km[-1] * dym[:, -1])
-    # )
-
-    func[:, -1] = (
+    func[:, -1] += (
         c_moins[-1]
         * cm[-1]
         * (dm[:, -1] * ((fm[:, -1] + fm[:, -2]) * 0.5 * dim[:, -1] + dym[:, -1]) + km[-1] * dym[:, -1])
@@ -332,6 +330,7 @@ def compute_jacobian_sparse(
     diffusion: u.Quantity,
     Kzz: u.Quantity,
     alpha: float = 0.0,
+    enable_settling: bool = False,
 ):
     from .kinetics import gravity_at_height
 
@@ -348,6 +347,10 @@ def compute_jacobian_sparse(
 
     # Compute the coefficients
     coeffs = compute_coeffs(vmr, altitude, Ro, go, density, masses, mu, T, diffusion, Kzz, alpha=alpha)
+
+    if not enable_settling:
+        coeffs[7] *= 0.0
+        coeffs[8] *= 0.0
 
     # Compute the Jacobian
     pd_same, pd_p, pd_m = build_jacobian_levels(coeffs, density)
@@ -369,6 +372,7 @@ def compute_dndt_vertical(
     diffusion: u.Quantity,
     Kzz: u.Quantity,
     alpha: float = 0.0,
+    enable_settling: bool = False,
 ):
     from .kinetics import gravity_at_height
 
@@ -394,4 +398,5 @@ def compute_dndt_vertical(
         diffusion,
         Kzz,
         alpha=alpha,
+        enable_settling=enable_settling,
     )
