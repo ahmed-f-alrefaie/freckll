@@ -7,6 +7,10 @@ $$
 \frac{\partial n_i}{\partial t} = P_i -L_i - \frac{\partial \phi_i}{\partial z}
 $$
 
+$$
+\phi_i = -n_i D_i \left( \frac{1}{n_i}\frac{\partial n_i}{\partial z} + \frac{1}{H_i} + \frac{1}{T}\frac{\partial T}{\partial z} \right)
+$$
+
 where $n_i$, $P_i$ and $L_i$ are the number density, production rate and loss rate of species $i$, $z$ is the vertical coordinate of the atmosphere, and $\phi_i$ is the vertical flux for species $i$ which has the form of a diffusion equation given below
 
 $$

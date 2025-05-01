@@ -13,8 +13,8 @@ from ..reactions.photo import StarSpectra
 from ..species import SpeciesFormula
 from ..venot import VenotChemicalNetwork, VenotPhotoChemistry
 
-Networks = t.Literal["venot-methanol-2023", "venot-methanol-2023-reduced"]
-Photonetworks = t.Literal["venot-methanol-2023-photo"]
+Networks = t.Literal["venot-methanol-2020", "venot-methanol-2020-reduced"]
+Photonetworks = t.Literal["venot-methanol-2020-photo"]
 
 Stars = t.Literal[
     "55cnc", "adleo", "gj436", "gj3470", "hd128167", "hd189733", "hd209458", "sun", "wasp12", "wasp39", "wasp43"
@@ -49,10 +49,12 @@ def generic_csv_loader(
     """
     filename = pathlib.Path(filename)
     if not filename.exists():
-        raise FileNotFoundError(f"File {filename} does not exist.")
+        _log.error(f"File {filename} does not exist.")
+        raise FileNotFoundError
 
     if not filename.is_file():
-        raise FileNotFoundError(f"File {filename} is not a file.")
+        _log.error(f"File {filename} is not a file.")
+        raise FileNotFoundError
 
     columns = [int(c) for c in columns]
 
@@ -256,18 +258,19 @@ def default_network_loader(network: Networks) -> VenotChemicalNetwork:
     """Load the default network.
 
     Args:
-        network: The network to load. Can be "venot-methanol-2023" or "venot-methanol-2023-reduced".
+        network: The network to load. Can be "venot-methanol-2020" or "venot-methanol-2020-reduced".
 
     Returns:
         The loaded network.
 
     """
-    if network == "venot-methanol-2023":
+    if network == "venot-methanol-2020":
         return default_full_network_loader()
-    elif network == "venot-methanol-2023-reduced":
+    elif network == "venot-methanol-2020-reduced":
         return default_reduced_network_loader()
     else:
-        raise ValueError(f"Unknown network '{network}'")
+        _log.error(f"Unknown network '{network}'")
+        raise ValueError
 
 
 def default_stellar_spectra_loader(
@@ -286,7 +289,8 @@ def default_stellar_spectra_loader(
     import pathlib
 
     if star not in t.get_args(Stars):
-        raise ValueError(f"Unknown star '{star}'")
+        _log.error(f"Unknown star '{star}'")
+        raise ValueError
 
     star_path = importlib.resources.files("freckll.data") / "Stars" / f"stellarflux_{star}.dat"
     star_path = star_path.resolve()

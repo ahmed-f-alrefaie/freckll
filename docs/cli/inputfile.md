@@ -43,8 +43,8 @@ star:
   spectrum: hd209458
 
 # Built in format
-network: venot-methanol-2023-reduced
-photochemistry: venot-methanol-2023-photo
+network: venot-methanol-2020-reduced
+photochemistry: venot-methanol-2020-photo
 
 thermochemistry:
   format: ace
@@ -249,14 +249,14 @@ The `network` section defines the chemical network of the simulation. It is a **
 To use the built in network only requires the name of the network. For example:
 
 ```yaml
-network: venot-methanol-2023-reduced
+network: venot-methanol-2020-reduced
 ```
 
 The available built-in networks are:
 
-- `venot-methanol-2023-reduced`
+- `venot-methanol-2020-reduced`
   - Reduced network for the Venot et al. (2020) methanol network.
-- `venot-methanol-2023`
+- `venot-methanol-2020`
   - Full network for the Venot et al. (2020) methanol network.
 
 ## Custom network
@@ -292,13 +292,13 @@ The `photochemistry` section contains the name of the photochemistry network to 
 Similar to the Network section, the photochemistry section can either be a built-in network or a custom network.
 The following built-in photochemistry networks are available:
 
-- `venot-methanol-2023-photo`
+- `venot-methanol-2020-photo`
   - Photochemistry network for the Venot et al. (2020) methanol network.
 
 ### Example
 
 ```yaml
-photochemistry: venot-methanol-2023-photo
+photochemistry: venot-methanol-2020-photo
 ```
 
 ## Custom photochemistry

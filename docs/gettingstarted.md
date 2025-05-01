@@ -108,15 +108,15 @@ You can also load in your own network but this will be covered in a different tu
 
 The `default_network_loader` allows for two arguments:
 
-- `venot-methanol-2023-reduced` - This is the reduced network that does not include photolysis.
-- `venot-methanol-2023` - This is the full network that includes photolysis.
+- `venot-methanol-2020-reduced` - This is the reduced network that does not include photolysis.
+- `venot-methanol-2020` - This is the full network that includes photolysis.
 
 We can use the loader to load in the reduced network:
 
 ```python
 from freckll.io.loader import default_network_loader
 
-network = default_network_loader("venot-methanol-2023-reduced")
+network = default_network_loader("venot-methanol-2020-reduced")
 ```
 
 We can inspect the species in the network:
@@ -593,7 +593,7 @@ plt.show()
 For the photochemistry case we will need to use the full network instead. We can load it in using the `default_network_loader` function:
 
 ```python
-full_network = default_network_loader("venot-methanol-2023")
+full_network = default_network_loader("venot-methanol-2020")
 ```
 
 We will also need to load in the photochemistry and actinic flux for the star. This is easily accomplished using the loader modules.

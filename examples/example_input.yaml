@@ -9,8 +9,8 @@ star:
   spectrum: sun # Loaded from the built-in library
 
 # Built in format
-network: venot-methanol-2023
-photochemistry: venot-methanol-2023-photo # Optional
+network: venot-methanol-2020
+photochemistry: venot-methanol-2020-photo # Optional
 
 # Custom format
 # network:

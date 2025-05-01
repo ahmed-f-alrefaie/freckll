@@ -13,8 +13,8 @@ star:
     radius: 1.16 Rsun
 
 # Built in format
-network: venot-methanol-2023
-photochemistry: venot-methanol-2023-photo
+network: venot-methanol-2020
+photochemistry: venot-methanol-2020-photo
 
 thermochemistry:
   format: ace

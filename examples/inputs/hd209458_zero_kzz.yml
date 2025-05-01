@@ -9,8 +9,8 @@ star:
   spectrum: hd209458
 
 # Built in format
-network: venot-methanol-2023-reduced
-#photochemistry: venot-methanol-2023-photo
+network: venot-methanol-2020-reduced
+#photochemistry: venot-methanol-2020-photo
 
 thermochemistry:
   format: ace
@@ -27,17 +27,17 @@ atmosphere:
     temperature_unit: K
     pressure_unit: mbar
 
-  kzz: 0 cm2/s
+  kzz: 1e4 cm2/s
 
 solver:
-  method: rosenbrock
+  method: vode
   t_span: [0.0, 1e10]
   nevals: 100
   dn_crit: 1e-3
   dndt_crit: 1e-6
   max_solve_time: 3 minute
-  enable_diffusion: false
-  rtol: 1e-2
+  enable_diffusion: true
+  rtol: 1e-3
   atol: 1e-25
   maxiter: 100
   strict: false

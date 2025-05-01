@@ -5,7 +5,7 @@ planet:
   albedo: 0.0
 
 # Built in format
-network: venot-methanol-2023-reduced
+network: venot-methanol-2020-reduced
 
 thermochemistry:
   format: ace
@@ -22,23 +22,26 @@ atmosphere:
     temperature_unit: K
     pressure_unit: mbar
 
-  kzz:
-    format: from-file
-    filename: kzz.csv
-    kzz_column: 1
-    pressure_column: 0
-    comments: "#"
-    kzz_unit: cm2/s
-    pressure_unit: mbar
+  kzz: 1e4 cm2/s
+  # kzz:
+  #   format: from-file
+  #   filename: kzz.csv
+  #   kzz_column: 1
+  #   pressure_column: 0
+  #   comments: "#"
+  #   kzz_unit: cm2/s
+  #   pressure_unit: mbar
 
 solver:
-  method: rosenbrock
-  t_span: [0.0, 1e10]
+  method: vode
+  t_span: [0.0, 1e12]
   max_iter: 100
   nevals: 200
   dn_crit: 1e-3
   dndt_crit: 1e-6
   max_solve_time: 1 hour
-  rtol: 1e-2
+  enable_diffusion: true
+  transform: logit
+  rtol: 1e-5
   atol: 1e-25
   maxiter: 1000
