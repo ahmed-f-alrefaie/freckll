@@ -1,6 +1,8 @@
 # Getting Started with FRECKLL
 
-The Google Colab version can be found [here](https://colab.research.google.com/drive/17qMpl1Zw8jWqb_L8s_2v7lMT9H9JT_jY?usp=sharing)
+- If you want to use the command line interface, the Quickstart can be found [here](cli/quickstart.md)
+
+- The Google Colab version of this page can be found [here](https://colab.research.google.com/drive/17qMpl1Zw8jWqb_L8s_2v7lMT9H9JT_jY?usp=sharing)
 
 This guide is there to quickly get started on the using the `freckll` library. Here you will learn the basics:
 

@@ -13,6 +13,7 @@ nav:
   - Introduction: introduction.md
   - Getting Started: gettingstarted.md
   - FRECKLL CLI:
+      - Quickstart: cli/quickstart.md
       - CLI program: cli/cli.md
       - Input file: cli/inputfile.md
   - Porting Networks: portingnetworks.md
@@ -61,6 +62,9 @@ theme:
 
 extra_javascript:
   - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
+extra_css:
+  - stylesheets/extra.css
 
 extra:
   social:
