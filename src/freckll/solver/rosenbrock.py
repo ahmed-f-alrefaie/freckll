@@ -214,7 +214,7 @@ class Rosenbrock(Solver):
             y_new, error = result
 
             y_new = transform.inverse_transform(y_new)
-            error = transform.inverse_transform(error)
+            # error = transform.inverse_transform(error)
 
             if not strict and isinstance(transform, UnityTransform):
                 y_new = np.maximum(y_new, tiny)
@@ -225,7 +225,7 @@ class Rosenbrock(Solver):
                 # y_new = convert_fm_to_y(fm)
 
             # If we are under strict conditions then reject the step if valeus are negative.
-            test_f = f(t, y_new)
+            test_f = f(t, transform.transform(y_new))
 
             # Check for NaN or Inf in the new values
             if np.any(np.isnan(y_new) | np.isinf(y_new) | np.isnan(test_f) | (y_new < 0)):

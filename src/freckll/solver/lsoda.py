@@ -1,7 +1,7 @@
 import numpy as np
 
 from ..types import FreckllArray
-from .solver import DyCallable, JacCallable, Solver, SolverOutput
+from .solver import DyCallable, JacCallable, Solver, SolverOutput, output_step
 from .transform import Transform
 
 
@@ -29,7 +29,12 @@ class LSODA(Solver):
         from ..utils import convert_to_banded_lsoda
 
         band = num_species + 2
-        banded_jac = lambda t, x: convert_to_banded_lsoda(jac(t, x), band)
+        banded_jac = lambda t, x, jac=jac, band=band: convert_to_banded_lsoda(jac(t, x), band)
+
+        def dydt(t, y):
+            # Call the function to compute dy/dt
+            output_step(t, y, self)
+            return f(t, y)
 
         # Set the solver options
 
@@ -38,6 +43,8 @@ class LSODA(Solver):
             "atol": atol,
             "rtol": rtol,
             "jac": banded_jac,
+            "lband": band,
+            "uband": band,
         }
 
         start_t = math.log10(max(t0, 1e-20))
@@ -46,7 +53,7 @@ class LSODA(Solver):
         y0_transform = transform.transform(y0)
         # Run the solver
         sol = solve_ivp(
-            fun=f,
+            fun=dydt,
             t_span=(t0, t1),
             y0=y0_transform,
             t_eval=t_eval,

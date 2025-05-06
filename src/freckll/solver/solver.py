@@ -114,7 +114,6 @@ def output_step(t, y, logger: Loggable = None) -> bool:
         y: The solution.
         logger: The logger.
     """
-    import math
 
     final = y
     logger.info(
@@ -123,7 +122,7 @@ def output_step(t, y, logger: Loggable = None) -> bool:
         final.min(),
         final.max(),
         t,
-        math.log10(t),
+        np.log10(t),
     )
 
 
@@ -146,7 +145,7 @@ def dndt(
 ) -> FreckllArray:
     """Calculate the rate of change of the VMR."""
     from ..chegp import compute_dndt_vertical
-    from ..diffusion import molecular_diffusion
+    from ..diffusion import molecular_diffusion_fuller
     from ..distill import ksum
     from ..kinetics import alpha_term, solve_altitude_profile
     from ..network import map_production_loss
@@ -173,7 +172,7 @@ def dndt(
 
     number_density = density * vmr
 
-    mole_diffusion = molecular_diffusion(network.species, number_density, temperature, pressure) * float(
+    mole_diffusion = molecular_diffusion_fuller(network.species, number_density, temperature, pressure) * float(
         enable_diffusion
     )
 
@@ -222,7 +221,7 @@ def jac(
     transform: Transform = UnityTransform,
 ) -> FreckllArray:
     from freckll.chegp import compute_dndt_vertical, compute_jacobian_sparse
-    from freckll.diffusion import molecular_diffusion
+    from freckll.diffusion import molecular_diffusion_fuller
     from freckll.distill import ksum
     from freckll.kinetics import alpha_term, solve_altitude_profile
     from freckll.ode import (
@@ -251,7 +250,7 @@ def jac(
         planet_radius,
     )
 
-    mole_diffusion = molecular_diffusion(network.species, number_density, temperature, pressure) * float(
+    mole_diffusion = molecular_diffusion_fuller(network.species, number_density, temperature, pressure) * float(
         enable_diffusion
     )
 
@@ -477,6 +476,8 @@ class Solver(Loggable):
             self.info("Solver completed successfully.")
 
         vmrs = np.array([convert_y_to_fm(ys, *vmr.shape) for ys in solver_output["y"]])
+
+        vmrs = vmrs / np.sum(vmrs, axis=1, keepdims=True)
 
         planet_data = {
             "radius": self.planet_radius,
