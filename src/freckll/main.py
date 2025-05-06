@@ -2,6 +2,7 @@ import datetime
 import logging
 import pathlib
 import time
+import typing as t
 
 import click
 
@@ -12,7 +13,7 @@ _log = logging.getLogger("freckll")
 
 @click.command()
 @click.argument(
-    "input",
+    "input_file",
     type=click.Path(exists=True),
 )
 @click.option(
@@ -53,12 +54,12 @@ _log = logging.getLogger("freckll")
     help="Animate the results.",
 )
 def freckll_cli(
-    input: pathlib.Path | str,
+    input_file: pathlib.Path | str,
     output: pathlib.Path | str,
     overwrite: bool = False,
     plot: bool = False,
-    plot_path: pathlib.Path | str = None,
-    plot_prefix: str = None,
+    plot_path: t.Optional[pathlib.Path | str] = None,
+    plot_prefix: t.Optional[str] = None,
     animate: bool = False,
 ) -> None:
     """Run the Freckll simulation.
@@ -87,7 +88,7 @@ def freckll_cli(
     _log.info(f"FRECKLL version {__version__}.")
     _log.info("Start Date: %s", started_at.isoformat())
 
-    _log.info("Input file: %s", input)
+    _log.info("Input file: %s", input_file)
     _log.info("Output file: %s", output)
 
     if not overwrite and pathlib.Path(output).exists():
@@ -96,7 +97,7 @@ def freckll_cli(
 
     _log.info("Beginning Solve...")
 
-    result = load_and_run_input(input)
+    result = load_and_run_input(input_file)
 
     if result["success"]:
         _log.info("Solve complete.")
@@ -114,19 +115,19 @@ def freckll_cli(
         from .plot import plot_solution_combined
 
         plot_path = pathlib.Path(plot_path)
-        plot_prefix = f"{plot_prefix}_"
+        pplot_prefix = f"{plot_prefix}_"
         plot_suffix = "" if result["success"] else "_failed"
         fig = plot_solution_combined(result, figsize=(10, 10))
-        fig.savefig(plot_path / f"{plot_prefix}solution{plot_suffix}.png", dpi=300)
+        fig.savefig(plot_path / f"{pplot_prefix}solution{plot_suffix}.png", dpi=300)
         _log.info("Plotting complete.")
 
     if animate:
         from .plot import animate_vmr
 
         plot_path = pathlib.Path(plot_path)
-        plot_prefix = f"{plot_prefix}_"
+        aplot_prefix = f"{plot_prefix}_"
         plot_suffix = "" if result["success"] else "_failed"
-        animate_path = plot_path / f"{plot_prefix}animation{plot_suffix}.mp4"
+        animate_path = plot_path / f"{aplot_prefix}animation{plot_suffix}.mp4"
         ani = animate_vmr(
             result["vmr"], result["times"], result["pressure"], result["species"], initial_vmr=result["initial_vmr"]
         )
