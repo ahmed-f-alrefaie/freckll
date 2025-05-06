@@ -18,7 +18,7 @@
         <link rel="prev" href="../introduction/">
       
       
-        <link rel="next" href="../cli/cli/">
+        <link rel="next" href="../cli/quickstart/">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
@@ -483,6 +483,28 @@
   
   
     <li class="md-nav__item">
+      <a href="../cli/quickstart/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quickstart
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../cli/cli/" class="md-nav__link">
         
   
@@ -935,6 +957,28 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/diffusion/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Diffusion
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1051,7 +1095,14 @@
 
 
 <h1 id="getting-started-with-freckll">Getting Started with FRECKLL<a class="headerlink" href="#getting-started-with-freckll" title="Permanent link">&para;</a></h1>
-<p>The Google Colab version can be found <a href="https://colab.research.google.com/drive/17qMpl1Zw8jWqb_L8s_2v7lMT9H9JT_jY?usp=sharing">here</a></p>
+<ul>
+<li>
+<p>If you want to use the command line interface, the Quickstart can be found <a href="../cli/quickstart/">here</a></p>
+</li>
+<li>
+<p>The Google Colab version of this page can be found <a href="https://colab.research.google.com/drive/17qMpl1Zw8jWqb_L8s_2v7lMT9H9JT_jY?usp=sharing">here</a></p>
+</li>
+</ul>
 <p>This guide is there to quickly get started on the using the <code>freckll</code> library. Here you will learn the basics:</p>
 <ul>
 <li>Loading in atmospheric data</li>
@@ -1135,13 +1186,13 @@
 <p>You can also load in your own network but this will be covered in a different tutorial.</p>
 <p>The <code>default_network_loader</code> allows for two arguments:</p>
 <ul>
-<li><code>venot-methanol-2023-reduced</code> - This is the reduced network that does not include photolysis.</li>
-<li><code>venot-methanol-2023</code> - This is the full network that includes photolysis.</li>
+<li><code>venot-methanol-2020-reduced</code> - This is the reduced network that does not include photolysis.</li>
+<li><code>venot-methanol-2020</code> - This is the full network that includes photolysis.</li>
 </ul>
 <p>We can use the loader to load in the reduced network:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">freckll.io.loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_network_loader</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">network</span> <span class="o">=</span> <span class="n">default_network_loader</span><span class="p">(</span><span class="s2">&quot;venot-methanol-2023-reduced&quot;</span><span class="p">)</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">network</span> <span class="o">=</span> <span class="n">default_network_loader</span><span class="p">(</span><span class="s2">&quot;venot-methanol-2020-reduced&quot;</span><span class="p">)</span>
 </span></code></pre></div>
 <p>We can inspect the species in the network:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">network</span><span class="o">.</span><span class="n">species</span>
@@ -1522,7 +1573,7 @@ to each species in <code>network.species</code>. The solver will then run from t
 <p><img alt="png" src="../gettingstarted_files/gettingstarted_58_0.png" /></p>
 <h2 id="running-with-photochemistry">Running with Photochemistry<a class="headerlink" href="#running-with-photochemistry" title="Permanent link">&para;</a></h2>
 <p>For the photochemistry case we will need to use the full network instead. We can load it in using the <code>default_network_loader</code> function:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a><span class="n">full_network</span> <span class="o">=</span> <span class="n">default_network_loader</span><span class="p">(</span><span class="s2">&quot;venot-methanol-2023&quot;</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a><span class="n">full_network</span> <span class="o">=</span> <span class="n">default_network_loader</span><span class="p">(</span><span class="s2">&quot;venot-methanol-2020&quot;</span><span class="p">)</span>
 </span></code></pre></div>
 <p>We will also need to load in the photochemistry and actinic flux for the star. This is easily accomplished using the loader modules.
 We will load the Venot 2020 photochemistry and the actinic flux for HD 209458 star</p>

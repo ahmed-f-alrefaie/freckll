@@ -381,6 +381,28 @@
   
   
     <li class="md-nav__item">
+      <a href="../quickstart/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quickstart
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../cli/" class="md-nav__link">
         
   
@@ -1201,6 +1223,28 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/diffusion/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Diffusion
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1613,8 +1657,8 @@
 </span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">  </span><span class="nt">spectrum</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hd209458</span>
 </span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>
 </span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="c1"># Built in format</span>
-</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="nt">network</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">venot-methanol-2023-reduced</span>
-</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="nt">photochemistry</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">venot-methanol-2023-photo</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="nt">network</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">venot-methanol-2020-reduced</span>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="nt">photochemistry</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">venot-methanol-2020-photo</span>
 </span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>
 </span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="nt">thermochemistry</span><span class="p">:</span>
 </span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="w">  </span><span class="nt">format</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ace</span>
@@ -1803,13 +1847,13 @@ The following properties are available:</p>
 <h2 id="network">Network<a class="headerlink" href="#network" title="Permanent link">&para;</a></h2>
 <p>The <code>network</code> section defines the chemical network of the simulation. It is a <strong>required</strong> section and must be present in the input file.</p>
 <p>To use the built in network only requires the name of the network. For example:</p>
-<div class="language-yaml highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nt">network</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">venot-methanol-2023-reduced</span>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nt">network</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">venot-methanol-2020-reduced</span>
 </span></code></pre></div>
 <p>The available built-in networks are:</p>
 <ul>
-<li><code>venot-methanol-2023-reduced</code></li>
+<li><code>venot-methanol-2020-reduced</code></li>
 <li>Reduced network for the Venot et al. (2020) methanol network.</li>
-<li><code>venot-methanol-2023</code></li>
+<li><code>venot-methanol-2020</code></li>
 <li>Full network for the Venot et al. (2020) methanol network.</li>
 </ul>
 <h2 id="custom-network">Custom network<a class="headerlink" href="#custom-network" title="Permanent link">&para;</a></h2>
@@ -1838,11 +1882,11 @@ The following properties are available:</p>
 <p>Similar to the Network section, the photochemistry section can either be a built-in network or a custom network.
 The following built-in photochemistry networks are available:</p>
 <ul>
-<li><code>venot-methanol-2023-photo</code></li>
+<li><code>venot-methanol-2020-photo</code></li>
 <li>Photochemistry network for the Venot et al. (2020) methanol network.</li>
 </ul>
 <h3 id="example_5">Example<a class="headerlink" href="#example_5" title="Permanent link">&para;</a></h3>
-<div class="language-yaml highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nt">photochemistry</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">venot-methanol-2023-photo</span>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nt">photochemistry</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">venot-methanol-2020-photo</span>
 </span></code></pre></div>
 <h2 id="custom-photochemistry">Custom photochemistry<a class="headerlink" href="#custom-photochemistry" title="Permanent link">&para;</a></h2>
 <p>If you want to use a custom photochemistry network. The arguments are as follows:</p>
