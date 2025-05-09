@@ -10,54 +10,22 @@ from ..nasa import NasaCoeffs
 from ..reactions.data import ReactionCall
 from ..species import SpeciesDict, SpeciesFormula, SpeciesState
 
-
-def _parse_nasa_lines(
-    line_1: str,
-    line_2: str,
-    line_3: str,
-    decode_species: t.Callable[[str], SpeciesFormula] = SpeciesFormula,
-) -> NasaCoeffs:
-    """Parse NASA polynomial coefficients from three lines."""
-    species, x1, x2, x3 = line_1.split()
-    a_coeff = np.array([float(s) for s in line_2.split()])
-    b_coeff = np.array([float(s) for s in line_3.split()])
-    return NasaCoeffs(decode_species(species), float(x1), float(x2), float(x3), a_coeff, b_coeff)
-
-
-def load_nasa_coeffs(file_path: pathlib.Path | str) -> SpeciesDict[NasaCoeffs]:
-    """Load NASA polynomial coefficients from a file."""
-    nasa_coeffs = SpeciesDict[NasaCoeffs]()
-
-    file_path = pathlib.Path(file_path)
-
-    with open(file_path) as file:
-        while True:
-            line_1 = file.readline().strip()
-            if not line_1:
-                break
-            line_2 = file.readline().strip()
-            line_3 = file.readline().strip()
-
-            nasa = _parse_nasa_lines(line_1, line_2, line_3, _decode_species)
-            if nasa.species in nasa_coeffs:
-                print(line_1, nasa.species.input_formula, nasa_coeffs[nasa.species].species.input_formula)
-            nasa_coeffs[nasa.species] = nasa
-
-    return nasa_coeffs
-
-
 # Some species have multiple isomers/states, so we need to map the species to the correct isomer/state
 _species_mapping: dict[str, SpeciesFormula] = {
+    "H2Oc": SpeciesFormula("H2Oc", state=SpeciesState.LIQUID, true_formula="H2O"),
+    "CH4c": SpeciesFormula("CH4c", state=SpeciesState.LIQUID, true_formula="CH4"),
+    "NH3c": SpeciesFormula("NH3c", state=SpeciesState.LIQUID, true_formula="NH3"),
+    "CH4-A": SpeciesFormula("CH4-A", true_formula="CH4"),
+    "C3H4-P": SpeciesFormula("C3H4-P", true_formula="C3H4"),
+    "OHV": SpeciesFormula("OHV", true_formula="OH"),
     "CH2CHO": SpeciesFormula("CH2CHO", true_formula="CH3CO"),
     "C4H8Y": SpeciesFormula("C4H8Y", true_formula="C4H8"),
     "C2H3CHOZ": SpeciesFormula("C2H3CHOZ", true_formula="C2H3CHO"),
     "N4S": SpeciesFormula("N4S", true_formula="N"),
     "N2D": SpeciesFormula("N2D", true_formula="N"),
-    "H2Oc": SpeciesFormula("H2Oc", state=SpeciesState.LIQUID, true_formula="H2O"),
-    "CH4c": SpeciesFormula("CH4c", state=SpeciesState.LIQUID, true_formula="CH4"),
-    "NH3c": SpeciesFormula("NH3c", state=SpeciesState.LIQUID, true_formula="NH3"),
     "O3P": SpeciesFormula("O3P", true_formula="O"),
     "O1D": SpeciesFormula("O1D", true_formula="O"),
+    "cC6H6": SpeciesFormula("cC6H6", true_formula="C6H6"),
     "toluene": SpeciesFormula("toluene", true_formula="C7H8"),
     "C4H7T": SpeciesFormula("C4H7T", true_formula="C4H7"),
     "1cC8H9": SpeciesFormula("1cC8H9", true_formula="C8H9"),
@@ -117,8 +85,46 @@ def _decode_species(s: str) -> SpeciesFormula:
     return SpeciesFormula(s)
 
 
+def _parse_nasa_lines(
+    line_1: str,
+    line_2: str,
+    line_3: str,
+    decode_species: t.Callable[[str], SpeciesFormula] = _decode_species,
+) -> NasaCoeffs:
+    """Parse NASA polynomial coefficients from three lines."""
+    species, x1, x2, x3 = line_1.split()
+    a_coeff = np.array([float(s) for s in line_2.split()])
+    b_coeff = np.array([float(s) for s in line_3.split()])
+    return NasaCoeffs(decode_species(species), float(x1), float(x2), float(x3), a_coeff, b_coeff)
+
+
+def load_nasa_coeffs(
+    file_path: pathlib.Path | str,
+    decode_species: t.Callable[[str], SpeciesFormula] = _decode_species,
+) -> SpeciesDict[NasaCoeffs]:
+    """Load NASA polynomial coefficients from a file."""
+    nasa_coeffs = SpeciesDict[NasaCoeffs]()
+
+    file_path = pathlib.Path(file_path)
+
+    with open(file_path) as file:
+        while True:
+            line_1 = file.readline().strip()
+            if not line_1:
+                break
+            line_2 = file.readline().strip()
+            line_3 = file.readline().strip()
+
+            nasa = _parse_nasa_lines(line_1, line_2, line_3, decode_species)
+            if nasa.species in nasa_coeffs:
+                print(line_1, nasa.species.input_formula, nasa_coeffs[nasa.species].species.input_formula)
+            nasa_coeffs[nasa.species] = nasa
+
+    return nasa_coeffs
+
+
 def _parse_reaction_line(
-    line: str,
+    line: str, decode_species: t.Callable[[str], SpeciesFormula] = _decode_species
 ) -> tuple[list[SpeciesFormula], list[SpeciesFormula], npt.NDArray[np.floating]]:
     """Parse a reaction line from the CHEGP format.
 
@@ -132,13 +138,17 @@ def _parse_reaction_line(
     """
     values = [line[x : x + 11].strip() for x in range(1, len(line), 11)]
 
-    reactants = [_decode_species(x.strip()) for x in values[:5] if x and x != "HV"]
-    products = [_decode_species(x.strip()) for x in values[5:10] if x and x != "HV"]
+    reactants = [decode_species(x.strip()) for x in values[:5] if x and x != "HV"]
+    products = [decode_species(x.strip()) for x in values[5:10] if x and x != "HV"]
     coeffs = np.array([float(x.replace("d", "e")) for x in line[112:].split()])
     return reactants, products, coeffs
 
 
-def load_efficiencies(file_path: pathlib.Path | str, composition: list[SpeciesFormula]) -> npt.NDArray[np.integer]:
+def load_efficiencies(
+    file_path: pathlib.Path | str,
+    composition: list[SpeciesFormula],
+    decode_species: t.Callable[[str], SpeciesFormula] = _decode_species,
+) -> npt.NDArray[np.integer]:
     """Load the efficiencies from a file.
 
     Args:
@@ -156,7 +166,7 @@ def load_efficiencies(file_path: pathlib.Path | str, composition: list[SpeciesFo
         for line in file:
             if not line:
                 break
-            efficiencies.append(_decode_species(line.strip()))
+            efficiencies.append(decode_species(line.strip()))
     # Build a species
     efficiencies = [e if e in composition else None for e in efficiencies]
 
@@ -166,33 +176,101 @@ def load_efficiencies(file_path: pathlib.Path | str, composition: list[SpeciesFo
     return efficiencies
 
 
-def load_composition(file_path: pathlib.Path | str) -> list[SpeciesFormula]:
+def _construct_from_makeup(makeup: dict[str, int]) -> str:
+    return "".join(f"{k}{v}" for k, v in makeup.items() if v > 0)
+
+
+def _build_species(line: str) -> tuple[bool, str, SpeciesFormula]:
+    """Check if the species needs decoding.
+
+    Args:
+        line: The line to check.
+
+    Returns:
+        True if the species needs decoding, False otherwise.
+
+    """
+    import molmass
+
+    elements_order = ["C", "H", "O", "N", "S", "P", "F", "Cl", "Br", "I"]
+
+    element_makeup = {}
+    if line:
+        idx, formula, mass, *elements = line.split()
+        for el, order in zip(elements, elements_order, strict=False):
+            if int(el) > 0:
+                element_makeup[order] = int(el)
+
+        try:
+            species = SpeciesFormula(formula)
+        except molmass.FormulaError:
+            # If the formula is not valid, we need to decode it
+            true_formula = _construct_from_makeup(element_makeup)
+            species = SpeciesFormula(formula, true_formula=true_formula)
+            return True, formula, species
+        if species.element_makeup != element_makeup:
+            # If the element makeup is not valid, we need to decode it (For example O3P)
+            true_formula = _construct_from_makeup(element_makeup)
+            species = SpeciesFormula(formula, true_formula=true_formula)
+            return True, formula, species
+
+    return False, "", species
+
+
+def load_composition(file_path: pathlib.Path | str) -> tuple[list[SpeciesFormula], t.Callable[[str], SpeciesFormula]]:
     """Load the composition from a file.
 
     Args:
         file_path: The file path.
 
     Returns:
-        The composition.
+        The composition and a function to decode the species.
 
     """
     file_path = pathlib.Path(file_path)
 
     composition = []
 
+    species_decoder = {}
+
     with open(file_path) as file:
         while True:
             line = file.readline().strip()
             if not line:
                 break
-            _, species, _, _, _, _, _ = line.split()
-            composition.append(_decode_species(species.strip()))
 
-    return composition
+            needs_decoding, formula, species = _build_species(line)
+
+            composition.append(species)
+
+            if needs_decoding:
+                species_decoder[formula] = species
+    _new_species_mapping = {
+        **_species_mapping,
+        **{k: v for k, v in species_decoder.items() if k not in _species_mapping},
+    }
+
+    def new_decode_species(s: str, species_mapping: dict[str, SpeciesFormula] = _new_species_mapping) -> SpeciesFormula:
+        """Decode a species formula from a string.
+
+        Args:
+            s: The species formula string.
+
+        Returns:
+            The decoded species formula
+
+        """
+        spec = _new_species_mapping.get(s)
+
+        if spec is not None:
+            return spec
+        return SpeciesFormula(s)
+
+    return composition, new_decode_species
 
 
 def parse_reaction_file(
-    file_path: pathlib.Path | str,
+    file_path: pathlib.Path | str, decode_species: t.Callable[[str], SpeciesFormula] = _decode_species
 ) -> list[tuple[list[SpeciesFormula], list[SpeciesFormula], list[float]]]:
     """Parse a reaction file.
 
@@ -212,7 +290,7 @@ def parse_reaction_file(
             if not line:
                 break
 
-            reactants, products, coeffs = _parse_reaction_line(line)
+            reactants, products, coeffs = _parse_reaction_line(line, decode_species)
             reactions.append((reactants, products, coeffs))
 
     return reactions
@@ -237,12 +315,16 @@ def build_efficienies(
     """
     efficiencies_array = np.full(len(composition), fill_value)
     efficiencies = np.array(efficiencies)
-    valid_efficiencies = efficiency_index != -1
 
     num_efficiencies = min(len(efficiencies), len(efficiency_index))
 
-    valid_effi_coeffs = efficiencies[valid_efficiencies[:num_efficiencies]]
-    valid_effi_index = efficiency_index[valid_efficiencies[:num_efficiencies]]
+    efficiencies = efficiencies[:num_efficiencies]
+    efficiency_index = efficiency_index[:num_efficiencies]
+
+    valid_efficiencies = efficiency_index != -1
+
+    valid_effi_coeffs = efficiencies[valid_efficiencies]
+    valid_effi_index = efficiency_index[valid_efficiencies]
 
     efficiencies_array[valid_effi_index] = valid_effi_coeffs
     return efficiencies_array
@@ -374,17 +456,19 @@ def _construct_reaction_call(  # noqa: C901
     composition: list[SpeciesFormula],
     file_path: pathlib.Path,
     efficiency_indices: npt.NDArray[np.integer],
+    decode_species: t.Callable[[str], SpeciesFormula] = _decode_species,
+    ignore_files: t.Optional[list[str]] = None,
 ) -> list[ReactionCall]:
     """Given a filepath, construct the correct_reaction call."""
     from functools import partial
 
     import freckll.reactions.reactions as react
 
+    ignore_files = ignore_files or []
     stem_name = file_path.stem
-    if stem_name in ("composes", "coeff_NASA", "efficacites", "photodissociations"):
+    if stem_name in ("composes", "coeff_NASA", "efficacites", "photodissociations") + tuple(ignore_files):  # noqa: RUF005
         return []
-
-    reaction_data = parse_reaction_file(file_path)
+    reaction_data = parse_reaction_file(file_path, decode_species)
     if len(reaction_data) == 0:
         return []
     inverted = "irrev" not in stem_name
@@ -456,6 +540,8 @@ def load_reactions(
     composition: list[SpeciesFormula],
     directory: pathlib.Path | str,
     efficiency_indices: npt.NDArray[np.integer],
+    decode_species: t.Callable[[str], SpeciesFormula] = _decode_species,
+    ignore_files: t.Optional[list[str]] = None,
 ) -> list[ReactionCall]:
     """Construct a reaction call from a directory.
 
@@ -466,6 +552,7 @@ def load_reactions(
         The reaction call.
 
     """
+    ignore_files = ignore_files or []
     directory = pathlib.Path(directory)
 
     # Glob .dat files
@@ -474,7 +561,9 @@ def load_reactions(
     # Reaction and its type is based on the file name
     reaction_calls = []
     for r in reaction_files:
-        reaction_calls.extend(_construct_reaction_call(composition, r, efficiency_indices))
+        reaction_calls.extend(
+            _construct_reaction_call(composition, r, efficiency_indices, decode_species, ignore_files=ignore_files)
+        )
 
     return reaction_calls
 
