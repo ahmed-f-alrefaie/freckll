@@ -1,47 +1,11 @@
 """Reaction equations."""
 
-import typing as t
-
 import numpy as np
 
 from ..species import SpeciesFormula
 from ..types import FreckllArray, ReactionFunction
-from .common import collision_rate_limit, invert_reaction
+from .common import arrhenius_constant, collision_rate_limit, invert_reaction
 from .falloff import FalloffFunction
-
-
-def arrhenius_constant(
-    a: float | FreckllArray,
-    n: float | FreckllArray,
-    er: float | FreckllArray,
-    temperature: FreckllArray,
-) -> FreckllArray:
-    r"""Computes Arrhenius rate constants for low and high pressure limits.
-
-    Formula is as follows:
-
-    $$
-    k = A T^n \exp(-E_r/T)
-    $$
-
-    where:
-    - $k$ is the rate constant
-    - $A$ is the pre-exponential factor
-    - $T$ is the temperature
-    - $n$ is the temperature exponent
-    - $E_r$ is the activation energy
-    - $k$ is the rate constant
-
-    Args:
-        a: The pre-exponential factor.
-        n: The temperature exponent
-        er: The activation energy.
-
-    Returns:
-        k: The rate constant of the reaction.
-
-    """
-    return t.cast(FreckllArray, (a * temperature**n) * np.exp(-er / temperature))
 
 
 def k0kinf_reaction(
@@ -615,32 +579,48 @@ def manybody_plog_reaction(
         A function that takes the concentration of the species and returns the rate
 
     """
-    from scipy.interpolate import RectBivariateSpline
-
     from freckll.constants import ATM_BAR
+
+    from .common import plog_interpolate
 
     BAR_ATM = 1.0 / ATM_BAR
 
     p0_plog, a0_plog, n0_plog, er0_plog = np.split(np.array(plog_coeffs), 4)
     p0_plog = np.log10(p0_plog)
-    p_log = np.log10(pressure * BAR_ATM * 1e-3)
 
-    temperature_test = np.linspace(100, 5000, 5000)
+    k0 = plog_interpolate(
+        p0_plog,
+        a0_plog,
+        n0_plog,
+        er0_plog,
+        pressure * BAR_ATM * 1e-3,
+        temperature,
+    )
+    # temperature_test = np.linspace(100, 5000, 5000)
 
-    _, a0 = np.meshgrid(temperature_test, a0_plog, indexing="ij")
-    _, p0 = np.meshgrid(temperature_test, p0_plog, indexing="ij")
-    _, n0 = np.meshgrid(temperature_test, n0_plog, indexing="ij")
-    _temperature, er0 = np.meshgrid(temperature_test, er0_plog, indexing="ij")
+    # _, a0 = np.meshgrid(temperature_test, a0_plog, indexing="ij")
+    # _, p0 = np.meshgrid(temperature_test, p0_plog, indexing="ij")
+    # _, n0 = np.meshgrid(temperature_test, n0_plog, indexing="ij")
+    # _temperature, er0 = np.meshgrid(temperature_test, er0_plog, indexing="ij")
 
-    k0_log = arrhenius_constant(a0, n0, er0, _temperature)
+    # k0_log = arrhenius_constant(a0, n0, er0, _temperature)
 
-    f = RectBivariateSpline(temperature_test, p0_plog, k0_log)
-    k0 = np.array([f(t, p)[0] for t, p in zip(temperature, p_log)])[:, 0]
+    # f = RectBivariateSpline(temperature_test, p0_plog, k0_log)
+    # k0 = np.array([f(t, p)[0] for t, p in zip(temperature, p_log)])[:, 0]
 
-    def _react(concentration: FreckllArray) -> list[FreckllArray]:
+    def _react(
+        concentration: FreckllArray,
+        k0: FreckllArray = k0,
+        reactants: list[SpeciesFormula] = reactants,
+        products: list[SpeciesFormula] = products,
+        temperature: FreckllArray = temperature,
+        thermo_reactants: FreckllArray = thermo_reactants,
+        thermo_products: FreckllArray = thermo_products,
+        invert: bool = invert,
+    ) -> list[FreckllArray]:
         m = np.sum(concentration, axis=0)
 
-        krate = k0
+        krate = np.copy(k0)
         if len(reactants) < 3:
             krate = collision_rate_limit(reactants, k0, np.zeros_like(k0), m, temperature)
 
@@ -685,32 +665,48 @@ def decomposition_plog(
     Returns:
         A function that takes the concentration of the species and returns the rate
     """
-    from scipy.interpolate import RectBivariateSpline
-
     from freckll.constants import ATM_BAR
+
+    from .common import plog_interpolate
 
     BAR_ATM = 1.0 / ATM_BAR
 
     p0_plog, a0_plog, n0_plog, er0_plog = np.split(np.array(plog_coeffs), 4)
     p0_plog = np.log10(p0_plog)
-    p_log = np.log10(pressure * BAR_ATM * 1e-3)
 
-    temperature_test = np.linspace(100, 5000, 5000)
+    k0 = plog_interpolate(
+        p0_plog,
+        a0_plog,
+        n0_plog,
+        er0_plog,
+        pressure * BAR_ATM * 1e-3,
+        temperature,
+    )
+    # p_log = np.log10(pressure * BAR_ATM * 1e-3)
 
-    _, a0 = np.meshgrid(temperature_test, a0_plog, indexing="ij")
-    _, p0 = np.meshgrid(temperature_test, p0_plog, indexing="ij")
-    _, n0 = np.meshgrid(temperature_test, n0_plog, indexing="ij")
-    _temperature, er0 = np.meshgrid(temperature_test, er0_plog, indexing="ij")
+    # temperature_test = np.linspace(100, 5000, 5000)
 
-    k0_log = arrhenius_constant(a0, n0, er0, _temperature)
+    # _, a0 = np.meshgrid(temperature_test, a0_plog, indexing="ij")
+    # _, p0 = np.meshgrid(temperature_test, p0_plog, indexing="ij")
+    # _, n0 = np.meshgrid(temperature_test, n0_plog, indexing="ij")
+    # _temperature, er0 = np.meshgrid(temperature_test, er0_plog, indexing="ij")
 
-    f = RectBivariateSpline(temperature_test, p0_plog, k0_log)
-    k0 = np.array([f(t, p)[0] for t, p in zip(temperature, p_log)])[:, 0]
-
-    def _react(concentration: FreckllArray) -> list[FreckllArray]:
+    # k0_log = arrhenius_constant(a0, n0, er0, _temperature)
+    # print(k0_log.shape, p0_plog.shape)
+    # f = RectBivariateSpline(temperature_test, p0_plog, k0_log,ky=min(3, p0_plog.size - 1))
+    # k0 = np.array([f(t, p)[0] for t, p in zip(temperature, p_log)])[:, 0]
+    def _react(
+        concentration: FreckllArray,
+        k0: FreckllArray = k0,
+        products: list[SpeciesFormula] = products,
+        temperature: FreckllArray = temperature,
+        thermo_reactants: FreckllArray = thermo_reactants,
+        thermo_products: FreckllArray = thermo_products,
+        invert: bool = invert,
+    ) -> list[FreckllArray]:
         m = np.sum(concentration, axis=0)
 
-        krate = k0
+        krate = np.copy(k0)
 
         if invert:
             k0inv, _, keq = invert_reaction(thermo_products, thermo_reactants, k0, np.zeros_like(k0), temperature)

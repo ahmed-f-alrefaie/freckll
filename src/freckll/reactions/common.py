@@ -1,5 +1,7 @@
 """Common functions and equations for reactions."""
 
+import typing as t
+
 import numpy as np
 
 from ..constants import AVO, K_BOLTZMANN, RA
@@ -194,3 +196,120 @@ def invert_reaction(
     k_inf_inv = k_inf / k_equil
 
     return k0_inv, k_inf_inv, k_equil
+
+
+def arrhenius_constant(
+    a: float | FreckllArray,
+    n: float | FreckllArray,
+    er: float | FreckllArray,
+    temperature: FreckllArray,
+) -> FreckllArray:
+    r"""Computes Arrhenius rate constants for low and high pressure limits.
+
+    Formula is as follows:
+
+    $$
+    k = A T^n \exp(-E_r/T)
+    $$
+
+    where:
+    - $k$ is the rate constant
+    - $A$ is the pre-exponential factor
+    - $T$ is the temperature
+    - $n$ is the temperature exponent
+    - $E_r$ is the activation energy
+    - $k$ is the rate constant
+
+    Args:
+        a: The pre-exponential factor.
+        n: The temperature exponent
+        er: The activation energy.
+
+    Returns:
+        k: The rate constant of the reaction.
+
+    """
+    return t.cast(FreckllArray, (a * temperature**n) * np.exp(-er / temperature))
+
+
+def plog_interpolate(
+    log_points: FreckllArray,
+    a_points: FreckllArray,
+    n_points: FreckllArray,
+    er_points: FreckllArray,
+    pressures: FreckllArray,
+    temperature: FreckllArray,
+) -> tuple[FreckllArray, FreckllArray, FreckllArray]:
+    r"""Interpolates the Arrhenius parameters for the given pressures.
+
+    This is for the Pressure-Dependent Arrhenius (PLOG) rate constants.
+
+    The interpolation is given by:
+
+    $$
+    \log{k(T, P)} = \log{k_1(T)} + (\log{k_2(T)} - \log{k_1(T)}) \frac{\log{P}- \log{P_1}}{\log{P_2} - \log{P_1}}
+    $$
+
+
+    Args:
+        plog_points: The pressures at which the Arrhenius parameters are defined.
+        a_points: The pre-exponential factors at the given pressures.
+        n_points: The temperature exponents at the given pressures.
+        er_points: The activation energies at the given pressures.
+        pressures: The pressures at which to interpolate the Arrhenius parameters.
+
+    Returns:
+        A tuple of the interpolated pre-exponential factor, temperature exponent, and activation energy.
+
+    """
+
+    log_pressures = np.log10(pressures)
+
+    p_1 = np.searchsorted(log_points, log_pressures)
+    p_1 = np.clip(p_1, 0, len(log_points) - 2)
+    p_2 = p_1 + 1
+
+    k_1 = np.log10(
+        arrhenius_constant(
+            a_points[p_1],
+            n_points[p_1],
+            er_points[p_1],
+            temperature,
+        )
+    )
+
+    k_2 = np.log10(
+        arrhenius_constant(
+            a_points[p_2],
+            n_points[p_2],
+            er_points[p_2],
+            temperature,
+        )
+    )
+
+    k_interp = k_1 + (k_2 - k_1) * (log_pressures - log_points[p_1]) / (log_points[p_2] - log_points[p_1])
+
+    # k = arrhenius_constant(
+    #     a_points[:, None],
+    #     n_points[:, None],
+    #     er_points[:, None],
+    #     temperature[None, :],
+    # )
+
+    # log_k = np.log10(k)
+
+    return 10**k_interp
+
+
+def check_balance(balance, threshold=1000):
+    is_good = True
+
+    if balance > threshold:
+        print("Send spending alert")
+        is_good = False
+
+    else:
+        print("Balance is normal")
+        is_good = True
+
+    return is_good
