@@ -262,32 +262,42 @@ def plog_interpolate(
         A tuple of the interpolated pre-exponential factor, temperature exponent, and activation energy.
 
     """
+    from scipy.interpolate import interp1d
 
     log_pressures = np.log10(pressures)
 
-    p_1 = np.searchsorted(log_points, log_pressures)
-    p_1 = np.clip(p_1, 0, len(log_points) - 2)
-    p_2 = p_1 + 1
+    # p_1 = np.searchsorted(log_points, log_pressures)
+    # p_1 = np.clip(p_1, 0, len(log_points) - 2)
+    # p_2 = p_1 + 1
 
-    k_1 = np.log10(
-        arrhenius_constant(
-            a_points[p_1],
-            n_points[p_1],
-            er_points[p_1],
-            temperature,
-        )
+    ks = arrhenius_constant(
+        a_points[:, None],
+        n_points[:, None],
+        er_points[:, None],
+        temperature[None, :],
     )
 
-    k_2 = np.log10(
-        arrhenius_constant(
-            a_points[p_2],
-            n_points[p_2],
-            er_points[p_2],
-            temperature,
-        )
+    func = interp1d(
+        log_points,
+        ks,
+        axis=0,
+        bounds_error=False,
+        fill_value="extrapolate",
     )
+    k_interp = np.diag(func(log_pressures))
 
-    k_interp = k_1 + (k_2 - k_1) * (log_pressures - log_points[p_1]) / (log_points[p_2] - log_points[p_1])
+    final = k_interp
+
+    # k_2 = np.log10(
+    #     arrhenius_constant(
+    #         a_points[p_2],
+    #         n_points[p_2],
+    #         er_points[p_2],
+    #         temperature,
+    #     )
+    # )
+
+    # k_interp = k_1 + (k_2 - k_1) * (log_pressures - log_points[p_1]) / (log_points[p_2] - log_points[p_1])
 
     # k = arrhenius_constant(
     #     a_points[:, None],
@@ -298,7 +308,7 @@ def plog_interpolate(
 
     # log_k = np.log10(k)
 
-    return 10**k_interp
+    return final
 
 
 def check_balance(balance, threshold=1000):

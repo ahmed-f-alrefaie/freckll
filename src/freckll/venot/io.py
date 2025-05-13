@@ -6,9 +6,13 @@ import typing as t
 import numpy as np
 import numpy.typing as npt
 
+from ..log import setup_log
 from ..nasa import NasaCoeffs
 from ..reactions.data import ReactionCall
 from ..species import SpeciesDict, SpeciesFormula, SpeciesState
+
+_log = setup_log(__name__)
+
 
 # Some species have multiple isomers/states, so we need to map the species to the correct isomer/state
 _species_mapping: dict[str, SpeciesFormula] = {
@@ -39,6 +43,8 @@ _species_mapping: dict[str, SpeciesFormula] = {
     "HNC": SpeciesFormula("HNC", true_formula="HCN"),
     "HON": SpeciesFormula("HON", true_formula="HNO"),
     "NCN": SpeciesFormula("NCN", true_formula="CNN"),
+    "aC3H4": SpeciesFormula("aC3H4", true_formula="C3H4"),
+    "pC3H4": SpeciesFormula("pC3H4", true_formula="C3H4"),
     "cC5H4OH": SpeciesFormula("cC5H4OH", true_formula="C5H5O"),
     "cC6H4OH": SpeciesFormula("cC6H4OH", true_formula="C6H5O"),
     "OC6H4OH": SpeciesFormula("OC6H4OH", true_formula="C6H5O2"),
@@ -90,17 +96,22 @@ def _parse_nasa_lines(
     line_2: str,
     line_3: str,
     decode_species: t.Callable[[str], SpeciesFormula] = _decode_species,
+    species_list: t.Optional[list[SpeciesFormula]] = None,
 ) -> NasaCoeffs:
     """Parse NASA polynomial coefficients from three lines."""
     species, x1, x2, x3 = line_1.split()
     a_coeff = np.array([float(s) for s in line_2.split()])
     b_coeff = np.array([float(s) for s in line_3.split()])
+    if species_list is not None and species not in species_list:
+        return None
+
     return NasaCoeffs(decode_species(species), float(x1), float(x2), float(x3), a_coeff, b_coeff)
 
 
 def load_nasa_coeffs(
     file_path: pathlib.Path | str,
     decode_species: t.Callable[[str], SpeciesFormula] = _decode_species,
+    species: t.Optional[list[SpeciesFormula]] = None,
 ) -> SpeciesDict[NasaCoeffs]:
     """Load NASA polynomial coefficients from a file."""
     nasa_coeffs = SpeciesDict[NasaCoeffs]()
@@ -115,7 +126,9 @@ def load_nasa_coeffs(
             line_2 = file.readline().strip()
             line_3 = file.readline().strip()
 
-            nasa = _parse_nasa_lines(line_1, line_2, line_3, decode_species)
+            nasa = _parse_nasa_lines(line_1, line_2, line_3, decode_species, species_list=species)
+            if nasa is None:
+                continue
             if nasa.species in nasa_coeffs:
                 print(line_1, nasa.species.input_formula, nasa_coeffs[nasa.species].species.input_formula)
             nasa_coeffs[nasa.species] = nasa
@@ -260,7 +273,7 @@ def load_composition(file_path: pathlib.Path | str) -> tuple[list[SpeciesFormula
             The decoded species formula
 
         """
-        spec = _new_species_mapping.get(s)
+        spec = species_mapping.get(s)
 
         if spec is not None:
             return spec
@@ -474,6 +487,7 @@ def _construct_reaction_call(  # noqa: C901
     inverted = "irrev" not in stem_name
 
     if "k0" in stem_name:
+        _log.info(f"Mapping {file_path.stem} to k0 reactions")
         return _handle_k0_reactions(
             composition,
             reaction_data,
@@ -483,6 +497,7 @@ def _construct_reaction_call(  # noqa: C901
         )
     if "desexcitation" in stem_name:
         reaction_calls = []
+        _log.info(f"Mapping {file_path.stem} to de-excitation reactions")
         for r, p, c in reaction_data:
             efficiencies = build_efficienies(composition, c[5:], efficiency_indices, fill_value=1.0)
             reaction_calls.append(
@@ -504,9 +519,11 @@ def _construct_reaction_call(  # noqa: C901
             )
         return reaction_calls
     if "plog" in stem_name:
+        _log.info(f"Mapping {file_path.stem} to plog reactions")
         return _handle_plog_reactions(composition, reaction_data, inverted, file_path)
     if "reaction_2_Corps" in stem_name:
         reaction_calls = []
+        _log.info(f"Mapping {file_path.stem} to corps reactions")
         for r, p, c in reaction_data:
             reaction_calls.append(
                 ReactionCall(
@@ -521,6 +538,7 @@ def _construct_reaction_call(  # noqa: C901
         return reaction_calls
     if "decompo" in stem_name:
         reaction_calls = []
+        _log.info(f"Mapping {file_path.stem} to decomposition reactions")
         for r, p, c in reaction_data:
             reaction_calls.append(
                 ReactionCall(

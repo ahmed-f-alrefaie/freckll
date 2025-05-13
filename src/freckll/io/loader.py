@@ -13,8 +13,8 @@ from ..reactions.photo import StarSpectra
 from ..species import SpeciesFormula
 from ..venot import VenotChemicalNetwork, VenotPhotoChemistry
 
-Networks = t.Literal["venot-methanol-2020", "venot-methanol-2020-reduced"]
-Photonetworks = t.Literal["venot-methanol-2020-photo"]
+Networks = t.Literal["velliet-2024", "venot-methanol-2020", "venot-methanol-2020-reduced"]
+Photonetworks = t.Literal["velliet-2024-photo", "venot-methanol-2020-photo"]
 
 Stars = t.Literal[
     "55cnc", "adleo", "gj436", "gj3470", "hd128167", "hd189733", "hd209458", "sun", "wasp12", "wasp39", "wasp43"
@@ -237,7 +237,19 @@ def default_full_network_loader() -> VenotChemicalNetwork:
     )
 
 
-def default_photonetwork_loader(species_list: list[SpeciesFormula]) -> VenotPhotoChemistry:
+def default_latest_network_loader() -> VenotChemicalNetwork:
+    """Load the default full network."""
+    import importlib.resources
+    import pathlib
+
+    full_network_path = importlib.resources.files("freckll.data") / "V23_FRECKLL" / "network"
+    full_network_path = full_network_path.resolve()
+    full_network_path = pathlib.Path(full_network_path)
+
+    return VenotChemicalNetwork(full_network_path, composes_name="new_composes.dat", coeffs_name="new_coeff_nasa.dat")
+
+
+def default_venot_photonetwork_loader(species_list: list[SpeciesFormula]) -> VenotPhotoChemistry:
     """Load the default photo network."""
     import importlib.resources
 
@@ -254,6 +266,42 @@ def default_photonetwork_loader(species_list: list[SpeciesFormula]) -> VenotPhot
     )
 
 
+def default_latest_photonetwork_loader(species_list: list[SpeciesFormula]) -> VenotPhotoChemistry:
+    """Load the default photo network."""
+    import importlib.resources
+
+    photo_file = importlib.resources.files("freckll.data") / "V23_FRECKLL" / "network" / "photodissociations.dat"
+    photo_file = photo_file.resolve()
+    section_path = importlib.resources.files("freckll.data") / "Sections"
+
+    section_path = section_path.resolve()
+
+    return VenotPhotoChemistry(
+        species_list,
+        photodissociation_file=photo_file,
+        cross_section_path=section_path,
+    )
+
+
+def default_photonetwork_loader(network: Photonetworks, species_list: list[SpeciesFormula]) -> VenotPhotoChemistry:
+    """Load the default photo network.
+
+    Args:
+        network: The network to load. Can be "venot-methanol-2020-photo" or "venot-methanol-2020-reduced-photo".
+
+    Returns:
+        The loaded network.
+
+    """
+    if network == "velliet-2024-photo":
+        return default_latest_photonetwork_loader(species_list)
+    elif network == "venot-methanol-2020-photo":
+        return default_venot_photonetwork_loader(species_list)
+    else:
+        _log.error(f"Unknown network '{network}'")
+        raise ValueError
+
+
 def default_network_loader(network: Networks) -> VenotChemicalNetwork:
     """Load the default network.
 
@@ -264,7 +312,9 @@ def default_network_loader(network: Networks) -> VenotChemicalNetwork:
         The loaded network.
 
     """
-    if network == "venot-methanol-2020":
+    if network == "velliet-2024":
+        return default_latest_network_loader()
+    elif network == "venot-methanol-2020":
         return default_full_network_loader()
     elif network == "venot-methanol-2020-reduced":
         return default_reduced_network_loader()
@@ -366,13 +416,27 @@ def ace_equil_chemistry_loader(
     **kwargs: t.Any,
 ) -> npt.NDArray[np.floating]:
     """Loads and runs the ACE chemistry model."""
+    import importlib.resources
+
+    import acepython
+
     from ..ace import equil_chemistry_ace
 
-    return equil_chemistry_ace(
-        composition=species,
-        therm_file=therm_file,
-        elements=elements,
-        abundances=abundances,
-        temperature=temperature,
-        pressure=pressure,
-    )
+    therm_file = therm_file or importlib.resources.files("freckll.data") / "new_nasa.therm"
+
+    for x in [
+        therm_file,
+        importlib.resources.files("freckll.data") / "new_nasa.therm",
+        importlib.resources.files("freckll.data") / "NASA.therm",
+    ]:
+        try:
+            return equil_chemistry_ace(
+                composition=species,
+                therm_file=x,
+                elements=elements,
+                abundances=abundances,
+                temperature=temperature,
+                pressure=pressure,
+            )
+        except acepython.ace.AceError:
+            continue

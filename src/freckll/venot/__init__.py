@@ -43,7 +43,7 @@ class VenotChemicalNetwork(ChemicalNetwork):
             composition, decoder = load_composition(composes_file)
 
         efficiencies = load_efficiencies(effi_file, composition, decoder)
-        nasa_coeffs = load_nasa_coeffs(nasa_file, decoder)
+        nasa_coeffs = load_nasa_coeffs(nasa_file, decoder, species=composition)
 
         reactions = load_reactions(
             composition,
