@@ -385,7 +385,7 @@ class Solver(Loggable):
         t_span: tuple[float, float],
         enable_diffusion: bool = False,
         enable_settling: bool = False,
-        transform: Transform = UnityTransform,
+        transform: Transform = None,
         atol: float = 1e-25,
         rtol: float = 1e-2,
         df_criteria: float = 1e-3,
@@ -413,6 +413,8 @@ class Solver(Loggable):
         from ..kinetics import air_density
         from ..ode import convert_fm_to_y, convert_y_to_fm
 
+        if transform is None:
+            transform = UnityTransform()
         density = air_density(self.temperature, self.pressure)
         self.info("Using Transform: %s", transform.__class__.__name__)
         f = partial(
