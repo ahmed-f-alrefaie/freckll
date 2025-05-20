@@ -140,7 +140,7 @@ def dndt(
     photochemistry: Optional[Optional[PhotoChemistry]] = None,
     vmr_shape: Optional[tuple[int, ...]] = None,
     enable_diffusion: bool = True,
-    enable_settling: bool = True,
+    use_upwind: bool = True,
     transform: Transform = UnityTransform,
 ) -> FreckllArray:
     """Calculate the rate of change of the VMR."""
@@ -190,7 +190,7 @@ def dndt(
         mole_diffusion,
         kzz,
         alpha=alpha,
-        enable_settling=enable_settling,
+        use_upwind=use_upwind,
     )
 
     reactions = network.compute_reactions(vmr, with_production_loss=False)
@@ -217,7 +217,7 @@ def jac(
     photochemistry: Optional[Optional[PhotoChemistry]] = None,
     vmr_shape: Optional[tuple[int, ...]] = None,
     enable_diffusion: bool = True,
-    enable_settling: bool = True,
+    use_upwind: bool = True,
     transform: Transform = UnityTransform,
 ) -> FreckllArray:
     from freckll.chegp import compute_dndt_vertical, compute_jacobian_sparse
@@ -274,7 +274,7 @@ def jac(
         mole_diffusion,
         kzz,
         alpha=alpha,
-        enable_settling=enable_settling,
+        use_upwind=use_upwind,
     )
 
     f = (reaction_term) / density.value + vert_term
@@ -293,7 +293,6 @@ def jac(
         mole_diffusion,
         kzz,
         alpha=alpha,
-        enable_settling=enable_settling,
     )
 
     total_mat = vert_mat + react_mat
@@ -384,7 +383,7 @@ class Solver(Loggable):
         vmr: FreckllArray,
         t_span: tuple[float, float],
         enable_diffusion: bool = False,
-        enable_settling: bool = False,
+        use_upwind: bool = False,
         transform: Transform = None,
         atol: float = 1e-25,
         rtol: float = 1e-2,
@@ -398,7 +397,7 @@ class Solver(Loggable):
             vmr: The initial VMR.
             t_span: The time span.
             enable_diffusion: Whether to enable molecular diffusion.
-            enable_settling: Whether to enable settling.
+            use_upwind: Whether to use upwind for advection.
             transform: The transform to use.
             atol: The absolute tolerance.
             rtol: The relative tolerance.
@@ -430,7 +429,7 @@ class Solver(Loggable):
             photochemistry=self.photochemistry,
             vmr_shape=vmr.shape,
             enable_diffusion=enable_diffusion,
-            enable_settling=enable_settling,
+            use_upwind=use_upwind,
             transform=transform,
         )
 
@@ -447,7 +446,7 @@ class Solver(Loggable):
             photochemistry=self.photochemistry,
             vmr_shape=vmr.shape,
             enable_diffusion=enable_diffusion,
-            enable_settling=enable_settling,
+            use_upwind=use_upwind,
             transform=transform,
         )
 

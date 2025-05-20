@@ -297,6 +297,8 @@ def diffusive_terms(
     diffusion_plus[..., -1] = 1 / h_mass[..., -1] - 1 / h_total[-1]
     diffusion_minus[..., 0] = 1 / h_mass[..., 0] - 1 / h_total[0]
 
+    # Upwind scheme
+
     return (
         diffusion_plus,
         diffusion_minus,

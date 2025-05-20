@@ -266,34 +266,97 @@ def convert_y_to_fm(y, num_species, num_layers):
     return fm
 
 
-def dndt(fm, density, masses, altitude, Ro, go, T, diffusion, Kzz, alpha=0.0, enable_settling=False):
-    mu = np.sum(fm * masses[:, None], axis=0)
-    coeffs = compute_coeffs(fm, altitude, Ro, go, density, masses, mu, T, diffusion, Kzz, alpha=alpha)
+def dndt(
+    fm,
+    density,
+    masses,
+    altitude,
+    Ro,
+    go,
+    T,
+    diffusion,
+    Kzz,
+    alpha=0.0,
+    use_upwind=False,
+):
+    vmr = fm
+    mu = np.sum(vmr * masses[:, None], axis=0)
+    coeffs = compute_coeffs(vmr, altitude, Ro, go, density, masses, mu, T, diffusion, Kzz, alpha=alpha)
 
-    if not enable_settling:
-        coeffs[7] *= 0.0
-        coeffs[8] *= 0.0
+    (
+        inv_dz,
+        _,
+        _,
+        density_plus,
+        density_minus,
+        f_corr_plus,
+        f_corr_minus,
+        diff_plus,
+        diff_minus,
+        moldiff_minus,
+        moldiff_plus,
+        dy_plus,
+        dy_minus,
+        eddy_minus,
+        eddy_plus,
+    ) = coeffs
 
-    inv_dz, _, _, cp, cm, c_plus, c_moins, dip, dim, dm, dp, dyp, dym, km, kp = coeffs
+    func = np.zeros_like(vmr)
 
-    func = np.zeros_like(fm)
+    diffusion_term = (moldiff_plus + eddy_plus) * dy_plus * f_corr_plus * density_plus + (
+        moldiff_minus + eddy_minus
+    ) * dy_minus * f_corr_minus * density_minus
 
-    func[:, 1:-1] += (
-        cp[1:-1]
-        * (dp[:, 1:-1] * ((fm[:, 2:] + fm[:, 1:-1]) * 0.5 * dip[:, 1:-1] + dyp[:, 1:-1]) + kp[1:-1] * dyp[:, 1:-1])
-        * c_plus[1:-1]
-        + cm[1:-1]
-        * (dm[:, 1:-1] * ((fm[:, 1:-1] + fm[:, :-2]) * 0.5 * dim[:, 1:-1] + dym[:, 1:-1]) + km[1:-1] * dym[:, 1:-1])
-        * c_moins[1:-1]
+    diffusion_term[:, 0] = (
+        density_plus[0] * (moldiff_plus[..., 0] + eddy_plus[..., 0]) * dy_plus[..., 0] * f_corr_plus[..., 0]
     )
-    func[:, 0] += (
-        cp[0] * (dp[:, 0] * ((fm[:, 1] + fm[:, 0]) * 0.5 * dip[:, 0] + dyp[:, 0]) + kp[0] * dyp[:, 0]) * c_plus[0]
+    diffusion_term[:, -1] = (
+        density_minus[-1] * (moldiff_minus[..., -1] + eddy_minus[..., -1]) * dy_minus[..., -1] * f_corr_minus[..., -1]
     )
-    func[:, -1] += (
-        c_moins[-1]
-        * cm[-1]
-        * (dm[:, -1] * ((fm[:, -1] + fm[:, -2]) * 0.5 * dim[:, -1] + dym[:, -1]) + km[-1] * dym[:, -1])
+
+    dens_vmr = density * vmr
+
+    mole_diff_velocity_plus = diff_plus
+    mole_diff_velocity_minus = diff_minus
+
+    advection_grid_plus = (
+        mole_diff_velocity_plus[..., 1:-1] * (vmr[:, 2:] + vmr[:, 1:-1]) * 0.5 * density_plus[..., 1:-1]
     )
+    advection_grid_minus = (
+        mole_diff_velocity_minus[..., 1:-1] * (vmr[:, 1:-1] + vmr[:, :-2]) * 0.5 * density_minus[..., 1:-1]
+    )
+
+    if use_upwind:
+        # vmr_centered_plus = (vmr[:, 2:] + vmr[:, 1:-1])*0.5
+        vmr_plus_term = np.where(mole_diff_velocity_plus[:, 1:-1] > 0, dens_vmr[:, 1:-1], dens_vmr[:, 2:])
+        vmr_minus_term = np.where(mole_diff_velocity_minus[:, 1:-1] > 0, dens_vmr[:, :-2], dens_vmr[:, 1:-1])
+        advection_grid_plus = mole_diff_velocity_plus[..., 1:-1] * vmr_plus_term
+        advection_grid_minus = mole_diff_velocity_minus[..., 1:-1] * vmr_minus_term
+
+    advection_term = np.zeros_like(vmr)
+
+    advection_term[..., 1:-1] = (
+        advection_grid_plus * f_corr_plus[..., 1:-1] + advection_grid_minus * f_corr_minus[..., 1:-1]
+    )
+
+    # Handle layer
+
+    advection_grid_plus = mole_diff_velocity_plus[..., 0] * (vmr[:, 1] + vmr[:, 0]) * 0.5 * density_plus[..., 0]
+    if use_upwind:
+        vmr_plus_term = np.where(mole_diff_velocity_plus[:, 0] > 0, dens_vmr[:, 0], dens_vmr[:, 1])
+        advection_grid_plus = mole_diff_velocity_plus[..., 0] * vmr_plus_term
+
+    advection_term[:, 0] = advection_grid_plus * f_corr_plus[0]
+
+    advection_grid_minus = mole_diff_velocity_minus[..., -1] * (vmr[:, -1] + vmr[:, -2]) * 0.5 * density_minus[..., -1]
+
+    if use_upwind:
+        vmr_minus_term = np.where(mole_diff_velocity_minus[:, -1] > 0, dens_vmr[:, -2], dens_vmr[:, -1])
+        advection_grid_minus = mole_diff_velocity_minus[..., -1] * vmr_minus_term
+
+    advection_term[:, -1] = advection_grid_minus * f_corr_minus[-1]
+
+    func = diffusion_term + advection_term
 
     # Handle layer
     final = func / density
@@ -330,7 +393,6 @@ def compute_jacobian_sparse(
     diffusion: u.Quantity,
     Kzz: u.Quantity,
     alpha: float = 0.0,
-    enable_settling: bool = False,
 ):
     from .kinetics import gravity_at_height
 
@@ -347,10 +409,6 @@ def compute_jacobian_sparse(
 
     # Compute the coefficients
     coeffs = compute_coeffs(vmr, altitude, Ro, go, density, masses, mu, T, diffusion, Kzz, alpha=alpha)
-
-    if not enable_settling:
-        coeffs[7] *= 0.0
-        coeffs[8] *= 0.0
 
     # Compute the Jacobian
     pd_same, pd_p, pd_m = build_jacobian_levels(coeffs, density)
@@ -372,7 +430,7 @@ def compute_dndt_vertical(
     diffusion: u.Quantity,
     Kzz: u.Quantity,
     alpha: float = 0.0,
-    enable_settling: bool = False,
+    use_upwind: bool = False,
 ):
     from .kinetics import gravity_at_height
 
@@ -398,5 +456,5 @@ def compute_dndt_vertical(
         diffusion,
         Kzz,
         alpha=alpha,
-        enable_settling=enable_settling,
+        use_upwind=use_upwind,
     )
