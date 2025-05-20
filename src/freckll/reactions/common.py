@@ -262,51 +262,62 @@ def plog_interpolate(
         A tuple of the interpolated pre-exponential factor, temperature exponent, and activation energy.
 
     """
-    from scipy.interpolate import interp1d
 
     log_pressures = np.log10(pressures)
 
-    # p_1 = np.searchsorted(log_points, log_pressures)
-    # p_1 = np.clip(p_1, 0, len(log_points) - 2)
-    # p_2 = p_1 + 1
+    index = np.searchsorted(log_points, log_pressures)
+    p_1 = index - 1
+    p_2 = index
 
-    ks = arrhenius_constant(
-        a_points[:, None],
-        n_points[:, None],
-        er_points[:, None],
-        temperature[None, :],
-    )
+    p_1 = np.maximum(p_1, 0)
+    p_2 = np.minimum(p_2, len(log_points) - 1)
 
-    func = interp1d(
-        log_points,
-        ks,
-        axis=0,
-        bounds_error=False,
-        fill_value="extrapolate",
-    )
-    k_interp = np.diag(func(log_pressures))
-
-    final = k_interp
-
-    # k_2 = np.log10(
-    #     arrhenius_constant(
-    #         a_points[p_2],
-    #         n_points[p_2],
-    #         er_points[p_2],
-    #         temperature,
-    #     )
-    # )
-
-    # k_interp = k_1 + (k_2 - k_1) * (log_pressures - log_points[p_1]) / (log_points[p_2] - log_points[p_1])
-
-    # k = arrhenius_constant(
+    # ks = arrhenius_constant(
     #     a_points[:, None],
     #     n_points[:, None],
     #     er_points[:, None],
     #     temperature[None, :],
     # )
 
-    # log_k = np.log10(k)
+    # func = interp1d(
+    #     log_points,
+    #     ks,
+    #     axis=0,
+    #     bounds_error=False,
+    #     fill_value="extrapolate",
+    # )
+    # k_interp = np.diag(func(log_pressures))
+
+    # final = k_interp
+
+    k_1 = np.log10(
+        arrhenius_constant(
+            a_points[p_1],
+            n_points[p_1],
+            er_points[p_1],
+            temperature,
+        )
+    )
+
+    k_2 = np.log10(
+        arrhenius_constant(
+            a_points[p_2],
+            n_points[p_2],
+            er_points[p_2],
+            temperature,
+        )
+    )
+
+    log_points_diff = log_points[p_2] - log_points[p_1]
+    log_pressures_diff = log_pressures - log_points[p_1]
+    non_zero = log_points_diff != 0
+    k_interp = np.zeros_like(k_1)
+    k_interp = k_1 + (k_2 - k_1) * np.divide(
+        log_pressures_diff,
+        log_points_diff,
+        where=non_zero,
+    )
+    final = 10**k_interp
 
     return final
 
