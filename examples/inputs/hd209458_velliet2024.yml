@@ -36,14 +36,13 @@ atmosphere:
     pressure_unit: mbar
 
 solver:
-  method: vode
-  t_span: [0.0, 1e12]
-  max_iter: 100
+  method: rosenbrock
+  t_span: [0.0, 1e10]
   nevals: 200
   dn_crit: 1e-3
   dndt_crit: 1e-6
   max_solve_time: 1 hour
-  enable_diffusion: true
-  rtol: 1e-3
-  atol: 1e-16
-  maxiter: 100
+  enable_diffusion: false
+  rtol: 1e-2
+  atol: 1e-12
+  maxiter: 1000
