@@ -106,7 +106,7 @@ def animate_vmr(
     pressure: u.Quantity,
     species: list[str],
     species_to_plot: list[str] = ("H2O", "CO2", "CH4", "H2", "H", "CO", "NH3", "HCN", "N2", "S"),
-    xlims: tuple[float, float] = (1e-30, 1),
+    xlims: tuple[float, float] = (1e-18, 1),
     initial_vmr: u.Quantity | None = None,
     ax: plt.Axes | None = None,
     **kwargs,
