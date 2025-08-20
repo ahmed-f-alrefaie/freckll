@@ -49,6 +49,6 @@ solver:
   dndt_crit: 1e-6
   max_solve_time: 1 hour
   rtol: 1e-2
-  atol: 1e-25
+  atol: 1e-10
   maxiter: 1000
-  enable_diffusion: true
+  enable_diffusion: false
