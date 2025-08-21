@@ -6,20 +6,15 @@ planet:
 
 star:
   incident_angle: 45 deg
-  spectrum:
-    format: rescale
-    from_star: sun
-    temperature: 6117 K
-    radius: 1.16 Rsun
+  spectrum: hd209458
 
 # Built in format
-network: venot-methanol-2020
-photochemistry: venot-methanol-2020-photo
-
+network: velliet-2024
+photochemistry: velliet-2024-photo
 thermochemistry:
   format: ace
-  abundances: [12.0, 10.925, 9.168, 7.86, 8.633]
-  elements: [H, He, C, N, O]
+  abundances: [12.0, 10.925, 9.168, 7.86, 8.633, 3.21]
+  elements: [H, He, C, N, O, S]
 
 atmosphere:
   tp_profile:
@@ -43,12 +38,11 @@ atmosphere:
 solver:
   method: rosenbrock
   t_span: [0.0, 1e10]
-  max_iter: 100
   nevals: 200
   dn_crit: 1e-3
   dndt_crit: 1e-6
   max_solve_time: 1 hour
-  rtol: 1e-2
-  atol: 1e-10
-  maxiter: 1000
   enable_diffusion: false
+  rtol: 1e-2
+  atol: 1e-12
+  maxiter: 1000

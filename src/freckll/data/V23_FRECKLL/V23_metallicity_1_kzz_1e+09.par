@@ -1,0 +1,56 @@
+
+[Atmosphere]
+tp_profile = /mnt/c/Users/R.Veillet/Documents/Pychegp_runs/Simus_GJ436b/profil_GJ436b.dat
+reduction = 130
+recompute_density = True
+kzz = 1.000000e+09
+
+[Star]
+spectrum = /mnt/c/Users/R.Veillet/Documents/Pychegp_runs/Simus_GJ436b/stellarflux_GJ436.dat
+
+[Planet]
+planet_name = GJ436b
+radius_m = 26566000.0
+semi_major_axis_au = 0.02887
+go = 12.6
+
+[Chemical Network]
+data_path = /mnt/c/Users/R.Veillet/Documents/Pychegp_runs/V23/network
+reduced = False
+nasa_file = /mnt/c/Users/R.Veillet/Documents/Pychegp_runs/V23/new_coeff_nasa.dat
+photodissociation_file = /mnt/c/Users/R.Veillet/Documents/Pychegp_runs/V23/photodissociations.dat
+efficacies = /mnt/c/Users/R.Veillet/Documents/Pychegp_runs/V23/efficacites.dat
+force_invert = False
+reaction_files = '''decompo_k0_rev.dat,
+      decompo_k0_kinf_rev.dat,
+      decompo_rev.dat,
+      decompo_rev_plog.dat,
+      desexcitation_rev.dat,
+      reaction_2_Corps_irrev.dat,
+      reaction_2_Corps_irrev_plog.dat,
+      reaction_2_Corps_rev.dat,
+      reaction_2_Corps_rev_plog.dat,
+      combinaison_k0_kinf_rev.dat,
+      combinaison_k0_rev.dat,
+      decompo_irrev.dat,
+      decompo_irrev_plog.dat
+'''
+
+[Chemistry]
+species_file = /mnt/c/Users/R.Veillet/Documents/Pychegp_runs/V23/new_composes.dat
+therm_file = /mnt/c/Users/R.Veillet/Documents/Pychegp_runs/V23/new_nasa.therm
+o_ratio = 1
+c_ratio = 1
+n_ratio = 1
+s_ratio = 1
+o_seq = 0.2
+
+[ODE]
+solver = vode
+atol = 1e-25
+rtol = 0.001
+end_time = 1.000000e+15
+nsteps = 21
+dn_stop = 0.01
+dndt_stop = 1e-10
+solver_stop_time = 1.000000e+10
