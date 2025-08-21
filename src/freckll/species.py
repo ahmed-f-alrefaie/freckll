@@ -97,6 +97,11 @@ class SpeciesFormula(Formula):
 
         return frozenset(comp_self) == frozenset(comp_other)
 
+    @property
+    def element_makeup(self) -> dict[str, int]:
+        """Return the element makeup of the species."""
+        return {k: v[0] for k, v in self.composition_dict.items()}
+
     def __str__(self) -> str:
         str_val = f"{self.input_formula}"
         if self.state != SpeciesState.GAS:

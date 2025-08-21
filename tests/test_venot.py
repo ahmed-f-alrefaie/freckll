@@ -328,7 +328,7 @@ def test_load_composes_file(tmp_path):
     composes_file = tmp_path / "composes.dat"
     composes_file.write_text(TEST_DATA)
 
-    species = load_composition(composes_file)
+    species, decoder = load_composition(composes_file)
     # Check first is okay
     assert species[0] == SpeciesFormula("CH3COOOH")
     # Check last is condensed phase

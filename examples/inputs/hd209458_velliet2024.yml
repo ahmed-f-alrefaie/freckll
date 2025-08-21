@@ -1,0 +1,48 @@
+planet:
+  mass: 0.714 Mjup
+  radius: 1.38 Rjup
+  distance: 0.04747 AU
+  albedo: 0.0
+
+star:
+  incident_angle: 45 deg
+  spectrum: hd209458
+
+# Built in format
+network: velliet-2024
+photochemistry: velliet-2024-photo
+thermochemistry:
+  format: ace
+  abundances: [12.0, 10.925, 9.168, 7.86, 8.633, 3.21]
+  elements: [H, He, C, N, O, S]
+
+atmosphere:
+  tp_profile:
+    format: from-file
+    filename: tpprofile.csv
+    temperature_column: 1
+    pressure_column: 0
+    comments: "#"
+    temperature_unit: K
+    pressure_unit: mbar
+
+  kzz:
+    format: from-file
+    filename: kzz.csv
+    kzz_column: 1
+    pressure_column: 0
+    comments: "#"
+    kzz_unit: cm2/s
+    pressure_unit: mbar
+
+solver:
+  method: rosenbrock
+  t_span: [0.0, 1e10]
+  nevals: 200
+  dn_crit: 1e-3
+  dndt_crit: 1e-6
+  max_solve_time: 1 hour
+  enable_diffusion: false
+  rtol: 1e-2
+  atol: 1e-12
+  maxiter: 1000

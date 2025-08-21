@@ -3,6 +3,7 @@ import typing as t
 import numpy as np
 from astropy import units as u
 
+from ..log import Loggable
 from ..nasa import NasaCoeffs
 from ..reactions.common import compile_thermodynamic_properties
 from ..reactions.data import Reaction, ReactionCall
@@ -53,7 +54,7 @@ def find_tagged_reactions(reactions: list[Reaction], tags: list[str] | str):
     return [r for r in reactions if set(r.tags) & tags]
 
 
-class ChemicalNetwork:
+class ChemicalNetwork(Loggable):
     """A chemical network."""
 
     def __init__(
@@ -68,6 +69,7 @@ class ChemicalNetwork:
             reaction_calls: The reaction calls.
 
         """
+        super().__init__()
         self.reaction_calls = reaction_calls
         self.nasa_coeffs = nasa_coeffs
         self.composition = composition

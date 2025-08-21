@@ -115,14 +115,15 @@ def dispatch_photochemistry(
     photochemistry_data: dict | str | None, species_list: list[SpeciesFormula]
 ) -> PhotoChemistry | None:
     from ..venot import VenotPhotoChemistry
-    from .loader import default_photonetwork_loader
+    from .loader import default_latest_photonetwork_loader, default_venot_photonetwork_loader
 
     if photochemistry_data is None:
         return None
 
     _dispatcher_map = {
         "venot": VenotPhotoChemistry,
-        "venot-methanol-2020-photo": default_photonetwork_loader,
+        "venot-methanol-2020-photo": default_venot_photonetwork_loader,
+        "velliet-2024-photo": default_latest_photonetwork_loader,
     }
 
     return _dispatch(photochemistry_data, dispatcher_map=_dispatcher_map, species_list=species_list)
