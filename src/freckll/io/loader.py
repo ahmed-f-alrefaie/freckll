@@ -342,7 +342,7 @@ def default_stellar_spectra_loader(
         _log.error(f"Unknown star '{star}'")
         raise ValueError
 
-    star_path = importlib.resources.files("freckll.data") / "Stars" / f"stellarflux_{star}.dat"
+    star_path = importlib.resources.files("freckll.data") / "Stars" / f"stellarflux_{star.lower()}.dat"
     star_path = star_path.resolve()
     star_path = pathlib.Path(star_path)
 
