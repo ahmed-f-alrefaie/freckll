@@ -26,6 +26,12 @@ PhotchemFormats = t.Literal["venot"]
 _log = setup_log(__name__)
 
 
+class AceFailureError(Exception):
+    """Raised when the ACE chemistry model fails to run."""
+
+    pass
+
+
 def generic_csv_loader(
     filename: PathLike,
     columns: list[int],
@@ -439,4 +445,7 @@ def ace_equil_chemistry_loader(
                 pressure=pressure,
             )
         except acepython.ace.AceError:
-            continue
+            pass
+
+    _log.error("ACE chemistry model failed to run.")
+    raise AceFailureError()

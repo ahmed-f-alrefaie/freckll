@@ -18,8 +18,8 @@ from freckll.io import dispatcher as freckll_dispatcher
 from freckll.reactions.photo import StarSpectra
 from freckll.solver import Rosenbrock
 
-DEFAULT_ELEMENTS = ("C", "N", "O")
-DEFAULT_ABUNDANCES = (8.39, 7.86, 8.73)
+DEFAULT_ELEMENTS = ("C", "N", "O", "S")
+DEFAULT_ABUNDANCES = (8.39, 7.86, 8.73, 3.63)
 
 
 DEFAULT_EQUIL_CONFIG = {
@@ -383,13 +383,33 @@ class FreckllChemistry(BaseFreckllChemistry):
 def build_star_config(string: str, arg: t.Optional[str] = None) -> t.Union[dict[str, t.Any], str]:
     """Builds the star configuration from a string."""
 
-    if string in t.get_args(freckll_loader.Stars):
-        return {"spectrum": string}
-    elif string.startswith("rescale-"):
+    string = string.lower()
+
+    if string in ("from-star",):
+        if arg in t.get_args(freckll_loader.Stars):
+            return {"spectrum": arg}
+        else:
+            raise ValueError(f"Unknown star format '{arg}' in data.")  # noqa: TRY003
+    elif string in ("rescale",):
+        if arg not in t.get_args(freckll_loader.Stars):
+            raise ValueError(f"Unknown star name '{arg}' in data for rescaling.")  # noqa: TRY003
         return {
             "spectrum": {
                 "format": "rescale",
-                "from_star": string.split("rescale-")[1],
+                "from_star": arg,
+            }
+        }
+    elif string in ("from-file",):
+        if arg is None:
+            raise ValueError("Star file path must be provided for 'from-file' star configuration.")  # noqa: TRY003
+        return {
+            "spectrum": {
+                "format": "from-file",
+                "flux_column": 1,
+                "spectral_column": 0,
+                "flux_unit": u.W / (u.m**2 * u.micron),
+                "spectral_unit": u.photon / u.cm**2 / u.s / u.nm,
+                "reference_distance": 1.0 * u.AU,
             }
         }
     elif string.startswith("from-taurex"):
@@ -401,7 +421,7 @@ class FreckllChemistryInput(BaseFreckllChemistry):
 
     def __init__(
         self,
-        network: t.Union[PathLike, freckll_loader.Networks] = "venot-methanol-2020",
+        network: t.Union[PathLike, freckll_loader.Networks] = "velliet-2024",
         photochemistry: t.Optional[t.Union[PathLike, freckll_loader.Photonetworks, t.Literal["auto"]]] = "auto",
         elements: tuple[str] = DEFAULT_ELEMENTS,
         abundances: tuple[float] = DEFAULT_ABUNDANCES,
@@ -431,6 +451,8 @@ class FreckllChemistryInput(BaseFreckllChemistry):
 
         """
         network_config = network
+        if photochemistry == "auto" and network_config == "velliet-2024":
+            photochemistry = "velliet-2024-photo"
         if photochemistry == "auto" and network_config == "venot-methanol-2020":
             photochemistry = "venot-methanol-2020-photo"
         elif photochemistry == "auto" and network_config == "venot-methanol-2020-reduced":
@@ -465,7 +487,7 @@ class FreckllChemistryInput(BaseFreckllChemistry):
             "maxiter": maxiter,
         }
 
-        star_config = build_star_config(star_method)
+        star_config = build_star_config(star_method, star_arg)
 
         super().__init__(
             network_config=network_config,
