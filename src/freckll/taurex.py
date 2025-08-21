@@ -380,9 +380,7 @@ class FreckllChemistry(BaseFreckllChemistry):
     pass
 
 
-def build_star_config(
-    string: str,
-) -> t.Union[dict[str, t.Any], str]:
+def build_star_config(string: str, arg: t.Optional[str] = None) -> t.Union[dict[str, t.Any], str]:
     """Builds the star configuration from a string."""
 
     if string in t.get_args(freckll_loader.Stars):
@@ -411,7 +409,8 @@ class FreckllChemistryInput(BaseFreckllChemistry):
         h_abundance: float = 12.0,
         h_he_ratio: float = 0.083,
         metallicity: float = 1.0,
-        star_method: str = "rescale-sun",
+        star_method: str = "rescale",
+        star_arg: str = "sun",
         solve_method: str = "rosenbrock",
         t_span: tuple[float, float] = (0.0, 1e10),
         max_iter: int = 100,
