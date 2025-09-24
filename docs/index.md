@@ -18,5 +18,6 @@ Head to the [Getting Started](gettingstarted.md) to get started or try the [Cola
 ## References
 
 - [FRECKLL paper](https://iopscience.iop.org/article/10.3847/1538-4357/ad3dee)
-- [Methanol Network](https://ui.adsabs.harvard.edu/abs/2020A%26A...634A..78V/abstract)
+- [Veillet et al. (2024) Network](https://www.aanda.org/articles/aa/full_html/2024/02/aa46680-23/aa46680-23.html)
+- [Venot et al. (2020) Networks](https://ui.adsabs.harvard.edu/abs/2020A%26A...634A..78V/abstract)
 - [K-fold method](https://epubs.siam.org/doi/10.1137/030601818)
