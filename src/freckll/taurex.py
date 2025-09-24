@@ -423,7 +423,7 @@ class FreckllChemistryInput(BaseFreckllChemistry):
 
     def __init__(
         self,
-        network: t.Union[PathLike, freckll_loader.Networks] = "velliet-2024",
+        network: t.Union[PathLike, freckll_loader.Networks] = "veillet-2024",
         photochemistry: t.Optional[t.Union[PathLike, freckll_loader.Photonetworks, t.Literal["auto"]]] = "auto",
         elements: t.Optional[tuple[str]] = None,
         abundances: t.Optional[tuple[float]] = None,
@@ -454,8 +454,8 @@ class FreckllChemistryInput(BaseFreckllChemistry):
         """
         logging.getLogger("freckll").addHandler(logging.getLogger("taurex").handlers[-1])
         network_config = network
-        if photochemistry == "auto" and network_config == "velliet-2024":
-            photochemistry = "velliet-2024-photo"
+        if photochemistry == "auto" and network_config == "veillet-2024":
+            photochemistry = "veillet-2024-photo"
         if photochemistry == "auto" and network_config == "venot-methanol-2020":
             photochemistry = "venot-methanol-2020-photo"
         elif photochemistry == "auto" and network_config == "venot-methanol-2020-reduced":

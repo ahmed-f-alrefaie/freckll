@@ -104,14 +104,13 @@ plt.show()
 
 ## Loading in the Network
 
-The next step is to load in the network. FRECKLL includes two [Venot 2020]() networks built in. The first is a full chemical network that includes photolysis and the second is a reduced network that does not include photolysis.
+The next step is to load in the network. FRECKLL includes three networks built in. You can also load in your own network but this will be covered in a different tutorial.
 
-You can also load in your own network but this will be covered in a different tutorial.
+The `default_network_loader` allows for three arguments:
 
-The `default_network_loader` allows for two arguments:
-
-- `venot-methanol-2020-reduced` - This is the reduced network that does not include photolysis.
-- `venot-methanol-2020` - This is the full network that includes photolysis.
+- `veillet-2024` - This is the full network from [Veillet et al. (2024)](https://www.aanda.org/articles/aa/full_html/2024/02/aa46680-23/aa46680-23.html) that includes photolysis.
+- `venot-methanol-2020-reduced` - This is the reduced network from [Venot et al. (2020)](https://www.aanda.org/articles/aa/full_html/2020/02/aa36697-19/aa36697-19.html) that does not include photolysis.
+- `venot-methanol-2020` - This is the full network from [Venot et al. (2020)](https://www.aanda.org/articles/aa/full_html/2020/02/aa36697-19/aa36697-19.html) that includes photolysis
 
 We can use the loader to load in the reduced network:
 
@@ -459,13 +458,13 @@ to each species in `network.species`. The solver will then run from this initial
 `FRECKLL` includes the equilibrium code `ACE` which is installed either from:
 
 ```bash
-pip install freckll[ace]
+pip install "freckll[ace]"
 ```
 
 or
 
 ```bash
-pip install freckll[recommended]
+pip install "freckll[recommended]"
 ```
 
 or you can install it manually using:
@@ -595,7 +594,7 @@ plt.show()
 For the photochemistry case we will need to use the full network instead. We can load it in using the `default_network_loader` function:
 
 ```python
-full_network = default_network_loader("venot-methanol-2020")
+full_network = default_network_loader("veillet-2024")
 ```
 
 We will also need to load in the photochemistry and actinic flux for the star. This is easily accomplished using the loader modules.

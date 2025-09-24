@@ -13,8 +13,8 @@ from ..reactions.photo import StarSpectra
 from ..species import SpeciesFormula
 from ..venot import VenotChemicalNetwork, VenotPhotoChemistry
 
-Networks = t.Literal["velliet-2024", "venot-methanol-2020", "venot-methanol-2020-reduced"]
-Photonetworks = t.Literal["velliet-2024-photo", "venot-methanol-2020-photo"]
+Networks = t.Literal["veillet-2024", "venot-methanol-2020", "venot-methanol-2020-reduced"]
+Photonetworks = t.Literal["veillet-2024-photo", "venot-methanol-2020-photo"]
 
 Stars = t.Literal[
     "55cnc", "adleo", "gj436", "gj3470", "hd128167", "hd189733", "hd209458", "sun", "wasp12", "wasp39", "wasp43"
@@ -299,7 +299,7 @@ def default_photonetwork_loader(network: Photonetworks, species_list: list[Speci
         The loaded network.
 
     """
-    if network == "velliet-2024-photo":
+    if network == "veillet-2024-photo":
         return default_latest_photonetwork_loader(species_list)
     elif network == "venot-methanol-2020-photo":
         return default_venot_photonetwork_loader(species_list)
@@ -318,7 +318,7 @@ def default_network_loader(network: Networks) -> VenotChemicalNetwork:
         The loaded network.
 
     """
-    if network == "velliet-2024":
+    if network == "veillet-2024":
         return default_latest_network_loader()
     elif network == "venot-methanol-2020":
         return default_full_network_loader()

@@ -47,7 +47,7 @@ $ freckll hd209458_reduced.yml -o hd209458_reduced.h5 --plot --plot-prefix reduc
 
 This will generate the same result file `hd209458_reduced.h5` as well as plot labelled `reduced_solution.png`:
 
-![reduced_solution.png](reduced_solution.png)
+![reduced_solution.png](quickstart/reduced_solution.png)
 
 This is a quick overview of the system, with the top-left representing your $T$-$P$ and $K_{zz}$ profiles, top-right representing the initial and final abundances of the species, the bottom-left representing the initial and final mean molecular weight ($\mu$) and bottom-right representing the actinic flux used (if photochemistry is enabled). We can also go one step further and generate an animation of the results evolving over time. This is done using the `--animate` option. The command is:
 
@@ -147,7 +147,7 @@ $ freckll hd209458_reduced_high_kzz.yml -o hd209458_reduced_high_kzz.h5 --plot -
 ```
 
 We should see the results in the output file `hd209458_reduced_high_kzz.h5` as well as plots and video labelled `reduced_high_kzz_solution.png` and `reduced_high_kzz_animation.mp4` respectively:
-![reduced_high_kzz_solution.png](reduced_high_kzz_solution.png)
+![reduced_high_kzz_solution.png](quickstart/reduced_high_kzz_solution.png)
 
 Here vertical mixing is much more dominant resulting in a much more constant profile. The video is shown below:
 
@@ -182,7 +182,7 @@ $ freckll hd209458_full_scheme.yml -o hd209458_full_scheme.h5 --plot --plot-pref
 ```
 
 Now it will take a bit longer to run as we are dealing with a factor of 5x more reactions and 2x more species. This will generate the result file `hd209458_full_scheme.h5` as well as plots and video labelled `full_scheme_solution.png` and `full_scheme_animation.mp4` respectively:
-![full_scheme_solution.png](full_scheme_solution.png)
+![full_scheme_solution.png](quickstart/full_scheme_solution.png)
 
 <figure class="video_container">
   <video controls="true" allowfullscreen="true">
@@ -221,7 +221,7 @@ $ freckll hd209458_full_scheme.yml -o hd209458_full_scheme_photo.h5 --plot --plo
 Running this will take a bit more time as we now have the influence of photochemistry on the ODE.
 
 This will generate the result file `hd209458_full_scheme_photo.h5` as well as plots and video labelled `full_scheme_photo_solution.png` and `full_scheme_photo_animation.mp4` respectively. LEts take a look at the plot output:
-![full_scheme_photo_solution.png](full_scheme_photo_solution.png)
+![full_scheme_photo_solution.png](quickstart/full_scheme_photo_solution.png)
 
 You may have noticed that we now have the lower right plot showing the actinic flux. This is the flux that is incident on the planet.
 
@@ -296,7 +296,7 @@ $ freckll custom.yml -o custom.h5 --plot --plot-prefix custom --animate
 
 This will generate the result file `custom.h5` as well as plots and video labelled `custom_solution.png` and `custom_animation.mp4` respectively.
 
-![custom_solution.png](custom_solution.png)
+![custom_solution.png](quickstart/custom_solution.png)
 
 <figure class="video_container">
   <video controls="true" allowfullscreen="true">

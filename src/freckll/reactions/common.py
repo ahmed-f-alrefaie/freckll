@@ -252,7 +252,7 @@ def plog_interpolate(
 
 
     Args:
-        plog_points: The pressures at which the Arrhenius parameters are defined.
+        log_points: The log of the pressures at which the Arrhenius parameters are given.
         a_points: The pre-exponential factors at the given pressures.
         n_points: The temperature exponents at the given pressures.
         er_points: The activation energies at the given pressures.

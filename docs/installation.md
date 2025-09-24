@@ -25,7 +25,7 @@ pip install "freckll[plot]" # Plotting
 
 FRECKLL has the following strict requirements which will be automatically installed when using `pip`:
 
-- Python>=3.9
+- Python>=3.10
 - [astropy>=5.3.2](https://www.astropy.org)
 - [molmass>=2024.10.25](https://pypi.org/project/molmass/)
 - [numba>=0.60.0](https://numba.pydata.org)

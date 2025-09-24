@@ -123,7 +123,7 @@ def dispatch_photochemistry(
     _dispatcher_map = {
         "venot": VenotPhotoChemistry,
         "venot-methanol-2020-photo": default_venot_photonetwork_loader,
-        "velliet-2024-photo": default_latest_photonetwork_loader,
+        "veillet-2024-photo": default_latest_photonetwork_loader,
     }
 
     return _dispatch(photochemistry_data, dispatcher_map=_dispatcher_map, species_list=species_list)
