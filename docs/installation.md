@@ -7,7 +7,7 @@ FRECKLL has support for Python 3.9 and above. It is recommended to use a virtual
 FRECKLL can be installed using standard `pip` command:
 
 ```bash
-pip install freckll[recommended]
+pip install "freckll[recommended]"
 ```
 
 which will install FRECKLL and additional optional dependancies.
