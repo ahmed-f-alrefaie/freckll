@@ -5,7 +5,7 @@ description = "Fast Disequilibrium chemistry"
 authors = [{ name = "Ahmed F. Al-Refaie", email = "ahmed.al-refaie@ucl.ac.uk" }]
 readme = "README.md"
 keywords = ['python']
-requires-python = ">=3.9,<4.0"
+requires-python = ">=3.10,<4.0"
 classifiers = [
     "Intended Audience :: Developers",
     "Programming Language :: Python",
@@ -63,6 +63,7 @@ dev = [
     "line-profiler>=4.2.0",
     "acepython>=0.0.17",
     "pytest>=8.3.4",
+    "taurex>=3.3",
 ]
 
 [build-system]
@@ -149,3 +150,7 @@ source = ["src"]
 
 [project.scripts]
 freckll = "freckll.main:freckll_cli"
+
+#Entry point for the plugin
+[project.entry-points."taurex.plugins"]
+"freckll" = "freckll.taurex"
