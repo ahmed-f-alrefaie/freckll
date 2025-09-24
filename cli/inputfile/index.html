@@ -1711,23 +1711,10 @@
 <p>The <code>planet</code> section contains the properties of the planet. It is a <strong>required</strong> section and must be present in the input file.
 The following properties are available:</p>
 <ul>
-<li><code>mass</code></li>
-<li>Format: <code>[mass]</code></li>
-<li><em>Required</em></li>
-<li>The mass of the planet in [mass] (e.g. <code>1 Mjup</code>, <code>2 Mearth</code>, etc.).</li>
-<li><code>radius</code></li>
-<li>Format: <code>[length]</code></li>
-<li><em>Required</em></li>
-<li>The radius of the planet in <code>[length]</code> (e.g. <code>2 Rjup</code>, <code>1 Rearth</code>, etc.).</li>
-<li><code>distance</code></li>
-<li>Format: <code>[length]</code></li>
-<li><em>Required</em> for photochemistry. <em>Optional</em> otherwise.</li>
-<li>The distance of the planet from the star in <code>[length]</code> (e.g. <code>1 AU</code>, <code>2 km</code>, etc.).</li>
-<li><code>albedo</code></li>
-<li>Format: <code>float</code></li>
-<li><em>Optional</em> (Used in Photochemistry)</li>
-<li>Determines how much flux reflects back from the BOA.</li>
-<li>Default is <code>0.0</code>.</li>
+<li><code>mass</code> - Format: <code>[mass]</code> - <em>Required</em> - The mass of the planet in [mass] (e.g. <code>1 Mjup</code>, <code>2 Mearth</code>, etc.).</li>
+<li><code>radius</code> - Format: <code>[length]</code> - <em>Required</em> - The radius of the planet in <code>[length]</code> (e.g. <code>2 Rjup</code>, <code>1 Rearth</code>, etc.).</li>
+<li><code>distance</code> - Format: <code>[length]</code> - <em>Required</em> for photochemistry. <em>Optional</em> otherwise. - The distance of the planet from the star in <code>[length]</code> (e.g. <code>1 AU</code>, <code>2 km</code>, etc.).</li>
+<li><code>albedo</code> - Format: <code>float</code> - <em>Optional</em> (Used in Photochemistry) - Determines how much flux reflects back from the BOA. - Default is <code>0.0</code>.</li>
 </ul>
 <h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">planet</span><span class="p">:</span>
@@ -1742,22 +1729,16 @@ The following properties are available:</p>
 <ul>
 <li>
 <p><code>incident_angle</code></p>
-</li>
-<li>
-<p>Format: <code>[angle]</code></p>
-</li>
+<ul>
+<li>Format: <code>[angle]</code></li>
 <li><em>Optional</em></li>
 <li>The angle of the star with respect to the planet in [angle] (e.g. <code>10 deg</code>, <code>1.2 rad</code>, etc.).</li>
-<li>
-<p>Default is <code>45.0 deg</code>.</p>
+<li>Default is <code>45.0 deg</code>.</li>
+</ul>
 </li>
 <li>
-<p><code>spectrum</code></p>
+<p><code>spectrum</code> - Format: <code>string</code> or <code>rescale</code> or <code>from-file</code> - <em>Required</em> if <code>photochemistry</code> is enabled. - The spectrum of the star. The spectrum can be either a built-in spectrum/custom spectrum/rescale from empirical data. - The built-in spectrum can be one of the following: <code>55cnc</code>, <code>adleo</code>, <code>gj436</code>, <code>gj3470</code>, <code>hd128167</code>, <code>hd189733</code>, <code>hd209458</code>, <code>sun</code>, <code>wasp12</code>, <code>wasp39</code>, <code>wasp43</code></p>
 </li>
-<li>Format: <code>string</code> or <code>rescale</code> or <code>from-file</code></li>
-<li><em>Required</em> if <code>photochemistry</code> is enabled.</li>
-<li>The spectrum of the star. The spectrum can be either a built-in spectrum/custom spectrum/rescale from empirical data.</li>
-<li>The built-in spectrum can be one of the following: <code>55cnc</code>, <code>adleo</code>, <code>gj436</code>, <code>gj3470</code>, <code>hd128167</code>, <code>hd189733</code>, <code>hd209458</code>, <code>sun</code>, <code>wasp12</code>, <code>wasp39</code>, <code>wasp43</code></li>
 </ul>
 <h3 id="example_1">Example<a class="headerlink" href="#example_1" title="Permanent link">&para;</a></h3>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">star</span><span class="p">:</span>
@@ -1767,42 +1748,15 @@ The following properties are available:</p>
 <h3 id="from-file-spectrum">from-file spectrum<a class="headerlink" href="#from-file-spectrum" title="Permanent link">&para;</a></h3>
 <p>The <code>from-file</code> option can be used to specify a custom spectrum file. Freckll supports a CSV file format. The arguments are as follows:</p>
 <ul>
-<li><code>filename</code></li>
-<li>Format: <code>Path</code></li>
-<li><em>Required</em></li>
-<li>The path to the custom spectrum file. The file should be in CSV format.</li>
-<li><code>flux_column</code></li>
-<li>Format: <code>int</code></li>
-<li><em>Required</em></li>
-<li>The column number of the flux data in the CSV file. The first column is <code>0</code>.</li>
-<li><code>spectral_column</code></li>
-<li>Format: <code>int</code></li>
-<li><em>Required</em></li>
-<li>The column number of the spectral data in the CSV file. The first column is <code>0</code>.</li>
-<li><code>flux_unit</code></li>
-<li>Format: <code>string</code></li>
-<li><em>Required</em></li>
-<li>The unit of the flux data. The unit should be in the form of a string (e.g. <code>W/m2/nm</code>, <code>erg/s/cm2/nm</code>, etc.).</li>
-<li><code>spectral_unit</code></li>
-<li>Format: <code>string</code></li>
-<li><em>Required</em></li>
-<li>The unit of the spectral data. The unit should be in the form of a string (e.g. <code>nm</code>, <code>um</code>, <code>cm-1</code>, etc.).</li>
-<li><code>reference_distance</code></li>
-<li>Format: <code>[length]</code></li>
-<li><em>Required</em></li>
-<li>The reference distance for the flux data in <code>[length]</code> (e.g. <code>1 AU</code>, <code>1 km</code>, etc.).</li>
-<li><code>skiprows</code></li>
-<li>Format: <code>int</code></li>
-<li><em>Optional</em></li>
-<li>The number of rows to skip at the beginning of the file. Default is <code>0</code>.</li>
-<li><code>delimiter</code></li>
-<li>Format: <code>string</code></li>
-<li><em>Optional</em></li>
-<li>The delimiter used in the CSV file. Default is <code>None</code>.</li>
-<li><code>comments</code></li>
-<li>Format: <code>string</code></li>
-<li><em>Optional</em></li>
-<li>The character used to denote comments in the CSV file. Default is <code>None</code>.</li>
+<li><code>filename</code> - Format: <code>Path</code> - <em>Required</em> - The path to the custom spectrum file. The file should be in CSV format.</li>
+<li><code>flux_column</code> - Format: <code>int</code> - <em>Required</em> - The column number of the flux data in the CSV file. The first column is <code>0</code>.</li>
+<li><code>spectral_column</code> - Format: <code>int</code> - <em>Required</em> - The column number of the spectral data in the CSV file. The first column is <code>0</code>.</li>
+<li><code>flux_unit</code> - Format: <code>string</code> - <em>Required</em> - The unit of the flux data. The unit should be in the form of a string (e.g. <code>W/m2/nm</code>, <code>erg/s/cm2/nm</code>, etc.).</li>
+<li><code>spectral_unit</code> - Format: <code>string</code> - <em>Required</em> - The unit of the spectral data. The unit should be in the form of a string (e.g. <code>nm</code>, <code>um</code>, <code>cm-1</code>, etc.).</li>
+<li><code>reference_distance</code> - Format: <code>[length]</code> - <em>Required</em> - The reference distance for the flux data in <code>[length]</code> (e.g. <code>1 AU</code>, <code>1 km</code>, etc.).</li>
+<li><code>skiprows</code> - Format: <code>int</code> - <em>Optional</em> - The number of rows to skip at the beginning of the file. Default is <code>0</code>.</li>
+<li><code>delimiter</code> - Format: <code>string</code> - <em>Optional</em> - The delimiter used in the CSV file. Default is <code>None</code>.</li>
+<li><code>comments</code> - Format: <code>string</code> - <em>Optional</em> - The character used to denote comments in the CSV file. Default is <code>None</code>.</li>
 </ul>
 <h4 id="example_2">Example<a class="headerlink" href="#example_2" title="Permanent link">&para;</a></h4>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nt">star</span><span class="p">:</span>
@@ -1822,18 +1776,9 @@ The following properties are available:</p>
 <h3 id="rescale">Rescale<a class="headerlink" href="#rescale" title="Permanent link">&para;</a></h3>
 <p>The <code>rescale</code> option can be used to generate a custom spectrum from one of the built-in spectra. The arguments are as follows:</p>
 <ul>
-<li><code>from_star</code></li>
-<li>Format: <code>string</code></li>
-<li><em>Required</em></li>
-<li>The name of the built-in star spectrum to be used as a reference. The built-in spectrum can be one of the following: <code>55cnc</code>, <code>adleo</code>, <code>gj436</code>, <code>gj3470</code>, <code>hd128167</code>, <code>hd189733</code>, <code>hd209458</code>, <code>sun</code>, <code>wasp12</code>, <code>wasp39</code>, <code>wasp43</code></li>
-<li><code>temperature</code></li>
-<li>Format: <code>[temperature]</code></li>
-<li><em>Required</em></li>
-<li>The temperature of the new star in <code>[temperature]</code> (e.g. <code>6117 K</code>, <code>3000 K</code>, etc.).</li>
-<li><code>radius</code></li>
-<li>Format: <code>[length]</code></li>
-<li><em>Required</em></li>
-<li>The radius of the new star in <code>[length]</code> (e.g. <code>1.16 Rsun</code>, <code>2 Rjup</code>, etc.).</li>
+<li><code>from_star</code> - Format: <code>string</code> - <em>Required</em> - The name of the built-in star spectrum to be used as a reference. The built-in spectrum can be one of the following: <code>55cnc</code>, <code>adleo</code>, <code>gj436</code>, <code>gj3470</code>, <code>hd128167</code>, <code>hd189733</code>, <code>hd209458</code>, <code>sun</code>, <code>wasp12</code>, <code>wasp39</code>, <code>wasp43</code></li>
+<li><code>temperature</code> - Format: <code>[temperature]</code> - <em>Required</em> - The temperature of the new star in <code>[temperature]</code> (e.g. <code>6117 K</code>, <code>3000 K</code>, etc.).</li>
+<li><code>radius</code> - Format: <code>[length]</code> - <em>Required</em> - The radius of the new star in <code>[length]</code> (e.g. <code>1.16 Rsun</code>, <code>2 Rjup</code>, etc.).</li>
 </ul>
 <h4 id="example_3">Example<a class="headerlink" href="#example_3" title="Permanent link">&para;</a></h4>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nt">star</span><span class="p">:</span>
@@ -1851,26 +1796,19 @@ The following properties are available:</p>
 </span></code></pre></div>
 <p>The available built-in networks are:</p>
 <ul>
-<li><code>venot-methanol-2020-reduced</code></li>
-<li>Reduced network for the Venot et al. (2020) methanol network.</li>
-<li><code>venot-methanol-2020</code></li>
-<li>Full network for the Venot et al. (2020) methanol network.</li>
+<li><code>veillet-2024</code> - Full network from <a href="https://www.aanda.org/articles/aa/full_html/2024/02/aa46680-23/aa46680-23.html">Veillet et al. (2024)</a></li>
+<li><code>venot-methanol-2020-reduced</code> - Reduced network for the <a href="https://www.aanda.org/articles/aa/full_html/2020/02/aa36697-19/aa36697-19.html">Venot et al. (2020)</a> methanol network.</li>
+<li><code>venot-methanol-2020</code> - Full network for the <a href="https://www.aanda.org/articles/aa/full_html/2020/02/aa36697-19/aa36697-19.html">Venot et al. (2020)</a> methanol network.</li>
 </ul>
 <h2 id="custom-network">Custom network<a class="headerlink" href="#custom-network" title="Permanent link">&para;</a></h2>
 <p>If you want to use a custom network, you can specify the path to the network file. The arguments are as follows:</p>
 <ul>
-<li><code>format</code></li>
-<li>Format: <code>string</code></li>
-<li><em>Required</em></li>
-<li>The name of the chemical network to be used. Only <code>venot</code> format is supported.</li>
+<li><code>format</code> - Format: <code>string</code> - <em>Required</em> - The name of the chemical network to be used. Only <code>venot</code> format is supported.</li>
 </ul>
 <h3 id="venot-format">Venot format<a class="headerlink" href="#venot-format" title="Permanent link">&para;</a></h3>
 <p>The <code>venot</code> format is a custom format used by FRECKLL. The arguments are as follows:</p>
 <ul>
-<li><code>network_path</code></li>
-<li>Format: <code>Path</code></li>
-<li><em>Required</em></li>
-<li>The path to the custom network file. The file should be in the <code>venot</code> format.</li>
+<li><code>network_path</code> - Format: <code>Path</code> - <em>Required</em> - The path to the custom network file. The file should be in the <code>venot</code> format.</li>
 </ul>
 <h4 id="example_4">Example<a class="headerlink" href="#example_4" title="Permanent link">&para;</a></h4>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nt">network</span><span class="p">:</span>
@@ -1882,8 +1820,8 @@ The following properties are available:</p>
 <p>Similar to the Network section, the photochemistry section can either be a built-in network or a custom network.
 The following built-in photochemistry networks are available:</p>
 <ul>
-<li><code>venot-methanol-2020-photo</code></li>
-<li>Photochemistry network for the Venot et al. (2020) methanol network.</li>
+<li><code>veillet-2024-photo</code> - Photochemistry network for the <a href="https://www.aanda.org/articles/aa/full_html/2024/02/aa46680-23/aa46680-23.html">Veillet et al. (2024)</a> network.</li>
+<li><code>venot-methanol-2020-photo</code> - Photochemistry network for the <a href="https://www.aanda.org/articles/aa/full_html/2020/02/aa36697-19/aa36697-19.html">Venot et al. (2020)</a> methanol network.</li>
 </ul>
 <h3 id="example_5">Example<a class="headerlink" href="#example_5" title="Permanent link">&para;</a></h3>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nt">photochemistry</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">venot-methanol-2020-photo</span>
@@ -1891,23 +1829,13 @@ The following built-in photochemistry networks are available:</p>
 <h2 id="custom-photochemistry">Custom photochemistry<a class="headerlink" href="#custom-photochemistry" title="Permanent link">&para;</a></h2>
 <p>If you want to use a custom photochemistry network. The arguments are as follows:</p>
 <ul>
-<li><code>format</code></li>
-<li>Format: <code>string</code></li>
-<li><em>Required</em></li>
-<li>The name of the photochemistry network to be used. Only <code>venot</code> format is supported.</li>
+<li><code>format</code> - Format: <code>string</code> - <em>Required</em> - The name of the photochemistry network to be used. Only <code>venot</code> format is supported.</li>
 </ul>
 <h3 id="venot-format_1">Venot format<a class="headerlink" href="#venot-format_1" title="Permanent link">&para;</a></h3>
 <p>The <code>venot</code> format is a custom format used by FRECKLL. The arguments are as follows:</p>
 <ul>
-<li><code>photodissociation_file</code></li>
-<li>Format: <code>Path</code></li>
-<li><em>Required</em></li>
-<li>The path to the custom photodissociation file. The file should be in the <code>venot</code> format.</li>
-<li><code>cross_section_path</code></li>
-<li>Format: <code>Path</code></li>
-<li><em>Required</em></li>
-<li>The path to the cross-section folder.</li>
-<li>Must include both <code>se*</code> and <code>qy*</code> files.</li>
+<li><code>photodissociation_file</code> - Format: <code>Path</code> - <em>Required</em> - The path to the custom photodissociation file. The file should be in the <code>venot</code> format.</li>
+<li><code>cross_section_path</code> - Format: <code>Path</code> - <em>Required</em> - The path to the cross-section folder. - Must include both <code>se*</code> and <code>qy*</code> files.</li>
 </ul>
 <h4 id="example_6">Example<a class="headerlink" href="#example_6" title="Permanent link">&para;</a></h4>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nt">photochemistry</span><span class="p">:</span>
@@ -1919,24 +1847,10 @@ The following built-in photochemistry networks are available:</p>
 <p>The <code>thermochemistry</code> section contains the thermochemistry data. It is a <strong>required</strong> section and must be present in the input file.</p>
 <p>Currently only <code>ace</code> is supported. The arguments are as follows:</p>
 <ul>
-<li><code>format</code></li>
-<li>Format: <code>string</code></li>
-<li><em>Required</em></li>
-<li>The name of the thermochemistry format to be used. Only <code>ace</code> format is supported.</li>
-<li><code>elements</code></li>
-<li>Format: <code>list</code></li>
-<li><em>Required</em></li>
-<li>The elements in the thermochemistry data. The elements should be in the form of a list (e.g. <code>[H, He, C, N, O]</code>).</li>
-<li><code>abundances</code></li>
-<li>Format: <code>list</code></li>
-<li><em>Required</em></li>
-<li>The abundances of the elements in the thermochemistry data. The abundances should be in the form of a list (e.g. <code>[12.0, 10.925, 9.168, 7.86, 8.633]</code>).</li>
-<li>Abundances should correspond to the elements in the same order.</li>
-<li><code>therm_file</code></li>
-<li>Format: <code>Path</code></li>
-<li><em>Optional</em></li>
-<li>The path to the NASA thermochemistry file. The file should be in the <code>ace</code> format.</li>
-<li>If not defined then FRECKLLs built-in ACE file will be used.</li>
+<li><code>format</code> - Format: <code>string</code> - <em>Required</em> - The name of the thermochemistry format to be used. Only <code>ace</code> format is supported.</li>
+<li><code>elements</code> - Format: <code>list</code> - <em>Required</em> - The elements in the thermochemistry data. The elements should be in the form of a list (e.g. <code>[H, He, C, N, O]</code>).</li>
+<li><code>abundances</code> - Format: <code>list</code> - <em>Required</em> - The abundances of the elements in the thermochemistry data. The abundances should be in the form of a list (e.g. <code>[12.0, 10.925, 9.168, 7.86, 8.633]</code>). - Abundances should correspond to the elements in the same order.</li>
+<li><code>therm_file</code> - Format: <code>Path</code> - <em>Optional</em> - The path to the NASA thermochemistry file. The file should be in the <code>ace</code> format. - If not defined then FRECKLLs built-in ACE file will be used.</li>
 </ul>
 <h4 id="example_7">Example<a class="headerlink" href="#example_7" title="Permanent link">&para;</a></h4>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nt">thermochemistry</span><span class="p">:</span>
@@ -1951,10 +1865,8 @@ The following built-in photochemistry networks are available:</p>
 <ul>
 <li>
 <p><code>tp_profile</code></p>
-</li>
-<li>
-<p>Defines the temperature profile of the atmosphere. The arguments are as follows:</p>
-</li>
+<ul>
+<li>Defines the temperature profile of the atmosphere. The arguments are as follows:</li>
 <li><code>format</code><ul>
 <li>Format: <code>string</code></li>
 <li><em>Required</em></li>
@@ -2009,82 +1921,18 @@ The following built-in photochemistry networks are available:</p>
 <li>The delimiter used in the CSV file. Default is <code>None</code>.</li>
 </ul>
 </li>
-<li>
-<p><code>start</code></p>
-<ul>
-<li>Format: <code>top</code> or <code>bottom</code></li>
-<li><em>Optional</em></li>
-<li>Whether the profile starts from the top or bottom of the atmosphere. Default is <code>bottom</code>.</li>
-</ul>
-</li>
-<li>
-<p><code>kzz</code></p>
-</li>
-<li>Defines the eddy diffusion coefficient profile of the atmosphere. The arguments are as follows:</li>
-<li><code>format</code><ul>
-<li>Format: <code>string</code></li>
-<li><em>Required</em></li>
-<li>The format of the eddy diffusion coefficient profile. Only <code>from-file</code> is supported.</li>
-</ul>
-</li>
-<li><code>filename</code><ul>
-<li>Format: <code>Path</code></li>
-<li><em>Required</em></li>
-<li>The path to the eddy diffusion coefficient profile file. The file should be in CSV format.</li>
-</ul>
-</li>
-<li><code>kzz_column</code><ul>
-<li>Format: <code>int</code></li>
-<li><em>Required</em></li>
-<li>The column number of the eddy diffusion coefficient data in the CSV file. The first column is <code>0</code>.</li>
-</ul>
-</li>
-<li><code>pressure_column</code><ul>
-<li>Format: <code>int</code></li>
-<li><em>Required</em></li>
-<li>The column number of the pressure data in the CSV file. The first column is <code>0</code>.</li>
-</ul>
-</li>
-<li><code>comments</code><ul>
-<li>Format: <code>string</code></li>
-<li><em>Optional</em></li>
-<li>The character used to denote comments in the CSV file. Default is <code>#</code>.</li>
-</ul>
-</li>
-<li><code>kzz_unit</code><ul>
-<li>Format: <code>string</code></li>
-<li><em>Required</em></li>
-<li>The unit of the eddy diffusion coefficient data. The unit should be in the form of a string (e.g. <code>cm2/s</code>, <code>m2/s</code>, etc.).</li>
-</ul>
-</li>
-<li><code>pressure_unit</code><ul>
-<li>Format: <code>string</code></li>
-<li><em>Required</em></li>
-<li>The unit of the pressure data. The unit should be in the form of a string (e.g. <code>Pa</code>, <code>bar</code>, etc.).</li>
-</ul>
-</li>
-<li><code>skiprows</code><ul>
-<li>Format: <code>int</code></li>
-<li><em>Optional</em></li>
-<li>The number of rows to skip at the beginning of the file. Default is <code>0</code>.</li>
-</ul>
-</li>
-<li><code>delimiter</code><ul>
-<li>Format: <code>string</code></li>
-<li><em>Optional</em></li>
-<li>The delimiter used in the CSV file. Default is <code>None</code>.</li>
-</ul>
-</li>
 <li><code>start</code><ul>
 <li>Format: <code>top</code> or <code>bottom</code></li>
 <li><em>Optional</em></li>
 <li>Whether the profile starts from the top or bottom of the atmosphere. Default is <code>bottom</code>.</li>
 </ul>
 </li>
-<li><code>interpolate_kzz</code></li>
-<li>Format: <code>bool</code></li>
-<li><em>Optional</em></li>
-<li>Whether to interpolate the eddy diffusion coefficient profile. Default is <code>True</code>.</li>
+</ul>
+</li>
+<li>
+<p><code>kzz</code> - Defines the eddy diffusion coefficient profile of the atmosphere. The arguments are as follows: - <code>format</code> - Format: <code>string</code> - <em>Required</em> - The format of the eddy diffusion coefficient profile. Only <code>from-file</code> is supported. - <code>filename</code> - Format: <code>Path</code> - <em>Required</em> - The path to the eddy diffusion coefficient profile file. The file should be in CSV format. - <code>kzz_column</code> - Format: <code>int</code> - <em>Required</em> - The column number of the eddy diffusion coefficient data in the CSV file. The first column is <code>0</code>. - <code>pressure_column</code> - Format: <code>int</code> - <em>Required</em> - The column number of the pressure data in the CSV file. The first column is <code>0</code>. - <code>comments</code> - Format: <code>string</code> - <em>Optional</em> - The character used to denote comments in the CSV file. Default is <code>#</code>. - <code>kzz_unit</code> - Format: <code>string</code> - <em>Required</em> - The unit of the eddy diffusion coefficient data. The unit should be in the form of a string (e.g. <code>cm2/s</code>, <code>m2/s</code>, etc.). - <code>pressure_unit</code> - Format: <code>string</code> - <em>Required</em> - The unit of the pressure data. The unit should be in the form of a string (e.g. <code>Pa</code>, <code>bar</code>, etc.). - <code>skiprows</code> - Format: <code>int</code> - <em>Optional</em> - The number of rows to skip at the beginning of the file. Default is <code>0</code>. - <code>delimiter</code> - Format: <code>string</code> - <em>Optional</em> - The delimiter used in the CSV file. Default is <code>None</code>. - <code>start</code> - Format: <code>top</code> or <code>bottom</code> - <em>Optional</em> - Whether the profile starts from the top or bottom of the atmosphere. Default is <code>bottom</code>.</p>
+</li>
+<li><code>interpolate_kzz</code> - Format: <code>bool</code> - <em>Optional</em> - Whether to interpolate the eddy diffusion coefficient profile. Default is <code>True</code>.</li>
 </ul>
 <p>For <code>kzz</code> it is also possible to use a constant value. e.g</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nt">atmosphere</span><span class="p">:</span>
@@ -2129,77 +1977,38 @@ Only two solvers are currently available: <code>rosenbrock</code> and <code>vode
 <ul>
 <li>
 <p><code>method</code></p>
-</li>
-<li>
-<p>Format: <code>string</code></p>
-</li>
+<ul>
+<li>Format: <code>string</code></li>
 <li><em>Required</em></li>
-<li>
-<p>The method to be used. Only <code>rosenbrock</code> and <code>vode</code> are supported.</p>
+<li>The method to be used. Only <code>rosenbrock</code> and <code>vode</code> are supported.</li>
+</ul>
 </li>
 <li>
-<p><code>t_span</code></p>
+<p><code>t_span</code> - Format: <code>list[float,float]</code> - <em>Required</em> - The start and end time of the simulation - The time span should be in the form of a list (e.g. <code>[0.0, 1e10]</code>).</p>
 </li>
-<li>Format: <code>list[float,float]</code></li>
-<li><em>Required</em></li>
-<li>The start and end time of the simulation</li>
-<li>The time span should be in the form of a list (e.g. <code>[0.0, 1e10]</code>).</li>
-<li><code>enable_diffusion</code></li>
-<li>Format: <code>bool</code></li>
-<li><em>Optional</em></li>
-<li>Whether to enable molecular diffusion. Default is <code>False</code>.</li>
-<li><code>atol</code></li>
-<li>Format: <code>float</code></li>
-<li><em>Optional</em></li>
-<li>The absolute tolerance of the solver. Default is <code>1e-25</code>.</li>
-<li><code>rtol</code></li>
-<li>Format: <code>float</code></li>
-<li><em>Optional</em></li>
-<li>The relative tolerance of the solver. Default is <code>1e-3</code>.</li>
-<li><code>df_criteria</code></li>
-<li>Format: <code>float</code></li>
-<li><em>Optional</em></li>
-<li>The criteria for convergence of the solver.</li>
-<li>Defined as <span class="arithmatex">\(|y_{i} - y_{i-1}| &lt; \Delta f\)</span>.</li>
-<li>Default is <code>1e-3</code>.</li>
-<li><code>dfdt_criteria</code></li>
-<li>Format: <code>float</code></li>
-<li><em>Optional</em></li>
-<li>The criteria for convergence of the solver.</li>
-<li>Defined as <span class="arithmatex">\(\frac{|y_{i} - y_{i-1}|}{t_i - t_{i-1}} &lt; \frac{\Delta f}{\Delta t}\)</span>.</li>
-<li>Default is <code>1e-8</code>.</li>
+<li><code>enable_diffusion</code> - Format: <code>bool</code> - <em>Optional</em> - Whether to enable molecular diffusion. Default is <code>False</code>.</li>
+<li><code>atol</code> - Format: <code>float</code> - <em>Optional</em> - The absolute tolerance of the solver. Default is <code>1e-25</code>.</li>
+<li><code>rtol</code> - Format: <code>float</code> - <em>Optional</em> - The relative tolerance of the solver. Default is <code>1e-3</code>.</li>
+<li><code>df_criteria</code> - Format: <code>float</code> - <em>Optional</em> - The criteria for convergence of the solver. - Defined as <span class="arithmatex">\(|y_{i} - y_{i-1}| &lt; \Delta f\)</span>. - Default is <code>1e-3</code>.</li>
+<li><code>dfdt_criteria</code> - Format: <code>float</code> - <em>Optional</em> - The criteria for convergence of the solver. - Defined as <span class="arithmatex">\(\frac{|y_{i} - y_{i-1}|}{t_i - t_{i-1}} &lt; \frac{\Delta f}{\Delta t}\)</span>. - Default is <code>1e-8</code>.</li>
 </ul>
 <h3 id="rosenbrock">Rosenbrock<a class="headerlink" href="#rosenbrock" title="Permanent link">&para;</a></h3>
 <p>The <code>rosenbrock</code> solver has the following additional properties:</p>
 <ul>
-<li><code>maxiter</code></li>
-<li>Format: <code>int</code></li>
-<li><em>Optional</em></li>
-<li>The maximum number of iterations for the solver. Default is <code>100</code>.</li>
-<li><code>nevals</code></li>
-<li>Format: <code>int</code></li>
-<li><em>Optional</em></li>
-<li>The number of evaluations to store in the solution.</li>
-<li>These are evenly spaced in <span class="arithmatex">\(\log_{10}(t)\)</span>.</li>
-<li>The results are interpolated to these points.</li>
-<li>Default is <code>200</code>.</li>
+<li><code>maxiter</code> - Format: <code>int</code> - <em>Optional</em> - The maximum number of iterations for the solver. Default is <code>100</code>.</li>
+<li><code>nevals</code> - Format: <code>int</code> - <em>Optional</em> - The number of evaluations to store in the solution. - These are evenly spaced in <span class="arithmatex">\(\log_{10}(t)\)</span>. - The results are interpolated to these points. - Default is <code>200</code>.</li>
 <li>
 <p><code>timestep_reject_factor</code></p>
-</li>
-<li>
-<p>Format: <code>float</code></p>
-</li>
+<ul>
+<li>Format: <code>float</code></li>
 <li><em>Optional</em></li>
 <li>The factor by which to reduce the timestep if the solver fails a step.</li>
-<li>
-<p>Default is <code>0.5</code>.</p>
+<li>Default is <code>0.5</code>.</li>
+</ul>
 </li>
 <li>
-<p><code>max_solve_time</code></p>
+<p><code>max_solve_time</code> - Format: <code>[time]</code> - <em>Optional</em> - The maximum time to run the solver. Default is <code>None</code></p>
 </li>
-<li>Format: <code>[time]</code></li>
-<li><em>Optional</em></li>
-<li>The maximum time to run the solver. Default is <code>None</code></li>
 </ul>
 <h4 id="example_9">Example<a class="headerlink" href="#example_9" title="Permanent link">&para;</a></h4>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="nt">solver</span><span class="p">:</span>
@@ -2217,17 +2026,8 @@ Only two solvers are currently available: <code>rosenbrock</code> and <code>vode
 <h3 id="vode">Vode<a class="headerlink" href="#vode" title="Permanent link">&para;</a></h3>
 <p>The <code>vode</code> solver has the following additional properties:</p>
 <ul>
-<li><code>max_retries</code></li>
-<li>Format: <code>int</code></li>
-<li><em>Optional</em></li>
-<li>The maximum number of retries for the solver. Default is <code>10</code>.</li>
-<li><code>nevals</code></li>
-<li>Format: <code>int</code></li>
-<li><em>Optional</em></li>
-<li>The number of evaluations to store in the solution.</li>
-<li>These are evenly spaced in <span class="arithmatex">\(\log_{10}(t)\)</span>.</li>
-<li>The results are interpolated to these points.</li>
-<li>Default is <code>200</code>.</li>
+<li><code>max_retries</code> - Format: <code>int</code> - <em>Optional</em> - The maximum number of retries for the solver. Default is <code>10</code>.</li>
+<li><code>nevals</code> - Format: <code>int</code> - <em>Optional</em> - The number of evaluations to store in the solution. - These are evenly spaced in <span class="arithmatex">\(\log_{10}(t)\)</span>. - The results are interpolated to these points. - Default is <code>200</code>.</li>
 </ul>
 <h4 id="example_10">Example<a class="headerlink" href="#example_10" title="Permanent link">&para;</a></h4>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="nt">solver</span><span class="p">:</span>

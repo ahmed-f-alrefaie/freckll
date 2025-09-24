@@ -1182,12 +1182,12 @@
 </span></code></pre></div>
 <p><img alt="png" src="../gettingstarted_files/gettingstarted_10_0.png" /></p>
 <h2 id="loading-in-the-network">Loading in the Network<a class="headerlink" href="#loading-in-the-network" title="Permanent link">&para;</a></h2>
-<p>The next step is to load in the network. FRECKLL includes two <a href="">Venot 2020</a> networks built in. The first is a full chemical network that includes photolysis and the second is a reduced network that does not include photolysis.</p>
-<p>You can also load in your own network but this will be covered in a different tutorial.</p>
-<p>The <code>default_network_loader</code> allows for two arguments:</p>
+<p>The next step is to load in the network. FRECKLL includes three networks built in. You can also load in your own network but this will be covered in a different tutorial.</p>
+<p>The <code>default_network_loader</code> allows for three arguments:</p>
 <ul>
-<li><code>venot-methanol-2020-reduced</code> - This is the reduced network that does not include photolysis.</li>
-<li><code>venot-methanol-2020</code> - This is the full network that includes photolysis.</li>
+<li><code>veillet-2024</code> - This is the full network from <a href="https://www.aanda.org/articles/aa/full_html/2024/02/aa46680-23/aa46680-23.html">Veillet et al. (2024)</a> that includes photolysis.</li>
+<li><code>venot-methanol-2020-reduced</code> - This is the reduced network from <a href="https://www.aanda.org/articles/aa/full_html/2020/02/aa36697-19/aa36697-19.html">Venot et al. (2020)</a> that does not include photolysis.</li>
+<li><code>venot-methanol-2020</code> - This is the full network from <a href="https://www.aanda.org/articles/aa/full_html/2020/02/aa36697-19/aa36697-19.html">Venot et al. (2020)</a> that includes photolysis</li>
 </ul>
 <p>We can use the loader to load in the reduced network:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">freckll.io.loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_network_loader</span>
@@ -1475,10 +1475,10 @@ We can also animate the results as well:</p>
 <p>Of course we may want to start from an atmosphere of given metallicity and molecular ratios. You can supply your own initial VMR as along as the first dimension maps
 to each species in <code>network.species</code>. The solver will then run from this initial VMR to the final state.</p>
 <p><code>FRECKLL</code> includes the equilibrium code <code>ACE</code> which is installed either from:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>pip<span class="w"> </span>install<span class="w"> </span>freckll<span class="o">[</span>ace<span class="o">]</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;freckll[ace]&quot;</span>
 </span></code></pre></div>
 <p>or</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>pip<span class="w"> </span>install<span class="w"> </span>freckll<span class="o">[</span>recommended<span class="o">]</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;freckll[recommended]&quot;</span>
 </span></code></pre></div>
 <p>or you can install it manually using:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>pip<span class="w"> </span>install<span class="w"> </span>acepython
@@ -1573,7 +1573,7 @@ to each species in <code>network.species</code>. The solver will then run from t
 <p><img alt="png" src="../gettingstarted_files/gettingstarted_58_0.png" /></p>
 <h2 id="running-with-photochemistry">Running with Photochemistry<a class="headerlink" href="#running-with-photochemistry" title="Permanent link">&para;</a></h2>
 <p>For the photochemistry case we will need to use the full network instead. We can load it in using the <code>default_network_loader</code> function:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a><span class="n">full_network</span> <span class="o">=</span> <span class="n">default_network_loader</span><span class="p">(</span><span class="s2">&quot;venot-methanol-2020&quot;</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a><span class="n">full_network</span> <span class="o">=</span> <span class="n">default_network_loader</span><span class="p">(</span><span class="s2">&quot;veillet-2024&quot;</span><span class="p">)</span>
 </span></code></pre></div>
 <p>We will also need to load in the photochemistry and actinic flux for the star. This is easily accomplished using the loader modules.
 We will load the Venot 2020 photochemistry and the actinic flux for HD 209458 star</p>
