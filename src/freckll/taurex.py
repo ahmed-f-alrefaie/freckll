@@ -1,5 +1,6 @@
 """Module for the TauREx plugin"""
 
+import logging
 import typing as t
 
 import numpy as np
@@ -214,7 +215,8 @@ class BaseFreckllChemistry(AutoChemistry):
         if self.star_config:
             if (
                 isinstance(self.star_config, dict)
-                and self.star_config["spectrum"]["format"] == "rescale"
+                and isinstance(self.star_config.get("spectrum"), dict)
+                and self.star_config["spectrum"].get("format") == "rescale"
                 and self.override_star_params_taurex
             ):
                 self.star_config["spectrum"]["radius"] = self.star_taurex.radius << u.m
@@ -352,7 +354,7 @@ class BaseFreckllChemistry(AutoChemistry):
         """Kzz value for the atmosphere."""
         self._kzz = value << u.cm**2 / u.s
 
-    BIBTEX_ENTRIES = (
+    BIBTEX_ENTRIES: t.ClassVar = [
         r"""
 @ARTICLE{2024ApJ...967..132A,
        author = {{Al-Refaie}, Ahmed Faris and {Venot}, Olivia and {Changeat}, Quentin and {Edwards}, Billy},
@@ -373,7 +375,7 @@ archivePrefix = {arXiv},
       adsnote = {Provided by the SAO/NASA Astrophysics Data System}
 }
 """,
-    )
+    ]
 
 
 class FreckllChemistry(BaseFreckllChemistry):
@@ -423,8 +425,8 @@ class FreckllChemistryInput(BaseFreckllChemistry):
         self,
         network: t.Union[PathLike, freckll_loader.Networks] = "velliet-2024",
         photochemistry: t.Optional[t.Union[PathLike, freckll_loader.Photonetworks, t.Literal["auto"]]] = "auto",
-        elements: tuple[str] = DEFAULT_ELEMENTS,
-        abundances: tuple[float] = DEFAULT_ABUNDANCES,
+        elements: t.Optional[tuple[str]] = None,
+        abundances: t.Optional[tuple[float]] = None,
         ratio_element: str = "O",
         h_abundance: float = 12.0,
         h_he_ratio: float = 0.083,
@@ -450,6 +452,7 @@ class FreckllChemistryInput(BaseFreckllChemistry):
 
 
         """
+        logging.getLogger("freckll").addHandler(logging.getLogger("taurex").handlers[-1])
         network_config = network
         if photochemistry == "auto" and network_config == "velliet-2024":
             photochemistry = "velliet-2024-photo"
@@ -463,6 +466,12 @@ class FreckllChemistryInput(BaseFreckllChemistry):
 
         elements = elements or DEFAULT_ELEMENTS
         abundances = abundances or DEFAULT_ABUNDANCES
+
+        if network_config.startswith("venot-methanol"):
+            # Remove S
+            elements, abundances = list(
+                zip(*tuple((ele, abun) for ele, abun in zip(elements, abundances) if ele != "S"))
+            )
 
         elements = ("H", "He", *tuple(elements))
         abundances = (h_abundance, he_dex, *tuple(abundances))
