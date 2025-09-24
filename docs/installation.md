@@ -16,9 +16,9 @@ You can also be more specific and install only the required dependencies:
 
 ```bash
 pip install freckll     # Minimum dependencies
-pip install freckll[recommended] # ace and plot
-pip install freckll[ace] # ACE chemistry
-pip install freckll[plot] # Plotting
+pip install "freckll[recommended]" # ace and plot
+pip install "freckll[ace]" # ACE chemistry
+pip install "freckll[plot]" # Plotting
 ```
 
 ## Requirements
@@ -54,5 +54,5 @@ To install from source, clone the repository and install using `pip`:
 ```bash
 git clone https://github.com/ahmed-f-alrefaie/freckll.git
 cd freckll
-pip install .[recommended]
+pip install ".[recommended]"
 ```
