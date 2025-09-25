@@ -100,7 +100,7 @@ class ReactionCall:
                 self.reactants_indices,
                 self.product_indices,
                 reaction_rate[0],
-                self.tags,
+                self.tags if self.inverted else [*self.tags, "irrev"],
             )
         ]
         if self.inverted:
