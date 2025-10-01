@@ -345,7 +345,7 @@ class BaseFreckllChemistry(AutoChemistry):
     def Kzz(self) -> float:
         """Kzz value for the atmosphere."""
         # If its not scalar then raise an error
-        if not np.isscalar(self.kzz_arr):
+        if not np.ndim(self.kzz_arr) == 0:
             raise ValueError("Kzz must be a scalar value to use fitting property.")  # noqa: TRY003
         return self._kzz.to(u.cm**2 / u.s).value
 
