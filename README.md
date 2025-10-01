@@ -21,5 +21,5 @@ pip install .
 ```bash
 cd freckll/examples/inputs
 
-python -m freckll.main -i hd209458_full.yml -o result_full.h5 --overwrite --plot
+freckll hd209458_full.yml -o result_full.h5 --overwrite --plot
 ```
