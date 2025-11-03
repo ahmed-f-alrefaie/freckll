@@ -444,6 +444,8 @@ class FreckllChemistryInput(BaseFreckllChemistry):
         rtol: float = 1e-2,
         atol: float = 1e-15,
         maxiter: int = 1000,
+        kzz: float = 1e10,
+        incident_angle: float = 45.0,
         **kwargs: t.Any,
     ) -> None:
         """Initialize the FreckllChemistry.
@@ -504,10 +506,10 @@ class FreckllChemistryInput(BaseFreckllChemistry):
             initial_equilibrium_config=equil_config,
             star_config=star_config,
             solver_config=solver_config,
-            kzz=kwargs.get("kzz", 1e10 * u.cm**2 / u.s),
+            kzz=kzz << u.cm**2 / u.s,
             ratio_element=ratio_element,
             metallicity=metallicity,
-            incident_angle=kwargs.get("incident_angle", 45.0 * u.deg),
+            incident_angle=incident_angle << u.deg,
             override_star_params_taurex=True,  # Should be True for input file format
             **kwargs,
         )
