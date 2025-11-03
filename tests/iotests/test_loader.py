@@ -102,10 +102,10 @@ def test_generic_csv_loader_swap_order(tmpdir):
     ],
 )
 def test_load_default_stellar_spectra(star):
-    from freckll.io.loader import load_default_stellar_spectra
+    from freckll.io.loader import default_stellar_spectra_loader
     from freckll.reactions.photo import StarSpectra
 
-    spectra = load_default_stellar_spectra(star)
+    spectra = default_stellar_spectra_loader(star)
     assert spectra is not None
     assert spectra.wavelength.unit == u.nm
     assert spectra.flux.unit == u.photon / (u.cm**2 * u.s * u.nm)
