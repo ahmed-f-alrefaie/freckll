@@ -1,0 +1,52 @@
+[Global]
+xsec_path = /path/to/xsec
+cia_path = /path/to/cia
+opacity_method = 'xsec'
+implicit_fit = true
+
+[Chemistry]
+chemistry_type = freckll
+network= "venot-methanol-2020-reduced"
+photochemistry= "auto"
+star_method= "from-star"
+star_arg= "sun"
+solve_method= "rosenbrock"
+t_span = 0.0, 1e10
+max_iter=100
+nevals=200
+dn_crit=1e-3
+dndt_crit=1e-6
+max_solve_time_hour=1
+enable_diffusion= False
+rtol= 1e-2
+atol= 1e-15
+
+[Temperature]
+profile_type = isothermal
+T = 1000
+
+[Pressure]
+profile_type = Simple
+atm_min_pressure = 1e-6
+atm_max_pressure = 1e6
+nlayers = 100
+
+[Planet]
+planet_type = Simple
+planet_mass = 0.71
+planet_radius = 1.39
+planet_distance = 0.045
+
+[Star]
+star_type = blackbody
+temperature = 5800
+
+[Model]
+model_type = transmission
+
+    [[Absorption]]
+
+    [[CIA]]
+    cia_pairs = H2-He,H2-H2
+
+    [[Rayleigh]]
