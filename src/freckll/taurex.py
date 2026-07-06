@@ -485,15 +485,15 @@ class FreckllChemistryInput(BaseFreckllChemistry):
         solver_config = {
             "method": solve_method,
             "t_span": t_span,
-            "max_iter": max_iter,
-            "nevals": nevals,
+            "max_iter": int(max_iter),
+            "nevals": int(nevals),
             "dn_crit": dn_crit,
             "dndt_crit": dndt_crit,
             "max_solve_time_hour": max_solve_time_hour,
             "enable_diffusion": enable_diffusion,
             "rtol": rtol,
             "atol": atol,
-            "maxiter": maxiter,
+            "maxiter": int(maxiter),
         }
 
         star_config = build_star_config(star_method, star_arg)
