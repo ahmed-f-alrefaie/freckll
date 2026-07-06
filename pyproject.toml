@@ -1,6 +1,6 @@
 [project]
 name = "FRECKLL"
-version = "0.0.1"
+version = "0.0.2"
 description = "Fast Disequilibrium chemistry"
 authors = [{ name = "Ahmed F. Al-Refaie", email = "ahmed.al-refaie@ucl.ac.uk" }]
 readme = "README.md"
