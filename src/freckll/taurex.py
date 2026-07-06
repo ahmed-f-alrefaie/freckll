@@ -10,6 +10,7 @@ from astropy.io.typing import PathLike
 from taurex.chemistry import AutoChemistry
 from taurex.core import fitparam
 from taurex.data.profiles.temperature.temparray import TemperatureArray
+from taurex.log.logger import TauRexHandler
 from taurex.planet import Planet
 from taurex.pressure import ArrayPressureProfile
 from taurex.stellar import Star
@@ -44,6 +45,9 @@ DEFAULT_SOLVER_CONFIG = {
 }
 
 
+_log = logging.getLogger("freckll")
+
+
 def resolve_star(star_string):
     """Resolves the star into the appropriate SED method."""
     freckll_loader.star_spectra_loader()
@@ -62,6 +66,7 @@ class BaseFreckllChemistry(AutoChemistry):
         kzz: t.Union[u.Quantity, dict] = 1e10 * u.cm**2 / u.s,
         ratio_element: str = "O",
         metallicity: float = 1.0,
+        verbose: bool = False,
         override_star_params_taurex: bool = False,
         **kwargs: t.Any,
     ) -> None:
@@ -144,6 +149,14 @@ class BaseFreckllChemistry(AutoChemistry):
         self._kzz = np.max(kzz)
         self.star_config = star_config
         self.override_star_params_taurex = override_star_params_taurex
+        if verbose and not any(isinstance(h, TauRexHandler) for h in _log.handlers):
+            _log.handlers = []
+            rh = TauRexHandler()
+            formatter = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
+            rh.setFormatter(formatter)
+            _log.addHandler(rh)
+            rh.setLevel(logging.INFO)
+            _log.setLevel(logging.INFO)
 
     def add_ratio_params(self):
         self._ratio_setters = {}
@@ -444,6 +457,8 @@ class FreckllChemistryInput(BaseFreckllChemistry):
         rtol: float = 1e-2,
         atol: float = 1e-15,
         maxiter: int = 1000,
+        verbose: bool = True,
+        kzz=1e10,
         **kwargs: t.Any,
     ) -> None:
         """Initialize the FreckllChemistry.
@@ -504,11 +519,12 @@ class FreckllChemistryInput(BaseFreckllChemistry):
             initial_equilibrium_config=equil_config,
             star_config=star_config,
             solver_config=solver_config,
-            kzz=kwargs.get("kzz", 1e10 * u.cm**2 / u.s),
+            kzz=kzz << u.cm**2 / u.s,
             ratio_element=ratio_element,
             metallicity=metallicity,
             incident_angle=kwargs.get("incident_angle", 45.0 * u.deg),
             override_star_params_taurex=True,  # Should be True for input file format
+            verbose=verbose,
             **kwargs,
         )
 
