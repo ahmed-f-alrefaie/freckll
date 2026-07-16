@@ -153,7 +153,7 @@ def _parse_reaction_line(
 
     reactants = [decode_species(x.strip()) for x in values[:5] if x and x != "HV"]
     products = [decode_species(x.strip()) for x in values[5:10] if x and x != "HV"]
-    coeffs = np.array([float(x.replace("d", "e")) for x in line[112:].split()])
+    coeffs = np.array([float(x.replace("d", "e")) for x in line[111:].split()])
     return reactants, products, coeffs
 
 
