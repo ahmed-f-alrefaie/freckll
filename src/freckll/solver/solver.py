@@ -478,7 +478,7 @@ class Solver(Loggable):
             self.info("Solver completed successfully.")
 
         vmrs = np.array([convert_y_to_fm(ys, *vmr.shape) for ys in solver_output["y"]])
-
+        no_norm_vmrs = vmrs
         vmrs = vmrs / np.sum(vmrs, axis=1, keepdims=True)
 
         planet_data = {
@@ -508,6 +508,7 @@ class Solver(Loggable):
             "planet": planet_data,
             "times": np.array(solver_output["times"]),
             "vmr": vmrs,
+            "no_norm_vmr": no_norm_vmrs,
             "masses": self.network.masses,
             "density": density,
             "species": self.network.species,
