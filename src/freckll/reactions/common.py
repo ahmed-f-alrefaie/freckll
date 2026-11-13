@@ -59,7 +59,7 @@ def collision_rate_limit(
     update_mask = k_rate >= k_coll
 
     if uni_reaction:
-        k_kinf = np.divide(k_rate * m_concentration, k_inf, where=k_inf != 0)
+        k_kinf = np.divide(k_rate * m_concentration, k_inf, where=k_inf != 0, out=None)
         k_rate_coll = k_rate / k_coll
         kinf_zero = k_inf == 0
         k_rate_exceeds_kinf = k_kinf > 1.0
@@ -105,7 +105,7 @@ def collision_rate_array(
 
     uni_reactions = num_species[:, None] == 1
     if np.any(uni_reactions):
-        k_kinf = np.divide(k_rate * m_concentration, k_inf, where=k_inf != 0)
+        k_kinf = np.divide(k_rate * m_concentration, k_inf, where=k_inf != 0, out=None)
         k_rate_coll = k_rate / k_coll
         kinf_zero = k_inf == 0
         k_rate_exceeds_kinf = k_kinf > 1.0
@@ -316,6 +316,7 @@ def plog_interpolate(
         log_pressures_diff,
         log_points_diff,
         where=non_zero,
+        out = None,
     )
     final = 10**k_interp
 
